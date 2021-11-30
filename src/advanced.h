@@ -25,9 +25,11 @@ class Advanced : public QObject {
 	Ui::MainWindow *ui;
 	dSettings &afSettings;
 	QPushButton *tfrButtons[8];
+	QPushButton *pcButtons[8];
 
 	void addHandlers();
 	void editTfr(int id);
+	void editPc(int id);
 };
 
 #endif // ADVANCED_H

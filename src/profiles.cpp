@@ -9,12 +9,10 @@ Profiles::Profiles(QWidget *parent, Ui::MainWindow *ui, dSettings &afSettings)
 	: mainwindow(parent), ui(ui), afSettings(afSettings) {
 
 	// replacement widgets
-	preheatCurveCombo = new QComboBox(mainwindow); // populated when connected
-	preheatCurveCombo->hide();
+	ui->profilePreheatCurveCombo->hide();
 
-	preheatCurveEditBtn = new QPushButton("Edit", mainwindow);
-	connect(preheatCurveEditBtn, SIGNAL(clicked()), this, SLOT(onPreheatEdit()));
-	preheatCurveEditBtn->hide();
+	connect(ui->profilePreheatCurveEditBtn, SIGNAL(clicked()), this, SLOT(onPreheatEdit()));
+	ui->profilePreheatCurveEditBtn->hide();
 	ui->profileNameEdit->setValidator(new ProfileNameValidator);
 
 	// set button IDs in buttonGroup to get profile ID when pressed
@@ -29,13 +27,15 @@ Profiles::Profiles(QWidget *parent, Ui::MainWindow *ui, dSettings &afSettings)
 }
 
 void Profiles::onPreheatEdit() {
-	PowerCurveDialog pcd(mainwindow, afSettings, preheatCurveCombo->currentIndex());
-	pcd.exec();
+	PowerCurveDialog pcd(mainwindow, afSettings, ui->profilePreheatCurveCombo->currentIndex());
+	if (pcd.exec() == QDialog::Rejected)
+		return;
 
 	// settings are in afSettings; set possibly modified curve name in combo box
-	char c[9];
-	std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[preheatCurveCombo->currentIndex()].Name, 8);
-	preheatCurveCombo->setItemText(preheatCurveCombo->currentIndex(), c);
+	char c[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+	std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[ui->profilePreheatCurveCombo->currentIndex()].Name, 8);
+	ui->profilePreheatCurveCombo->setItemText(ui->profilePreheatCurveCombo->currentIndex(), c);
+	ui->pcButtonGroup->button(ui->profilePreheatCurveCombo->currentIndex())->setText(c);
 }
 
 void Profiles::deviceSettingsAvailable() {
@@ -59,10 +59,10 @@ void Profiles::deviceSettingsAvailable() {
 	ui->profilePowerSpin->setMaximum((double)afSettings.DeviceInfo.MaxPower / 10);
 
 	// populate curve names
-	char c[9];
+	char c[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 	for (int i = 0; i < 8; i++) {
 		std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[i].Name, 8);
-		preheatCurveCombo->addItem(QString(c));
+		ui->profilePreheatCurveCombo->addItem(QString(c));
 	}
 }
 
@@ -245,45 +245,20 @@ void Profiles::onCoilMaterialCombo(int idx) {
 }
 
 void Profiles::onPreheatTypeCombo(int idx) {
-	QLayoutItem *li1 = nullptr;
-	QLayoutItem *li2 = nullptr;
-	switch (idx) {
-	case 0: // absolute (W)
-		ui->profilePreheatPowerLabel->setText("W");
-		li1 = ui->gridLayout->replaceWidget(preheatCurveCombo, ui->profilePreheatPowerSpin);
-		li2 = ui->gridLayout->replaceWidget(preheatCurveEditBtn, ui->profilePreheatPowerLabel);
-		break;
-	case 1: // relative (%)
-		ui->profilePreheatPowerLabel->setText("%");
-		li1 = ui->gridLayout->replaceWidget(preheatCurveCombo, ui->profilePreheatPowerSpin);
-		li2 = ui->gridLayout->replaceWidget(preheatCurveEditBtn, ui->profilePreheatPowerLabel);
-		break;
-	case 2: // curve
+
+	if (idx == 2) { // curve
+		ui->profilePreheatPowerSpin->hide();
+		ui->profilePreheatCurveCombo->show();
+		ui->profilePreheatPowerLabel->hide();
+		ui->profilePreheatCurveEditBtn->show();
+		ui->profilePreheatLabel->setText("Preheat Curve:");
 		ui->profilePreheatPowerLabel->setText("");
-		li1 = ui->gridLayout->replaceWidget(ui->profilePreheatPowerSpin, preheatCurveCombo);
-		li2 = ui->gridLayout->replaceWidget(ui->profilePreheatPowerLabel, preheatCurveEditBtn);
-		break;
-	default:
-		assert(0);
-	}
-	if (li1) {
-		delete li1;
-		if (idx == 2) {
-			ui->profilePreheatPowerSpin->hide();
-			preheatCurveCombo->show();
-		} else {
-			preheatCurveCombo->hide();
-			ui->profilePreheatPowerSpin->show();
-		}
-	}
-	if (li2) {
-		delete li2;
-		if (idx == 2) {
-			ui->profilePreheatPowerLabel->hide();
-			preheatCurveEditBtn->show();
-		} else {
-			preheatCurveEditBtn->hide();
-			ui->profilePreheatPowerLabel->show();
-		}
+	} else { // power (absolute / relative)
+		ui->profilePreheatCurveCombo->hide();
+		ui->profilePreheatPowerSpin->show();
+		ui->profilePreheatCurveEditBtn->hide();
+		ui->profilePreheatPowerLabel->show();
+		ui->profilePreheatLabel->setText("Preheat Power:");
+		ui->profilePreheatPowerLabel->setText(idx ? "%" : "W");
 	}
 }

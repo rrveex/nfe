@@ -27,9 +27,6 @@ class Profiles : public QObject {
 
 	int currentProfileId = 0;
 
-	QComboBox *preheatCurveCombo = nullptr;
-	QPushButton *preheatCurveEditBtn = nullptr;
-
 	void addHandlers();
 
 	int last_material; // remember when changing between VW/TC

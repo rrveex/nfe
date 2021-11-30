@@ -48,7 +48,7 @@ PowerCurveDialog::PowerCurveDialog(QWidget *parent, dSettings &afSettings, int c
 	});
 	connect(series, &QXYSeries::released, this, [this](QPointF) { movingPoint = -1; });
 
-	connect(ui->cancelBtn, &QPushButton::pressed, this, [this] { close(); });
+	connect(ui->cancelBtn, &QPushButton::pressed, this, [this] { done(QDialog::Rejected); });
 	connect(ui->saveBtn, &QPushButton::pressed, this, [this] { save(); });
 
 	connect(series, &QXYSeries::hovered, this, &PowerCurveDialog::hovered);
@@ -103,7 +103,7 @@ PowerCurveDialog::PowerCurveDialog(QWidget *parent, dSettings &afSettings, int c
 		}
 		p_arr[i]->setValue(afSettings.Advanced.PowerCurves[curveId].CurveData[i].Percent);
 	}
-	char c[9];
+	char c[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 	std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[curveId].Name, 8);
 	ui->curveNameEdit->setText(c);
 }
@@ -117,7 +117,7 @@ void PowerCurveDialog::save() {
 		afSettings.Advanced.PowerCurves[curveId].CurveData[i].Time = (uint8_t)(points.at(i).x() * 10);
 		afSettings.Advanced.PowerCurves[curveId].CurveData[i].Percent = points.at(i).y();
 	}
-	close();
+	done(QDialog::Accepted);
 }
 
 void PowerCurveDialog::onMouseMoved(QMouseEvent *e) {

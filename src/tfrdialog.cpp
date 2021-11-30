@@ -1,6 +1,8 @@
 #include "tfrdialog.h"
 #include "ui_tfrdialog.h"
-
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QTextStream>
 #include <cstring>
 
 TfrDialog::TfrDialog(QWidget *parent, dSettings &afSettings, int curveId)
@@ -28,7 +30,7 @@ TfrDialog::TfrDialog(QWidget *parent, dSettings &afSettings, int curveId)
 
 	series->setPointLabelsFormat("@yPoint");
 
-	for (int i = 0; i < arr_len; i++) {
+	for (int i = 0; i < no_points; i++) {
 		// x value matters here because of populating -> signal -> min/max range for spin
 		series->append(afSettings.Advanced.TFR_Tables[curveId].TFR[i].temp, 1);
 	}
@@ -50,8 +52,10 @@ TfrDialog::TfrDialog(QWidget *parent, dSettings &afSettings, int curveId)
 	});
 	connect(series, &QXYSeries::released, this, [this](QPointF) { movingPoint = -1; });
 
-	connect(ui->cancelBtn, &QPushButton::pressed, this, [this] { close(); });
-	connect(ui->saveBtn, &QPushButton::pressed, this, [this] { save(); });
+	connect(ui->cancelBtn, &QPushButton::pressed, this, [this] { done(QDialog::Rejected); });
+	connect(ui->saveBtn, &QPushButton::pressed, this, &TfrDialog::onSave);
+	connect(ui->exportBtn, &QPushButton::pressed, this, &TfrDialog::onExport);
+	connect(ui->importBtn, &QPushButton::pressed, this, &TfrDialog::onImport);
 
 	connect(series, &QXYSeries::hovered, this, &TfrDialog::hovered);
 	connect(chartView, &ChartView::mouseMoved, this, &TfrDialog::onMouseMoved);
@@ -77,12 +81,12 @@ TfrDialog::TfrDialog(QWidget *parent, dSettings &afSettings, int curveId)
 	// value edited in spinboxes (move points)
 	auto sbChanged = static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged);
 	auto dsbChanged = static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged);
-	for (int i = 0; i < arr_len; i++) {
+	for (int i = 0; i < no_points; i++) {
 		connect(t_arr[i], sbChanged, this, [this, i](int val) {
 			if (i > 0) {
 				t_arr[i - 1]->setMaximum(val - 1);
 			}
-			if (i < arr_len - 1) {
+			if (i < no_points - 1) {
 				t_arr[i + 1]->setMinimum(val + 1);
 			}
 			auto p = series->points().at(i);
@@ -105,21 +109,9 @@ TfrDialog::TfrDialog(QWidget *parent, dSettings &afSettings, int curveId)
 		}
 		f_arr[i]->setValue((double)afSettings.Advanced.TFR_Tables[curveId].TFR[i].res / 10000);
 	}
-	char c[9];
-	std::strncpy(c, (char *)afSettings.Advanced.TFR_Tables[curveId].Name, 8);
+	char c[5] = {0, 0, 0, 0, 0};
+	std::strncpy(c, (char *)afSettings.Advanced.TFR_Tables[curveId].Name, 4);
 	ui->curveNameEdit->setText(c);
-}
-
-void TfrDialog::save() {
-	std::string s = ui->curveNameEdit->text().toStdString();
-	std::strncpy((char *)afSettings.Advanced.TFR_Tables[curveId].Name, s.c_str(), 8);
-
-	auto points = series->points();
-	for (int i = 0; i < 8; i++) {
-		afSettings.Advanced.TFR_Tables[curveId].TFR[i].temp = points.at(i).x();
-		afSettings.Advanced.TFR_Tables[curveId].TFR[i].res = (uint16_t)(points.at(i).y() * 10000);
-	}
-	close();
 }
 
 void TfrDialog::onMouseMoved(QMouseEvent *e) {
@@ -167,6 +159,77 @@ void TfrDialog::hovered(const QPointF &point, bool state) {
 		}
 	}
 	chartView->setRubberBand(QChartView::HorizontalRubberBand);
+}
+
+void TfrDialog::onSave() {
+	std::string s = ui->curveNameEdit->text().toStdString();
+	std::strncpy((char *)afSettings.Advanced.TFR_Tables[curveId].Name, s.c_str(), 8);
+
+	auto points = series->points();
+	for (int i = 0; i < no_points; i++) {
+		afSettings.Advanced.TFR_Tables[curveId].TFR[i].temp = points.at(i).x();
+		afSettings.Advanced.TFR_Tables[curveId].TFR[i].res = (uint16_t)(points.at(i).y() * 10000);
+	}
+	done(QDialog::Accepted);
+}
+void TfrDialog::onExport() {
+	QFileDialog dialog;
+	dialog.setNameFilter("*.csv");
+	if (dialog.exec()) {
+		QString fn = dialog.selectedFiles().at(0);
+		if (!fn.endsWith(".csv")) {
+			fn += ".csv";
+		}
+		QFile file(fn);
+		if (!file.open(QIODevice::ReadWrite)) {
+			QMessageBox::critical(0, "error", file.errorString());
+			return;
+		}
+		QTextStream stream(&file);
+		stream << "\"Temperature(degF)\",\"Electrical Resistivity\"" << Qt::endl;
+
+		auto points = series->points();
+		for (int i = 0; i < no_points; i++) {
+			uint16_t temp = points.at(i).x();
+			double res = points.at(i).y();
+			stream << temp << "," << QString::number(res, 'f', 4) << Qt::endl;
+		}
+	}
+}
+void TfrDialog::onImport() {
+	QFileDialog dialog;
+	dialog.setNameFilter("*.csv");
+	if (dialog.exec()) {
+		QString fn = dialog.selectedFiles().at(0);
+		QFile file(fn);
+		if (!file.open(QIODevice::ReadOnly)) {
+			QMessageBox::critical(0, "error", file.errorString());
+			return;
+		}
+		QTextStream stream(&file);
+
+		if (!stream.atEnd()) {
+			stream.readLine(); // header
+		}
+		int i = 0;
+		while (!stream.atEnd()) {
+			QString line = stream.readLine();
+			QStringList tup = line.split(",");
+			if (tup.size() != 2)
+				break;
+
+			bool ok_int, ok_double;
+			t_arr[i]->setValue(tup.at(0).toUInt(&ok_int));
+			f_arr[i]->setValue(tup.at(1).toDouble(&ok_double));
+			if (!ok_int || !ok_double)
+				break;
+
+			i++;
+		}
+		if (i != no_points) {
+			QMessageBox::critical(0, "error", "Import NOK, inconsistent state.");
+		}
+	}
 }
 
 TfrDialog::~TfrDialog() {

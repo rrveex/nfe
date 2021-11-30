@@ -122,7 +122,7 @@ bool Device::readSettings() {
 	if (offs < settings_size) {
 		qDebug() << "readSettings read just" << offs << "bytes, retrying";
 		emit readSettingsSignal(
-			false, "readSettings read: " + QString(offs) + QString::fromWCharArray(hid_error(handle)));
+			false, "readSettings read: " + QString::number(offs) + QString::fromWCharArray(hid_error(handle)));
 		return false;
 	}
 

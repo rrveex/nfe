@@ -24,16 +24,18 @@ class TfrDialog : public QDialog {
 	ChartView *chartView;
 	int movingPoint = -1;
 	int selectedPoint = -1;
-	static constexpr int arr_len = 7;
-	QSpinBox *t_arr[arr_len];
-	QDoubleSpinBox *f_arr[arr_len];
+	static constexpr int no_points = 7;
+	QSpinBox *t_arr[no_points];
+	QDoubleSpinBox *f_arr[no_points];
 
 	dSettings &afSettings;
 	int curveId;
   private slots:
 	void hovered(const QPointF &point, bool state);
 	void onMouseMoved(QMouseEvent *);
-	void save();
+	void onSave();
+	void onExport();
+	void onImport();
 };
 
 #endif // TFRDIALOG_H

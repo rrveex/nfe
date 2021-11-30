@@ -9,7 +9,7 @@ and the STM32 thread:
 https://nfeteam.org/forum/threads/lost-vape-quest-chip-grus-ursa-cyborg-btb-thelema.4905
 
 # Audience
-This currently only works on Linux. It could be ported on other OSs (just needs another USB library), but I don't suppose anyone needs that. For Windows there are the official tools and the Apple people probably only have DNA devices :)
+I wrote this for myself and I use Linux exclussively. It only needs Qt5 and hidapi, both available for Windows/Apple too, should be portable.
 
 # Warning
 The official tools know things about firmare versions and device models and capabilities and stuff. This tool doesn't.

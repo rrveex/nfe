@@ -1,6 +1,7 @@
 #include "advanced.h"
 #include "./ui_mainwindow.h"
 #include "mainwindow.h"
+#include "powercurvedialog.h"
 #include "tfrdialog.h"
 #include <QDebug>
 #include <cstring>
@@ -38,6 +39,20 @@ void Advanced::deviceSettingsAvailable() {
 	// USB Max Charging Current: 50 - 0.5A, 100 - 1A, 150 - 1.5A, 200 - 2A
 	ui->advUsbMaxCurrCombo->setCurrentIndex(afSettings.Advanced.ChargingCurrent / 50 - 1);
 
+	// --- Power Curves ---
+	const QRegularExpression re_pc("pc(\\d)Btn"); // pc0Btn .. pc7Btn
+	foreach (auto *btn, ui->pcButtonGroup->buttons()) {
+		auto match = re_pc.match(btn->objectName());
+		if (match.hasMatch()) {
+			int id = match.captured(1).toInt();
+			pcButtons[id] = qobject_cast<QPushButton *>(btn);
+			char c[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+			std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[id].Name, 8);
+			pcButtons[id]->setText(c);
+			ui->pcButtonGroup->setId(pcButtons[id], id);
+		}
+	}
+
 	// --- Materials ---
 	const QRegularExpression re("tfr(\\d)Btn"); // tfr0Btn .. tfr7Btn
 	foreach (auto *btn, ui->tfrButtonGroup->buttons()) {
@@ -45,9 +60,9 @@ void Advanced::deviceSettingsAvailable() {
 		if (match.hasMatch()) {
 			int id = match.captured(1).toInt();
 			tfrButtons[id] = qobject_cast<QPushButton *>(btn);
-			char c[9];
-			std::strncpy(c, (char *)afSettings.Advanced.TFR_Tables[id].Name, 8);
-			tfrButtons[id]->setText(c);
+			char c[5] = {0, 0, 0, 0, 0};
+			std::strncpy(c, (char *)afSettings.Advanced.TFR_Tables[id].Name, 4);
+			tfrButtons[id]->setText(QString("[TCR] ") + c);
 		}
 	}
 	// --- BVO ---
@@ -121,7 +136,16 @@ void Advanced::addHandlers() {
 	connect(ui->advUsbMaxCurrCombo, cbChanged, this, [this](int index) {
 		afSettings.Advanced.ChargingCurrent = (index + 1) * 50;
 	});
-
+	// --- Power Curves ---
+	const QRegularExpression re_pc("pc(\\d)Btn"); // pc0Btn .. pc7Btn
+	foreach (auto *btn, ui->pcButtonGroup->buttons()) {
+		auto match = re_pc.match(btn->objectName());
+		if (match.hasMatch()) {
+			int id = match.captured(1).toInt();
+			pcButtons[id] = qobject_cast<QPushButton *>(btn);
+			connect(pcButtons[id], &QPushButton::pressed, this, [this, id]() { editPc(id); });
+		}
+	}
 	// --- Materials ---
 	const QRegularExpression re("tfr(\\d)Btn"); // tfr0Btn .. tfr7Btn
 	foreach (auto *btn, ui->tfrButtonGroup->buttons()) {
@@ -147,7 +171,25 @@ void Advanced::addHandlers() {
 		afSettings.Advanced.BVOffset[3] = (uint16_t)(val * 100);
 	});
 }
+
+void Advanced::editPc(int id) {
+	PowerCurveDialog pcd(mainwindow, afSettings, id);
+	if (pcd.exec() == QDialog::Rejected)
+		return;
+
+	// settings are in afSettings; set possibly modified curve name in combo box
+	char c[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+	std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[id].Name, 8);
+	pcButtons[id]->setText(c);
+	ui->profilePreheatCurveCombo->setItemText(id, c);
+}
+
 void Advanced::editTfr(int id) {
-	TfrDialog d(mainwindow, afSettings, id);
-	d.exec();
+	TfrDialog tcrd(mainwindow, afSettings, id);
+	if (tcrd.exec() == QDialog::Rejected)
+		return;
+
+	char c[5] = {0, 0, 0, 0, 0};
+	std::strncpy(c, (char *)afSettings.Advanced.TFR_Tables[id].Name, 4);
+	tfrButtons[id]->setText(c);
 }
