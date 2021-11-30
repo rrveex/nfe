@@ -2,6 +2,7 @@
 #define POWERCURVEDIALOG_H
 
 #include "afdata.h"
+#include "chartview.h"
 
 #include <QDialog>
 #include <QDoubleSpinBox>
@@ -15,25 +16,11 @@ namespace Ui {
 class PowerCurveDialog;
 }
 
-QT_CHARTS_USE_NAMESPACE
-
-class ChartView : public QChartView {
-	Q_OBJECT
-  public:
-	explicit ChartView(QChart *chart, QWidget *parent = nullptr);
-
-  protected:
-	virtual void mouseMoveEvent(QMouseEvent *event);
-
-  signals:
-	void mouseMoved(QMouseEvent *event);
-};
-
 class PowerCurveDialog : public QDialog {
 	Q_OBJECT
 
   public:
-	PowerCurveDialog(QWidget *parent, dSettings &afSettings, int profileId, int curveId);
+	PowerCurveDialog(QWidget *parent, dSettings &afSettings, int curveId);
 	~PowerCurveDialog();
 
   private:
@@ -47,7 +34,6 @@ class PowerCurveDialog : public QDialog {
 	QSpinBox *p_arr[12];
 
 	dSettings &afSettings;
-	int profileId;
 	int curveId;
 
   private slots:

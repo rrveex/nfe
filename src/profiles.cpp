@@ -6,13 +6,13 @@
 #include <cstring>
 
 Profiles::Profiles(QWidget *parent, Ui::MainWindow *ui, dSettings &afSettings)
-	: mw(parent), ui(ui), afSettings(afSettings) {
+	: mainwindow(parent), ui(ui), afSettings(afSettings) {
 
 	// replacement widgets
-	preheatCurveCombo = new QComboBox(mw); // populated when connected
+	preheatCurveCombo = new QComboBox(mainwindow); // populated when connected
 	preheatCurveCombo->hide();
 
-	preheatCurveEditBtn = new QPushButton("Edit", mw);
+	preheatCurveEditBtn = new QPushButton("Edit", mainwindow);
 	connect(preheatCurveEditBtn, SIGNAL(clicked()), this, SLOT(onPreheatEdit()));
 	preheatCurveEditBtn->hide();
 	ui->profileNameEdit->setValidator(new ProfileNameValidator);
@@ -29,7 +29,7 @@ Profiles::Profiles(QWidget *parent, Ui::MainWindow *ui, dSettings &afSettings)
 }
 
 void Profiles::onPreheatEdit() {
-	PowerCurveDialog pcd(mw, afSettings, currentProfileId, preheatCurveCombo->currentIndex());
+	PowerCurveDialog pcd(mainwindow, afSettings, preheatCurveCombo->currentIndex());
 	pcd.exec();
 
 	// settings are in afSettings; set possibly modified curve name in combo box

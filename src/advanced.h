@@ -17,13 +17,17 @@ QT_END_NAMESPACE
 class Advanced : public QObject {
 	Q_OBJECT
   public:
-	Advanced(Ui::MainWindow *ui, dSettings &afSettings);
+	Advanced(QWidget *parent, Ui::MainWindow *ui, dSettings &afSettings);
 	void deviceSettingsAvailable();
 
   private:
+	QWidget *mainwindow;
 	Ui::MainWindow *ui;
 	dSettings &afSettings;
+	QPushButton *tfrButtons[8];
+
 	void addHandlers();
+	void editTfr(int id);
 };
 
 #endif // ADVANCED_H

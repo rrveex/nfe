@@ -1,8 +1,12 @@
 #include "advanced.h"
 #include "./ui_mainwindow.h"
 #include "mainwindow.h"
+#include "tfrdialog.h"
+#include <QDebug>
+#include <cstring>
 
-Advanced::Advanced(Ui::MainWindow *ui, dSettings &afSettings) : ui(ui), afSettings(afSettings) {
+Advanced::Advanced(QWidget *parent, Ui::MainWindow *ui, dSettings &afSettings)
+	: mainwindow(parent), ui(ui), afSettings(afSettings) {
 
 	addHandlers();
 }
@@ -34,6 +38,18 @@ void Advanced::deviceSettingsAvailable() {
 	// USB Max Charging Current: 50 - 0.5A, 100 - 1A, 150 - 1.5A, 200 - 2A
 	ui->advUsbMaxCurrCombo->setCurrentIndex(afSettings.Advanced.ChargingCurrent / 50 - 1);
 
+	// --- Materials ---
+	const QRegularExpression re("tfr(\\d)Btn"); // tfr0Btn .. tfr7Btn
+	foreach (auto *btn, ui->tfrButtonGroup->buttons()) {
+		auto match = re.match(btn->objectName());
+		if (match.hasMatch()) {
+			int id = match.captured(1).toInt();
+			tfrButtons[id] = qobject_cast<QPushButton *>(btn);
+			char c[9];
+			std::strncpy(c, (char *)afSettings.Advanced.TFR_Tables[id].Name, 8);
+			tfrButtons[id]->setText(c);
+		}
+	}
 	// --- BVO ---
 	ui->advBvoSpin1->setValue((double)afSettings.Advanced.BVOffset[0] / 100);
 	ui->advBvoSpin2->setValue((double)afSettings.Advanced.BVOffset[1] / 100);
@@ -106,6 +122,17 @@ void Advanced::addHandlers() {
 		afSettings.Advanced.ChargingCurrent = (index + 1) * 50;
 	});
 
+	// --- Materials ---
+	const QRegularExpression re("tfr(\\d)Btn"); // tfr0Btn .. tfr7Btn
+	foreach (auto *btn, ui->tfrButtonGroup->buttons()) {
+		auto match = re.match(btn->objectName());
+		if (match.hasMatch()) {
+			int id = match.captured(1).toInt();
+			tfrButtons[id] = qobject_cast<QPushButton *>(btn);
+			connect(tfrButtons[id], &QPushButton::pressed, this, [this, id]() { editTfr(id); });
+		}
+	}
+
 	// --- BVO ---
 	connect(ui->advBvoSpin1, dsbChanged, this, [this](double val) {
 		afSettings.Advanced.BVOffset[0] = (uint16_t)(val * 100);
@@ -119,4 +146,8 @@ void Advanced::addHandlers() {
 	connect(ui->advBvoSpin4, dsbChanged, this, [this](double val) {
 		afSettings.Advanced.BVOffset[3] = (uint16_t)(val * 100);
 	});
+}
+void Advanced::editTfr(int id) {
+	TfrDialog d(mainwindow, afSettings, id);
+	d.exec();
 }

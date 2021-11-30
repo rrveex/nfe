@@ -315,12 +315,12 @@ typedef struct // 32 bytes
 {
 	uint8_t Name[4];
 	sTFR TFR[7];
-} dTFR;
+} dTFRTable;
 
-typedef struct {
-	//  dfTFRTable_t TFR_Tables[8];
-	char dummy[8][32];
-} dTFRTables;
+// typedef struct {
+//	dTFR TFR_Tables[8];
+//	//	char dummy[8][32];
+// } dTFRTables;
 
 typedef struct {
 	uint8_t Time;	 // current puff time, tenths of a second
@@ -350,8 +350,8 @@ typedef struct __attribute__((packed)) {
 	uint8_t BatteryModel; // 0 - Generic, 1..3 - Custom (user defined)
 	sCustomBattery CustomBatteryProfile[3];
 
-	//    dfTFRTable_t TFR_Tables[8];
-	char dummy[8][32];
+	dTFRTable TFR_Tables[8];
+	//	char dummy[8][32];
 	sCurve PowerCurves[8];
 
 	uint8_t DeepSleepMode;	// 0 - standard, 1 - Off before sleep, 2 - Lock before

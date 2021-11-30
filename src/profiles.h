@@ -21,7 +21,7 @@ class Profiles : public QObject {
 	void deviceSettingsAvailable();
 
   private:
-	QWidget *mw;
+	QWidget *mainwindow;
 	Ui::MainWindow *ui;
 	dSettings &afSettings;
 

@@ -38,9 +38,14 @@ set(PROJECT_SOURCES
 	src/smartstat.cpp
 	src/smartstat.h
 	src/afdata.h
+	src/chartview.h
+	src/chartview.cpp
 	src/powercurvedialog.h
 	src/powercurvedialog.cpp
 	src/powercurvedialog.ui
+	src/tfrdialog.h
+	src/tfrdialog.cpp
+	src/tfrdialog.ui
 	src/device.cpp
 	src/device.h
 )

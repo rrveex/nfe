@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	// instantiate all other ui classes
 	profiles = new Profiles(this, ui, afSettings);
 	screen = new Screen(ui, afSettings);
-	advanced = new Advanced(ui, afSettings);
+	advanced = new Advanced(this, ui, afSettings);
 	controls = new Controls(ui, afSettings);
 	smartstat = new SmartStat(ui, afSettings);
 

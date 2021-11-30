@@ -494,9 +494,6 @@
        <property name="sizeConstraint">
         <enum>QLayout::SetMaximumSize</enum>
        </property>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2"/>
-       </item>
       </layout>
      </item>
     </layout>

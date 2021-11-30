@@ -122,7 +122,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -5228,7 +5228,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_4">
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="tab_15">
            <attribute name="title">
@@ -5542,6 +5542,114 @@
            <attribute name="title">
             <string>Materials</string>
            </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_22">
+            <item>
+             <layout class="QGridLayout" name="gridLayout_15">
+              <property name="leftMargin">
+               <number>50</number>
+              </property>
+              <property name="rightMargin">
+               <number>50</number>
+              </property>
+              <property name="spacing">
+               <number>50</number>
+              </property>
+              <item row="0" column="1">
+               <widget class="QPushButton" name="tfr1Btn">
+                <property name="text">
+                 <string>PushButton</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">tfrButtonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QPushButton" name="tfr0Btn">
+                <property name="text">
+                 <string>PushButton</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">tfrButtonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QPushButton" name="tfr4Btn">
+                <property name="text">
+                 <string>PushButton</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">tfrButtonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QPushButton" name="tfr3Btn">
+                <property name="text">
+                 <string>PushButton</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">tfrButtonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QPushButton" name="tfr2Btn">
+                <property name="text">
+                 <string>PushButton</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">tfrButtonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QPushButton" name="tfr5Btn">
+                <property name="text">
+                 <string>PushButton</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">tfrButtonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QPushButton" name="tfr6Btn">
+                <property name="text">
+                 <string>PushButton</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">tfrButtonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QPushButton" name="tfr7Btn">
+                <property name="text">
+                 <string>PushButton</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">tfrButtonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_16">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>416</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </widget>
           <widget class="QWidget" name="tab_12">
            <attribute name="title">
@@ -5817,5 +5925,6 @@
  <connections/>
  <buttongroups>
   <buttongroup name="profilesButtonGroup"/>
+  <buttongroup name="tfrButtonGroup"/>
  </buttongroups>
 </ui>

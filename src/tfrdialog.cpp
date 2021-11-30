@@ -1,10 +1,12 @@
-#include "powercurvedialog.h"
-#include "ui_powercurvedialog.h"
+#include "tfrdialog.h"
+#include "ui_tfrdialog.h"
+
 #include <cstring>
 
-PowerCurveDialog::PowerCurveDialog(QWidget *parent, dSettings &afSettings, int curveId)
-	: QDialog(parent), ui(new Ui::PowerCurveDialog), afSettings(afSettings), curveId(curveId) {
+TfrDialog::TfrDialog(QWidget *parent, dSettings &afSettings, int curveId)
+	: QDialog(parent), ui(new Ui::TfrDialog), afSettings(afSettings), curveId(curveId) {
 	ui->setupUi(this);
+
 	chart = new QChart();
 
 	chart->legend()->hide();
@@ -26,9 +28,9 @@ PowerCurveDialog::PowerCurveDialog(QWidget *parent, dSettings &afSettings, int c
 
 	series->setPointLabelsFormat("@yPoint");
 
-	for (int i = 0; i < 12; i++) {
+	for (int i = 0; i < arr_len; i++) {
 		// x value matters here because of populating -> signal -> min/max range for spin
-		series->append((double)afSettings.Advanced.PowerCurves[curveId].CurveData[i].Time / 10, 0);
+		series->append(afSettings.Advanced.TFR_Tables[curveId].TFR[i].temp, 1);
 	}
 
 	chart->addSeries(series);
@@ -36,8 +38,8 @@ PowerCurveDialog::PowerCurveDialog(QWidget *parent, dSettings &afSettings, int c
 	series->attachAxis(axisX);
 	series->attachAxis(axisY);
 
-	axisX->setRange(0, 15);
-	axisY->setRange(0, 250);
+	axisX->setRange(0, 800);
+	axisY->setRange(1, 4);
 
 	chartView = new ChartView(chart);
 	chartView->setRenderHint(QPainter::Antialiasing);
@@ -51,23 +53,23 @@ PowerCurveDialog::PowerCurveDialog(QWidget *parent, dSettings &afSettings, int c
 	connect(ui->cancelBtn, &QPushButton::pressed, this, [this] { close(); });
 	connect(ui->saveBtn, &QPushButton::pressed, this, [this] { save(); });
 
-	connect(series, &QXYSeries::hovered, this, &PowerCurveDialog::hovered);
-	connect(chartView, &ChartView::mouseMoved, this, &PowerCurveDialog::onMouseMoved);
+	connect(series, &QXYSeries::hovered, this, &TfrDialog::hovered);
+	connect(chartView, &ChartView::mouseMoved, this, &TfrDialog::onMouseMoved);
 
 	chartView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	ui->curveLayout->addWidget(chartView);
 
 	// get spin boxes from ui in array to work with them easier
-	const QRegularExpression re("(t|p)(\\d\\d)Spin"); // t00Spin .. t11Spin
+	const QRegularExpression re("(t|f)(\\d)Spin"); // t00Spin .. t11Spin
 	foreach (auto *btn, children()) {
 		auto match = re.match(btn->objectName());
 		if (match.hasMatch()) {
 			if (match.captured(1) == "t") {
-				QDoubleSpinBox *dsb = qobject_cast<QDoubleSpinBox *>(btn);
-				t_arr[match.captured(2).toInt()] = dsb;
-			} else {
 				QSpinBox *sb = qobject_cast<QSpinBox *>(btn);
-				p_arr[match.captured(2).toInt()] = sb;
+				t_arr[match.captured(2).toInt()] = sb;
+			} else {
+				QDoubleSpinBox *dsb = qobject_cast<QDoubleSpinBox *>(btn);
+				f_arr[match.captured(2).toInt()] = dsb;
 			}
 		}
 	}
@@ -75,13 +77,13 @@ PowerCurveDialog::PowerCurveDialog(QWidget *parent, dSettings &afSettings, int c
 	// value edited in spinboxes (move points)
 	auto sbChanged = static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged);
 	auto dsbChanged = static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged);
-	for (int i = 0; i < 12; i++) {
-		connect(t_arr[i], dsbChanged, this, [this, i](double val) {
+	for (int i = 0; i < arr_len; i++) {
+		connect(t_arr[i], sbChanged, this, [this, i](int val) {
 			if (i > 0) {
-				t_arr[i - 1]->setMaximum(val - 0.1);
+				t_arr[i - 1]->setMaximum(val - 1);
 			}
-			if (i < 11) {
-				t_arr[i + 1]->setMinimum(val + 0.1);
+			if (i < arr_len - 1) {
+				t_arr[i + 1]->setMinimum(val + 1);
 			}
 			auto p = series->points().at(i);
 			p.setX(val);
@@ -89,38 +91,38 @@ PowerCurveDialog::PowerCurveDialog(QWidget *parent, dSettings &afSettings, int c
 			chartView->repaint();
 		});
 
-		connect(p_arr[i], sbChanged, this, [this, i](int val) {
+		connect(f_arr[i], dsbChanged, this, [this, i](double val) {
 			auto p = series->points().at(i);
 			p.setY(val);
 			series->replace(i, p);
 			chartView->repaint();
 		});
 
-		t_arr[i]->setValue((double)afSettings.Advanced.PowerCurves[curveId].CurveData[i].Time / 10);
+		t_arr[i]->setValue(afSettings.Advanced.TFR_Tables[curveId].TFR[i].temp);
 		if (i > 0) {
 			t_arr[i - 1]->setMaximum(t_arr[i]->value() - 0.1);
 			t_arr[i]->setMinimum(t_arr[i - 1]->value() + 0.1);
 		}
-		p_arr[i]->setValue(afSettings.Advanced.PowerCurves[curveId].CurveData[i].Percent);
+		f_arr[i]->setValue((double)afSettings.Advanced.TFR_Tables[curveId].TFR[i].res / 10000);
 	}
 	char c[9];
-	std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[curveId].Name, 8);
+	std::strncpy(c, (char *)afSettings.Advanced.TFR_Tables[curveId].Name, 8);
 	ui->curveNameEdit->setText(c);
 }
 
-void PowerCurveDialog::save() {
+void TfrDialog::save() {
 	std::string s = ui->curveNameEdit->text().toStdString();
-	std::strncpy((char *)afSettings.Advanced.PowerCurves[curveId].Name, s.c_str(), 8);
+	std::strncpy((char *)afSettings.Advanced.TFR_Tables[curveId].Name, s.c_str(), 8);
 
 	auto points = series->points();
-	for (int i = 0; i < 12; i++) {
-		afSettings.Advanced.PowerCurves[curveId].CurveData[i].Time = (uint8_t)(points.at(i).x() * 10);
-		afSettings.Advanced.PowerCurves[curveId].CurveData[i].Percent = points.at(i).y();
+	for (int i = 0; i < 8; i++) {
+		afSettings.Advanced.TFR_Tables[curveId].TFR[i].temp = points.at(i).x();
+		afSettings.Advanced.TFR_Tables[curveId].TFR[i].res = (uint16_t)(points.at(i).y() * 10000);
 	}
 	close();
 }
 
-void PowerCurveDialog::onMouseMoved(QMouseEvent *e) {
+void TfrDialog::onMouseMoved(QMouseEvent *e) {
 	if (movingPoint >= 0) {
 		// dragging a point; calculate position
 		auto widgetPos = e->pos();
@@ -143,11 +145,11 @@ void PowerCurveDialog::onMouseMoved(QMouseEvent *e) {
 
 		// this will trigger signals and the chart gets updated too
 		t_arr[movingPoint]->setValue(val.x());
-		p_arr[movingPoint]->setValue(val.y());
+		f_arr[movingPoint]->setValue(val.y());
 	}
 }
 
-void PowerCurveDialog::hovered(const QPointF &point, bool state) {
+void TfrDialog::hovered(const QPointF &point, bool state) {
 	selectedPoint = -1;
 	if (!state) {
 		chartView->setRubberBand(QChartView::HorizontalRubberBand);
@@ -167,6 +169,6 @@ void PowerCurveDialog::hovered(const QPointF &point, bool state) {
 	chartView->setRubberBand(QChartView::HorizontalRubberBand);
 }
 
-PowerCurveDialog::~PowerCurveDialog() {
+TfrDialog::~TfrDialog() {
 	delete ui;
 }
