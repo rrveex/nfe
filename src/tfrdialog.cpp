@@ -186,13 +186,13 @@ void TfrDialog::onExport() {
 			return;
 		}
 		QTextStream stream(&file);
-		stream << "\"Temperature(degF)\",\"Electrical Resistivity\"" << Qt::endl;
+		stream << "\"Temperature(degF)\",\"Electrical Resistivity\"" << '\n';
 
 		auto points = series->points();
 		for (int i = 0; i < no_points; i++) {
 			uint16_t temp = points.at(i).x();
 			double res = points.at(i).y();
-			stream << temp << "," << QString::number(res, 'f', 4) << Qt::endl;
+			stream << temp << "," << QString::number(res, 'f', 4) << '\n';
 		}
 	}
 }
