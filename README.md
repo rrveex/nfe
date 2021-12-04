@@ -43,7 +43,7 @@ mkdir build && cd build
 cmake ..
 make -j
 ```
-That's it. You should have the `nfe` executable, which you can put anywhere (copy `nfe.png` to the same place if you want to see the icon in the taskbar)
+That's it. You should have the `nfe` executable, which you can put anywhere.
 
 ## Copyright
 I got the logo picture from here: https://github.com/TBXin/NFirmwareEditor/blob/master/src/NToolbox/Resources/arcticfox_logo.png

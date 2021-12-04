@@ -1,15 +1,14 @@
 #ifndef DEVICE_H
 #define DEVICE_H
-#include <QByteArray>
-#include <QObject>
-#include <QString>
-#include <QTimer>
-#include <map>
-#include <stdio.h>
-#include <vector>
-
 #include "afdata.h"
 #include "hidapi/hidapi.h"
+#include <QByteArray>
+#include <QMap>
+#include <QObject>
+#include <QPair>
+#include <QString>
+#include <QTimer>
+#include <stdio.h>
 
 enum class Chipset
 {
@@ -21,7 +20,7 @@ enum class Chipset
 class Device : public QObject {
 	Q_OBJECT
   public:
-	Device(dSettings &afSettings);
+	Device(dSettings &afSettings, sColorTheme &afTheme);
 	~Device();
 
 	QByteArray createCommand(uint8_t ccode, uint32_t arg1, uint32_t arg2);
@@ -32,26 +31,50 @@ class Device : public QObject {
 	bool loadConfig(QString filename);
 
   public slots:
-	bool readSettings();
-	bool writeSettings();
+	void readSettings();
+	void writeSettings();
+	void readTheme();
+	void writeTheme();
 
   signals:
 	void deviceConnected();
 	void deviceDisconnected();
+
 	void readingSettings();
-	void readSettingsSignal(bool ok, QString msg);
+	void doneReadSettings(bool ok, QString msg);
+
 	void writingSettings();
-	void writeSettingsSignal(bool ok, QString msg);
+	void doneWriteSettings(bool ok, QString msg);
+
+	void doneReadTheme(bool ok, QString msg);
+	void doneWriteTheme(bool ok, QString msg);
 
   private:
+	enum BufferType
+	{
+		settings,
+		theme
+	};
 	QTimer *findDeviceTimer;
 	QTimer *checkDisconnectTimer;
 	hid_device *handle = nullptr;
 
 	dSettings &afSettings;
-	static constexpr unsigned settings_size = 1088;
+	sColorTheme &afTheme;
 
-	std::map<QString, QString> deviceStringMap = {
+	QMap<BufferType, unsigned> transfer_size = {{settings, 1088}, {theme, 128}};
+	QMap<BufferType, uint8_t> read_cmd = {{settings, 0x60}, {theme, 0x90}};
+	QMap<BufferType, uint8_t> write_cmd = {{settings, 0x61}, {theme, 0x91}};
+	QMap<BufferType, void *> data_ptr = {{settings, &afSettings}, {theme, &afTheme}};
+	QMap<BufferType, size_t> data_size = {{settings, sizeof(afSettings)}, {theme, sizeof(afTheme)}};
+
+	static constexpr unsigned theme_struct_size = 84;
+
+	QPair<bool, QString> readBuffer(BufferType);
+	QPair<bool, QString> writeBuffer(BufferType);
+
+	//	std::map<QString, QString> deviceStringMap = {
+	QMap<QString, QString> deviceStringMap = {
 		{"E052", "Joyetech eVic VTC Mini"},	  {"E043", "Joyetech eVic VTwo"},	   {"E115", "Joyetech eVic VTwo Mini"},
 		{"E079", "Joyetech eVic VTC Dual"},	  {"E150", "Joyetech eVic Basic"},	   {"E092", "Joyetech eVic AIO"},
 		{"E182", "Joyetech eVic Primo"},	  {"E203", "Joyetech eVic Primo 2.0"}, {"E196", "Joyetech eVic Primo Mini"},
@@ -83,6 +106,8 @@ class Device : public QObject {
 
 	Chipset chipset;
 
+	void openhid();
+	void closehid();
 	bool findDevice();
 
   private slots:

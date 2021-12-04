@@ -5,23 +5,25 @@
 #include <QFile>
 #include <QIODevice>
 #include <QString>
+#include <QThread>
 #include <QTimer>
 #include <stdio.h>
 #include <stdlib.h>
 #include <wchar.h>
 
-Device::Device(dSettings &afSettings) : afSettings(afSettings) {
+Device::Device(dSettings &afSettings, sColorTheme &afTheme) : afSettings(afSettings), afTheme(afTheme) {
+
 	findDeviceTimer = new QTimer(this);
 	checkDisconnectTimer = new QTimer(this);
 
-	connect(findDeviceTimer, SIGNAL(timeout()), this, SLOT(onFindDeviceTimerTimeout()));
-	connect(checkDisconnectTimer, SIGNAL(timeout()), this, SLOT(onCheckDisconnectTimerTimeout()));
+	connect(findDeviceTimer, &QTimer::timeout, this, &Device::onFindDeviceTimerTimeout);
+	connect(checkDisconnectTimer, &QTimer::timeout, this, &Device::onCheckDisconnectTimerTimeout);
+
 	findDeviceTimer->start(1000);
 }
+
 Device::~Device() {
-	if (handle != nullptr) {
-		hid_close(handle);
-	}
+	closehid();
 	hid_exit();
 }
 
@@ -29,8 +31,7 @@ void Device::onFindDeviceTimerTimeout() {
 	if (findDevice()) {
 		findDeviceTimer->stop();
 		emit deviceConnected();
-		if (chipset != Chipset::_file)
-			checkDisconnectTimer->start(1000);
+		if (chipset != Chipset::_file) checkDisconnectTimer->start(1000);
 	}
 }
 
@@ -63,7 +64,8 @@ bool Device::findDevice() {
 		qApp->processEvents(); // show status message before reading
 
 		hid_free_enumeration(hidDevices);
-		return readSettings();
+		readSettings();
+		return true;
 	}
 	return false;
 }
@@ -72,119 +74,184 @@ QString Device::getName() {
 	// find device name
 	char s[5] = {0, 0, 0, 0, 0};
 	memcpy(s, &afSettings.DeviceInfo.ProductId, 4);
-	QString spid(s);
-	auto it = deviceStringMap.find(spid);
-	if (it != deviceStringMap.end()) {
-		return (it->second);
+
+	if (deviceStringMap.contains(s)) {
+		return deviceStringMap[s];
 	} else {
-		return QString("Unknown device: ") + spid;
+		return QString("Unknown device: ") + s;
 	}
 }
 
-bool Device::readSettings() {
-
-	int res;
-	unsigned char buf[settings_size];
+void Device::openhid() {
 	auto [vid, pid] = vpid[chipset];
 
 	// Open the device using the VID, PID and optionally the Serial number.
 	handle = hid_open(vid, pid, NULL);
 
 	if (!handle) {
-		emit readSettingsSignal(false, "hid_open: " + QString::fromWCharArray(hid_error(handle)));
-		return false;
+		emit doneReadSettings(false, "hid_open: " + QString::fromWCharArray(hid_error(handle)));
+		return;
 	}
 
 	if (hid_set_nonblocking(handle, 1) < 0) {
-		emit readSettingsSignal(false, "set_nonblocking: " + QString::fromWCharArray(hid_error(handle)));
-		return false;
+		emit doneReadSettings(false, "set_nonblocking: " + QString::fromWCharArray(hid_error(handle)));
+		closehid();
 	}
+}
 
-	QByteArray arr = createCommand(0x60, 0, settings_size);
+void Device::closehid() {
+	if (handle) hid_close(handle);
+	handle = nullptr;
+}
+
+void Device::readSettings() {
+	QPair<bool, QString> res = readBuffer(settings);
+	emit doneReadSettings(res.first, res.second);
+}
+
+QPair<bool, QString> Device::readBuffer(BufferType bType) {
+	if (!handle) openhid();
+	if (!handle) return {false, "no handle"};
+
+	checkDisconnectTimer->stop();
+
+	int res;
+	unsigned char buf[transfer_size[bType]];
+
+	QByteArray arr = createCommand(read_cmd[bType], 0, transfer_size[bType]);
 	buf[0] = 0;
 	memcpy(buf + 1, (unsigned char *)arr.data(), arr.size());
 	res = hid_write(handle, buf, arr.size() + 1);
-	qDebug() << "arr.len: " << arr.size() << "create command res: " << res;
 
 	if (res < 0) {
-		emit readSettingsSignal(false, "read request: " + QString::fromWCharArray(hid_error(handle)));
-		return false;
+		QString err = "read request: " + QString::fromWCharArray(hid_error(handle));
+		closehid();
+		return {false, err};
 	}
 	unsigned offs = 0;
 	while (1) {
 		res = hid_read_timeout(handle, buf + offs, 64, 100);
-		qDebug() << "read" << res << "bytes";
-		if (res <= 0)
-			break;
+		if (res <= 0) break;
 		offs += res;
 	}
+	qDebug() << "read: " << offs << " bytes";
 
-	if (offs < settings_size) {
-		qDebug() << "readSettings read just" << offs << "bytes, retrying";
-		emit readSettingsSignal(
-			false, "readSettings read: " + QString::number(offs) + QString::fromWCharArray(hid_error(handle)));
-		return false;
+	if (offs < transfer_size[bType]) {
+		qDebug() << "read read just" << offs << "bytes, retrying";
+		QString err = "Error: read just " + QString::number(offs) + " bytes; ";
+		checkDisconnectTimer->start();
+		return {false, err};
 	}
 
-	memcpy(&afSettings, buf, sizeof(afSettings));
+	memcpy(data_ptr[bType], buf, data_size[bType]);
 
-	emit readSettingsSignal(true, "Read settings OK");
-	return true;
+	checkDisconnectTimer->start();
+	return {true, "Read OK"};
 }
 
-bool Device::writeSettings() {
-	qDebug() << sizeof(afSettings);
+void Device::writeSettings() {
+	QPair<bool, QString> res = writeBuffer(settings);
 
-	constexpr int size_to_send = settings_size + 1; // +1 first byte 0 report id
+	if (!res.first) {
+		emit doneWriteSettings(res.first, res.second);
+		return;
+	}
+	// re-read from device; first attempt will fail (?), second (hopefully)
+	// succeed and only then the settings are applied
+	for (int i = 0; i < 5; i++) {
+		QThread::currentThread()->sleep(1);
+		qDebug() << "read after write... " << i;
+		res = readBuffer(settings);
+		if (res.first) {
+			emit doneWriteSettings(true, "Write settings OK.");
+			return;
+		}
+	}
+	emit doneWriteSettings(false, "Write settings NOK.");
+}
 
-	QByteArray arr = createCommand(0x61, 0, size_to_send);
+void Device::writeTheme() {
+	QPair<bool, QString> res = writeBuffer(theme);
+
+	if (!res.first) {
+		emit doneWriteTheme(res.first, res.second);
+		return;
+	}
+	// re-read from device; first attempt will fail (?), second (hopefully)
+	// succeed and only then the theme is applied
+	for (int i = 0; i < 5; i++) {
+		QThread::currentThread()->sleep(1);
+		qDebug() << "read after write... " << i;
+		res = readBuffer(theme);
+		if (res.first) {
+			emit doneWriteTheme(true, "Write theme OK.");
+			return;
+		}
+	}
+	emit doneWriteTheme(false, "Write theme NOK.");
+}
+
+QPair<bool, QString> Device::writeBuffer(BufferType bType) {
+	if (!handle) openhid();
+	if (!handle) return {false, "no handle"};
+
+	checkDisconnectTimer->stop();
+
+	const int size_to_send = transfer_size[bType] + 1; // +1 first byte 0 report id
+
+	QByteArray arr = createCommand(write_cmd[bType], 0, size_to_send);
 	int res = hid_write(handle, (unsigned char *)arr.data(), arr.size());
 
 	if (res < 0) {
-		emit writeSettingsSignal(false, "write request: " + QString::fromWCharArray(hid_error(handle)));
-		return false;
+		QString err = "write request: " + QString::fromWCharArray(hid_error(handle));
+		closehid();
+		return {false, err};
 	}
 
 	uint8_t buf[size_to_send];
 	memset(buf, 0, size_to_send);
 
-	memcpy(buf + 1, &afSettings, sizeof(afSettings)); // first 0: report id
+	memcpy(buf + 1, data_ptr[bType], data_size[bType]); // first 0: report id
 
 	int offs = 0;
 	int remaining = size_to_send;
 	while (remaining > 0) {
 		res = hid_write(handle, buf + offs, remaining);
 		qDebug() << "writing from offset" << offs << "res" << res;
-		if (res <= 0)
-			break;
+		if (res <= 0) break;
 		offs += res;
 		remaining -= res;
 	}
-	qDebug() << "finished while; offset" << offs;
+	qDebug() << "write: " << offs << " bytes";
 
+	checkDisconnectTimer->start();
 	if (offs == size_to_send) {
-		emit writeSettingsSignal(true, "Settings written OK");
-		return true;
+		return {true, "Write OK"};
 	} else {
-		emit writeSettingsSignal(false, "Error writing settings: " + QString::fromWCharArray(hid_error(handle)));
-		return false;
+		return {false, "Error: wrote just " + QString::number(offs) + " bytes; "};
 	}
 }
+
 bool Device::saveConfig(QString filename) {
 	QFile f(filename);
-	if (!f.open(QIODevice::WriteOnly))
-		return false;
+	if (!f.open(QIODevice::WriteOnly)) return false;
 
 	int res = f.write((char *)&afSettings, sizeof(afSettings));
 	return res == sizeof(afSettings);
 }
+
 bool Device::loadConfig(QString filename) {
 	QFile f(filename);
-	if (!f.open(QIODevice::ReadOnly))
-		return false;
+	if (!f.open(QIODevice::ReadOnly)) return false;
 
 	int res = f.read((char *)&afSettings, sizeof(afSettings));
 	return res == sizeof(afSettings);
+}
+
+void Device::readTheme() {
+	static_assert(sizeof(afTheme) == theme_struct_size, "packed afTheme size!");
+	QPair<bool, QString> res = readBuffer(theme);
+	emit doneReadTheme(res.first, res.second);
 }
 
 QByteArray Device::createCommand(uint8_t ccode, uint32_t arg1, uint32_t arg2) {

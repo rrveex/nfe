@@ -6,8 +6,7 @@
 #include <QDebug>
 #include <cstring>
 
-Advanced::Advanced(QWidget *parent, Ui::MainWindow *ui, dSettings &afSettings)
-	: mainwindow(parent), ui(ui), afSettings(afSettings) {
+Advanced::Advanced(QWidget *parent, Ui::MainWindow *ui, dSettings &afSettings) : mainwindow(parent), ui(ui), afSettings(afSettings) {
 
 	addHandlers();
 }
@@ -47,7 +46,7 @@ void Advanced::deviceSettingsAvailable() {
 			int id = match.captured(1).toInt();
 			pcButtons[id] = qobject_cast<QPushButton *>(btn);
 			char c[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-			std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[id].Name, 8);
+			std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[id].Name, sizeof(afSettings.Advanced.PowerCurves[id].Name));
 			pcButtons[id]->setText(c);
 			ui->pcButtonGroup->setId(pcButtons[id], id);
 		}
@@ -61,7 +60,7 @@ void Advanced::deviceSettingsAvailable() {
 			int id = match.captured(1).toInt();
 			tfrButtons[id] = qobject_cast<QPushButton *>(btn);
 			char c[5] = {0, 0, 0, 0, 0};
-			std::strncpy(c, (char *)afSettings.Advanced.TFR_Tables[id].Name, 4);
+			std::strncpy(c, (char *)afSettings.Advanced.TFR_Tables[id].Name, sizeof(afSettings.Advanced.TFR_Tables[id].Name));
 			tfrButtons[id]->setText(QString("[TCR] ") + c);
 		}
 	}
@@ -93,22 +92,17 @@ void Advanced::addHandlers() {
 	auto dsbChanged = static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged);
 
 	// Power Limit
-	connect(ui->advPowerLimitSpin, dsbChanged, this, [this](double val) {
-		afSettings.Advanced.PowerLimit = (uint16_t)(val * 10);
-	});
+	connect(ui->advPowerLimitSpin, dsbChanged, this, [this](double val) { afSettings.Advanced.PowerLimit = (uint16_t)(val * 10); });
 
 	// Puff Cut-Off
 	connect(ui->advPuffCutoffSpin, sbChanged, this, [this](int val) { afSettings.Advanced.PuffCutOff = val; });
 
 	// Shunt Correction
-	connect(ui->advShuntCorrectionSpin, sbChanged, this, [this](int val) {
-		afSettings.Advanced.ShuntCorrection = (uint16_t)(val * 10);
-	});
+	connect(ui->advShuntCorrectionSpin, sbChanged, this, [this](int val) { afSettings.Advanced.ShuntCorrection = (uint16_t)(val * 10); });
 
 	// Internal Resistance
-	connect(ui->advInternalResistanceSpin, dsbChanged, this, [this](double val) {
-		afSettings.Advanced.InternalRes = (uint16_t)(val * 1000);
-	});
+	connect(
+		ui->advInternalResistanceSpin, dsbChanged, this, [this](double val) { afSettings.Advanced.InternalRes = (uint16_t)(val * 1000); });
 
 	// Battery Model
 	connect(ui->advBatteryModelCombo, cbChanged, this, [this](int index) { afSettings.Advanced.BatteryModel = index; });
@@ -133,9 +127,7 @@ void Advanced::addHandlers() {
 		afSettings.Advanced.USBCharging = (state == Qt::Checked) ? 1 : 0;
 	});
 	// USB Max Charging Current: 50 - 0.5A, 100 - 1A, 150 - 1.5A, 200 - 2A
-	connect(ui->advUsbMaxCurrCombo, cbChanged, this, [this](int index) {
-		afSettings.Advanced.ChargingCurrent = (index + 1) * 50;
-	});
+	connect(ui->advUsbMaxCurrCombo, cbChanged, this, [this](int index) { afSettings.Advanced.ChargingCurrent = (index + 1) * 50; });
 	// --- Power Curves ---
 	const QRegularExpression re_pc("pc(\\d)Btn"); // pc0Btn .. pc7Btn
 	foreach (auto *btn, ui->pcButtonGroup->buttons()) {
@@ -158,38 +150,28 @@ void Advanced::addHandlers() {
 	}
 
 	// --- BVO ---
-	connect(ui->advBvoSpin1, dsbChanged, this, [this](double val) {
-		afSettings.Advanced.BVOffset[0] = (uint16_t)(val * 100);
-	});
-	connect(ui->advBvoSpin2, dsbChanged, this, [this](double val) {
-		afSettings.Advanced.BVOffset[1] = (uint16_t)(val * 100);
-	});
-	connect(ui->advBvoSpin3, dsbChanged, this, [this](double val) {
-		afSettings.Advanced.BVOffset[2] = (uint16_t)(val * 100);
-	});
-	connect(ui->advBvoSpin4, dsbChanged, this, [this](double val) {
-		afSettings.Advanced.BVOffset[3] = (uint16_t)(val * 100);
-	});
+	connect(ui->advBvoSpin1, dsbChanged, this, [this](double val) { afSettings.Advanced.BVOffset[0] = (uint16_t)(val * 100); });
+	connect(ui->advBvoSpin2, dsbChanged, this, [this](double val) { afSettings.Advanced.BVOffset[1] = (uint16_t)(val * 100); });
+	connect(ui->advBvoSpin3, dsbChanged, this, [this](double val) { afSettings.Advanced.BVOffset[2] = (uint16_t)(val * 100); });
+	connect(ui->advBvoSpin4, dsbChanged, this, [this](double val) { afSettings.Advanced.BVOffset[3] = (uint16_t)(val * 100); });
 }
 
 void Advanced::editPc(int id) {
 	PowerCurveDialog pcd(mainwindow, afSettings, id);
-	if (pcd.exec() == QDialog::Rejected)
-		return;
+	if (pcd.exec() == QDialog::Rejected) return;
 
 	// settings are in afSettings; set possibly modified curve name in combo box
 	char c[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-	std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[id].Name, 8);
+	std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[id].Name, sizeof(afSettings.Advanced.PowerCurves[id].Name));
 	pcButtons[id]->setText(c);
 	ui->profilePreheatCurveCombo->setItemText(id, c);
 }
 
 void Advanced::editTfr(int id) {
 	TfrDialog tcrd(mainwindow, afSettings, id);
-	if (tcrd.exec() == QDialog::Rejected)
-		return;
+	if (tcrd.exec() == QDialog::Rejected) return;
 
 	char c[5] = {0, 0, 0, 0, 0};
-	std::strncpy(c, (char *)afSettings.Advanced.TFR_Tables[id].Name, 4);
+	std::strncpy(c, (char *)afSettings.Advanced.TFR_Tables[id].Name, sizeof(afSettings.Advanced.TFR_Tables[id].Name));
 	tfrButtons[id]->setText(c);
 }

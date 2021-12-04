@@ -407,4 +407,62 @@ typedef struct __attribute__((packed)) {
 	uint8_t Second;
 } sDateTime;
 
+// sColorTheme: 84 (2 * 64 =128 actually) bytes.
+// scommands 0x90 (read from device) and 0x91 (write to device),
+
+// typedef struct __attribute__((packed)) {
+typedef struct {
+	// Main View - 40 bytes
+	uint16_t Main_Background;
+	uint16_t Main_Divider;
+	uint16_t Main_DivSq;
+	uint16_t Main_Batts;
+	uint16_t Main_BattsNum;
+	uint16_t Main_Clock;
+	uint16_t Main_Profile;
+	uint16_t Main_TCR;
+	uint16_t Main_Dom;
+	uint16_t Main_AccentVW;
+	uint16_t Main_AccentTC;
+	uint16_t Main_AccentPB;
+	uint16_t Main_Fixed;
+	uint16_t Main_Fixed_Acc;
+	uint16_t Main_Info;
+	uint16_t Main_Info_Acc;
+	uint16_t Main_Info_Cap;
+	uint16_t Main_PuffTime;
+	uint16_t Main_PuffTime_Acc;
+	uint16_t Main_TextMsg;
+
+	// Menu - 12 bytes
+	uint16_t Menu_Background;
+	uint16_t Menu_TextHeader;
+	uint16_t Menu_Divider;
+	uint16_t Menu_Cursor;
+	uint16_t Menu_Text;
+	uint16_t Menu_TextSelected;
+
+	// Saver - 6 bytes
+	uint16_t Saver_Background;
+	uint16_t Saver_Time;
+	uint16_t Saver_Date;
+
+	// Info - 10 bytes
+	uint16_t Info_Background;
+	uint16_t Info_Header;
+	uint16_t Info_Divider;
+	uint16_t Info_Text;
+	uint16_t Info_Actions;
+
+	// Charge - 16 bytes
+	uint16_t Charge_Background;
+	uint16_t Charge_Battery;
+	uint16_t Charge_Pct;
+	uint16_t Charge_Volt;
+	uint16_t Charge_VoltBal;
+	uint16_t Charge_Current;
+	uint16_t Charge_Temp;
+	uint16_t Charge_Clock;
+} sColorTheme; // 84 bytes
+
 #endif // __AFDATA_H__

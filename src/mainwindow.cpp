@@ -1,13 +1,18 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include "theme/themedialog.h"
 #include <QByteArray>
 #include <QFileDialog>
+#include <QFont>
+#include <QFontDatabase>
+#include <QFontDialog>
 #include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
 	ui->setupUi(this);
 
-	setWindowIcon(QIcon("nfe.png"));
+	setWindowIcon(QIcon(":/res/nfe.png"));
+	QFontDatabase::addApplicationFont(":/res/fontawesome-5.otf");
 
 	// instantiate all other ui classes
 	profiles = new Profiles(this, ui, afSettings);
@@ -16,23 +21,31 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	controls = new Controls(ui, afSettings);
 	smartstat = new SmartStat(ui, afSettings);
 
-	device = new Device(afSettings);
-	connect(device, SIGNAL(deviceConnected()), this, SLOT(onDeviceConnected()));
-	connect(device, SIGNAL(deviceDisconnected()), this, SLOT(onDeviceDisconnected()));
-	connect(device, SIGNAL(readingSettings()), this, SLOT(onDeviceReadingSettings()));
+	device = new Device(afSettings, afTheme);
+	connect(device, &Device::deviceConnected, this, &MainWindow::onDeviceConnected);
+	connect(device, &Device::deviceDisconnected, this, &MainWindow::onDeviceDisconnected);
+	connect(device, &Device::readingSettings, this, &MainWindow::onDeviceReadingSettings);
 
-	connect(ui->readSettingsBtn, SIGNAL(clicked()), device, SLOT(readSettings()));
-	connect(ui->writeSettingsBtn, SIGNAL(clicked()), device, SLOT(writeSettings()));
-	connect(device, &Device::writeSettingsSignal, this, &MainWindow::onWriteSettings);
-	connect(device, &Device::readSettingsSignal, this, [this](bool ok, QString msg) {
+	connect(ui->readSettingsBtn, &QPushButton::clicked, device, &Device::readSettings);
+	connect(ui->writeSettingsBtn, &QPushButton::clicked, device, &Device::writeSettings);
+	connect(device, &Device::doneWriteSettings, this, &MainWindow::onWriteSettings);
+	connect(device, &Device::doneReadSettings, this, [this](bool ok, QString msg) {
 		ui->statusbar->showMessage(msg, msg_duration);
-		if (ok) {
-			deviceSettingsAvailable();
-		}
+		if (ok) deviceSettingsAvailable();
 	});
 
-	connect(ui->configLoadBtn, SIGNAL(clicked()), this, SLOT(onLoadConfig()));
-	connect(ui->configSaveBtn, SIGNAL(clicked()), this, SLOT(onSaveConfig()));
+	connect(ui->configLoadBtn, &QPushButton::clicked, this, &MainWindow::onLoadConfig);
+	connect(ui->configSaveBtn, &QPushButton::clicked, this, &MainWindow::onSaveConfig);
+	connect(ui->themeBtn, &QPushButton::clicked, this, [this] {
+		ThemeDialog diag(this, afTheme);
+		connect(&diag, &ThemeDialog::doReadTheme, device, &Device::readTheme);
+		connect(&diag, &ThemeDialog::doWriteTheme, device, &Device::writeTheme);
+		connect(device, &Device::doneReadTheme, &diag, &ThemeDialog::onReadTheme);
+		connect(device, &Device::doneWriteTheme, &diag, &ThemeDialog::onWriteTheme);
+		connect(device, &Device::deviceConnected, &diag, &ThemeDialog::onDeviceConnected);
+		connect(device, &Device::deviceDisconnected, &diag, &ThemeDialog::onDeviceDisconnected);
+		diag.exec();
+	});
 
 	connectionLabel = new QLabel("No device found");
 	ui->statusbar->addPermanentWidget(connectionLabel);

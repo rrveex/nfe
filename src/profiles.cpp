@@ -5,8 +5,7 @@
 #include <QtWidgets>
 #include <cstring>
 
-Profiles::Profiles(QWidget *parent, Ui::MainWindow *ui, dSettings &afSettings)
-	: mainwindow(parent), ui(ui), afSettings(afSettings) {
+Profiles::Profiles(QWidget *parent, Ui::MainWindow *ui, dSettings &afSettings) : mainwindow(parent), ui(ui), afSettings(afSettings) {
 
 	// replacement widgets
 	ui->profilePreheatCurveCombo->hide();
@@ -28,12 +27,14 @@ Profiles::Profiles(QWidget *parent, Ui::MainWindow *ui, dSettings &afSettings)
 
 void Profiles::onPreheatEdit() {
 	PowerCurveDialog pcd(mainwindow, afSettings, ui->profilePreheatCurveCombo->currentIndex());
-	if (pcd.exec() == QDialog::Rejected)
-		return;
+	if (pcd.exec() == QDialog::Rejected) return;
 
 	// settings are in afSettings; set possibly modified curve name in combo box
 	char c[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-	std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[ui->profilePreheatCurveCombo->currentIndex()].Name, 8);
+	std::strncpy(
+		c,
+		(char *)afSettings.Advanced.PowerCurves[ui->profilePreheatCurveCombo->currentIndex()].Name,
+		sizeof(afSettings.Advanced.PowerCurves[ui->profilePreheatCurveCombo->currentIndex()].Name));
 	ui->profilePreheatCurveCombo->setItemText(ui->profilePreheatCurveCombo->currentIndex(), c);
 	ui->pcButtonGroup->button(ui->profilePreheatCurveCombo->currentIndex())->setText(c);
 }
@@ -61,7 +62,7 @@ void Profiles::deviceSettingsAvailable() {
 	// populate curve names
 	char c[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 	for (int i = 0; i < 8; i++) {
-		std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[i].Name, 8);
+		std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[i].Name, sizeof(afSettings.Advanced.PowerCurves[i].Name));
 		ui->profilePreheatCurveCombo->addItem(QString(c));
 	}
 }
@@ -93,8 +94,7 @@ void Profiles::onProfileSelected() {
 	// resistance
 	ui->profileResistanceSpin->setValue((double)afSettings.General.Profiles[currentProfileId].Resistance / 1000);
 	// resistance lock
-	ui->profileResistanceLockCheck->setCheckState(
-		afSettings.General.Profiles[currentProfileId].Flags.locked ? Qt::Checked : Qt::Unchecked);
+	ui->profileResistanceLockCheck->setCheckState(afSettings.General.Profiles[currentProfileId].Flags.locked ? Qt::Checked : Qt::Unchecked);
 
 	// mode
 	last_material = afSettings.General.Profiles[currentProfileId].Flags.material;
@@ -107,11 +107,7 @@ void Profiles::addHandlers() {
 	auto sbChanged = static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged);
 	auto dsbChanged = static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged);
 
-	connect(
-		ui->profilesButtonGroup,
-		QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked),
-		this,
-		&Profiles::onProfileSelected);
+	connect(ui->profilesButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked), this, &Profiles::onProfileSelected);
 
 	connect(ui->profileActiveCombo, cbChanged, this, [this](int index) -> void {
 		afSettings.General.ActiveProfile = index;
@@ -185,10 +181,13 @@ void Profiles::addHandlers() {
 	});
 
 	// mode (VW/TC)
-	connect(ui->profileModeCombo, SIGNAL(currentIndexChanged(int)), SLOT(onModeCombo(int)));
+	connect(ui->profileModeCombo, cbChanged, this, &Profiles::onModeCombo);
 
 	// coil material
-	connect(ui->profileCoilMaterialCombo, SIGNAL(currentIndexChanged(int)), SLOT(onCoilMaterialCombo(int)));
+	connect(ui->profileCoilMaterialCombo, cbChanged, this, &Profiles::onCoilMaterialCombo);
+
+	// temperature
+	connect(ui->profileTempSpin, sbChanged, this, [this](int val) -> void { afSettings.General.Profiles[currentProfileId].Temp = val; });
 
 	// temperature dominant
 	connect(ui->profileTempDomCheck, &QCheckBox::stateChanged, this, [this](int state) -> void {

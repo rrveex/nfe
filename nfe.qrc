@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/fontawesome-5.otf</file>
+        <file>res/nfe.png</file>
+    </qresource>
+</RCC>

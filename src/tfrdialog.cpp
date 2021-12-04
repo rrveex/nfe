@@ -47,8 +47,7 @@ TfrDialog::TfrDialog(QWidget *parent, dSettings &afSettings, int curveId)
 	chartView->setRenderHint(QPainter::Antialiasing);
 
 	connect(series, &QXYSeries::pressed, this, [this](QPointF) {
-		if (selectedPoint >= 0)
-			movingPoint = selectedPoint;
+		if (selectedPoint >= 0) movingPoint = selectedPoint;
 	});
 	connect(series, &QXYSeries::released, this, [this](QPointF) { movingPoint = -1; });
 
@@ -110,7 +109,7 @@ TfrDialog::TfrDialog(QWidget *parent, dSettings &afSettings, int curveId)
 		f_arr[i]->setValue((double)afSettings.Advanced.TFR_Tables[curveId].TFR[i].res / 10000);
 	}
 	char c[5] = {0, 0, 0, 0, 0};
-	std::strncpy(c, (char *)afSettings.Advanced.TFR_Tables[curveId].Name, 4);
+	std::strncpy(c, (char *)afSettings.Advanced.TFR_Tables[curveId].Name, sizeof(afSettings.Advanced.TFR_Tables[curveId].Name));
 	ui->curveNameEdit->setText(c);
 }
 
@@ -125,12 +124,10 @@ void TfrDialog::onMouseMoved(QMouseEvent *e) {
 		auto points = series->points();
 
 		if (movingPoint > 0) {
-			if (val.x() - points[movingPoint - 1].x() < 0.1)
-				val.setX(points[movingPoint - 1].x() + 0.1);
+			if (val.x() - points[movingPoint - 1].x() < 0.1) val.setX(points[movingPoint - 1].x() + 0.1);
 		}
 		if (movingPoint < points.length() - 1) {
-			if (points[movingPoint + 1].x() - val.x() < 0.1)
-				val.setX(points[movingPoint + 1].x() - 0.1);
+			if (points[movingPoint + 1].x() - val.x() < 0.1) val.setX(points[movingPoint + 1].x() - 0.1);
 		}
 
 		val.setY(static_cast<int>(val.y()));
@@ -163,7 +160,7 @@ void TfrDialog::hovered(const QPointF &point, bool state) {
 
 void TfrDialog::onSave() {
 	std::string s = ui->curveNameEdit->text().toStdString();
-	std::strncpy((char *)afSettings.Advanced.TFR_Tables[curveId].Name, s.c_str(), 8);
+	std::strncpy((char *)afSettings.Advanced.TFR_Tables[curveId].Name, s.c_str(), sizeof(afSettings.Advanced.TFR_Tables[curveId].Name));
 
 	auto points = series->points();
 	for (int i = 0; i < no_points; i++) {
@@ -194,6 +191,7 @@ void TfrDialog::onExport() {
 			double res = points.at(i).y();
 			stream << temp << "," << QString::number(res, 'f', 4) << '\n';
 		}
+		stream.flush();
 	}
 }
 void TfrDialog::onImport() {
@@ -215,14 +213,12 @@ void TfrDialog::onImport() {
 		while (!stream.atEnd()) {
 			QString line = stream.readLine();
 			QStringList tup = line.split(",");
-			if (tup.size() != 2)
-				break;
+			if (tup.size() != 2) break;
 
 			bool ok_int, ok_double;
 			t_arr[i]->setValue(tup.at(0).toUInt(&ok_int));
 			f_arr[i]->setValue(tup.at(1).toDouble(&ok_double));
-			if (!ok_int || !ok_double)
-				break;
+			if (!ok_int || !ok_double) break;
 
 			i++;
 		}

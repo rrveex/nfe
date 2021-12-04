@@ -43,8 +43,7 @@ PowerCurveDialog::PowerCurveDialog(QWidget *parent, dSettings &afSettings, int c
 	chartView->setRenderHint(QPainter::Antialiasing);
 
 	connect(series, &QXYSeries::pressed, this, [this](QPointF) {
-		if (selectedPoint >= 0)
-			movingPoint = selectedPoint;
+		if (selectedPoint >= 0) movingPoint = selectedPoint;
 	});
 	connect(series, &QXYSeries::released, this, [this](QPointF) { movingPoint = -1; });
 
@@ -104,13 +103,13 @@ PowerCurveDialog::PowerCurveDialog(QWidget *parent, dSettings &afSettings, int c
 		p_arr[i]->setValue(afSettings.Advanced.PowerCurves[curveId].CurveData[i].Percent);
 	}
 	char c[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-	std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[curveId].Name, 8);
+	std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[curveId].Name, sizeof(afSettings.Advanced.PowerCurves[curveId].Name));
 	ui->curveNameEdit->setText(c);
 }
 
 void PowerCurveDialog::save() {
 	std::string s = ui->curveNameEdit->text().toStdString();
-	std::strncpy((char *)afSettings.Advanced.PowerCurves[curveId].Name, s.c_str(), 8);
+	std::strncpy((char *)afSettings.Advanced.PowerCurves[curveId].Name, s.c_str(), sizeof(afSettings.Advanced.PowerCurves[curveId].Name));
 
 	auto points = series->points();
 	for (int i = 0; i < 12; i++) {
@@ -131,12 +130,10 @@ void PowerCurveDialog::onMouseMoved(QMouseEvent *e) {
 		auto points = series->points();
 
 		if (movingPoint > 0) {
-			if (val.x() - points[movingPoint - 1].x() < 0.1)
-				val.setX(points[movingPoint - 1].x() + 0.1);
+			if (val.x() - points[movingPoint - 1].x() < 0.1) val.setX(points[movingPoint - 1].x() + 0.1);
 		}
 		if (movingPoint < points.length() - 1) {
-			if (points[movingPoint + 1].x() - val.x() < 0.1)
-				val.setX(points[movingPoint + 1].x() - 0.1);
+			if (points[movingPoint + 1].x() - val.x() < 0.1) val.setX(points[movingPoint + 1].x() - 0.1);
 		}
 
 		val.setY(static_cast<int>(val.y()));

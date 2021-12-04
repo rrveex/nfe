@@ -15,7 +15,6 @@
 #include <QLabel>
 #include <QMainWindow>
 #include <QPushButton>
-#include <map>
 #include <string>
 
 QT_BEGIN_NAMESPACE
@@ -36,6 +35,7 @@ class MainWindow : public QMainWindow {
   private:
 	Ui::MainWindow *ui;
 	dSettings afSettings;
+	sColorTheme afTheme;
 	Profiles *profiles;
 	Screen *screen;
 	Advanced *advanced;

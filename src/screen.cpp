@@ -122,15 +122,11 @@ void Screen::addHandlers() {
 	auto dsbChanged = static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged);
 
 	// Brightness
-	connect(
-		ui->screenBrightnessSlider,
-		static_cast<void (QSlider::*)(int)>(&QSlider::valueChanged),
-		this,
-		[this](int val) -> void {
-			afSettings.UI.Brightness = val;
-			int perc = static_cast<int>(val / 2.55);
-			ui->screenBrightnessLabel->setText(QString("%1 %").arg(perc));
-		});
+	connect(ui->screenBrightnessSlider, static_cast<void (QSlider::*)(int)>(&QSlider::valueChanged), this, [this](int val) -> void {
+		afSettings.UI.Brightness = val;
+		int perc = static_cast<int>(val / 2.55);
+		ui->screenBrightnessLabel->setText(QString("%1 %").arg(perc));
+	});
 	// Idle Time
 	connect(ui->screenIdleSpin, sbChanged, this, [this](int val) { afSettings.UI.DimTimeout = val; });
 
@@ -141,8 +137,7 @@ void Screen::addHandlers() {
 	connect(ui->screenIdleChargeSpin, sbChanged, this, [this](int val) { afSettings.UI.DimTimeoutCharge = val; });
 
 	// Puff Screen Delay
-	connect(
-		ui->screenPuffDelay, dsbChanged, this, [this](double val) { afSettings.UI.PuffHold = (uint16_t)(val * 10); });
+	connect(ui->screenPuffDelay, dsbChanged, this, [this](double val) { afSettings.UI.PuffHold = (uint16_t)(val * 10); });
 
 	// Flipped
 	connect(ui->screenFlippedCheck, &QCheckBox::stateChanged, this, [this](int state) {
@@ -171,47 +166,27 @@ void Screen::addHandlers() {
 	// Clock Type
 	connect(ui->screenClockTypeCombo, cbChanged, this, [this](int index) { afSettings.UI.ClockType = index; });
 	// Charge Screen
-	connect(
-		ui->screenChargeScreenCombo, cbChanged, this, [this](int index) { afSettings.UI.IsBatteryPercents = index; });
+	connect(ui->screenChargeScreenCombo, cbChanged, this, [this](int index) { afSettings.UI.IsBatteryPercents = index; });
 
 	// Charge Extra
-	connect(
-		ui->screenChargeExtraCombo, cbChanged, this, [this](int index) { afSettings.UI.ChargingExtraInfo = index; });
+	connect(ui->screenChargeExtraCombo, cbChanged, this, [this](int index) { afSettings.UI.ChargingExtraInfo = index; });
 
 	// Screensaver Time
 	connect(ui->screenSaverTimeSpin, sbChanged, this, [this](int val) { afSettings.UI.ScreensaveDuration = val; });
 
 	// Layout tab
-	connect(
-		ui->screenFoxyVW1Combo, cbChanged, this, [this](int index) { idx2l(index, afSettings.UI.VWLayoutNew.Line1); });
-	connect(ui->screenFoxyVW1Check, &QCheckBox::stateChanged, this, [this](int state) {
-		cb2l(state, afSettings.UI.VWLayoutNew.Line1);
-	});
-	connect(
-		ui->screenFoxyVW2Combo, cbChanged, this, [this](int index) { idx2l(index, afSettings.UI.VWLayoutNew.Line2); });
-	connect(ui->screenFoxyVW2Check, &QCheckBox::stateChanged, this, [this](int state) {
-		cb2l(state, afSettings.UI.VWLayoutNew.Line2);
-	});
-	connect(
-		ui->screenFoxyVW3Combo, cbChanged, this, [this](int index) { idx2l(index, afSettings.UI.VWLayoutNew.Line3); });
-	connect(ui->screenFoxyVW3Check, &QCheckBox::stateChanged, this, [this](int state) {
-		cb2l(state, afSettings.UI.VWLayoutNew.Line3);
-	});
-	connect(
-		ui->screenFoxyTC1Combo, cbChanged, this, [this](int index) { idx2l(index, afSettings.UI.TCLayoutNew.Line1); });
-	connect(ui->screenFoxyTC1Check, &QCheckBox::stateChanged, this, [this](int state) {
-		cb2l(state, afSettings.UI.TCLayoutNew.Line1);
-	});
-	connect(
-		ui->screenFoxyTC2Combo, cbChanged, this, [this](int index) { idx2l(index, afSettings.UI.TCLayoutNew.Line2); });
-	connect(ui->screenFoxyTC2Check, &QCheckBox::stateChanged, this, [this](int state) {
-		cb2l(state, afSettings.UI.TCLayoutNew.Line2);
-	});
-	connect(
-		ui->screenFoxyTC3Combo, cbChanged, this, [this](int index) { idx2l(index, afSettings.UI.TCLayoutNew.Line3); });
-	connect(ui->screenFoxyTC3Check, &QCheckBox::stateChanged, this, [this](int state) {
-		cb2l(state, afSettings.UI.TCLayoutNew.Line3);
-	});
+	connect(ui->screenFoxyVW1Combo, cbChanged, this, [this](int index) { idx2l(index, afSettings.UI.VWLayoutNew.Line1); });
+	connect(ui->screenFoxyVW1Check, &QCheckBox::stateChanged, this, [this](int state) { cb2l(state, afSettings.UI.VWLayoutNew.Line1); });
+	connect(ui->screenFoxyVW2Combo, cbChanged, this, [this](int index) { idx2l(index, afSettings.UI.VWLayoutNew.Line2); });
+	connect(ui->screenFoxyVW2Check, &QCheckBox::stateChanged, this, [this](int state) { cb2l(state, afSettings.UI.VWLayoutNew.Line2); });
+	connect(ui->screenFoxyVW3Combo, cbChanged, this, [this](int index) { idx2l(index, afSettings.UI.VWLayoutNew.Line3); });
+	connect(ui->screenFoxyVW3Check, &QCheckBox::stateChanged, this, [this](int state) { cb2l(state, afSettings.UI.VWLayoutNew.Line3); });
+	connect(ui->screenFoxyTC1Combo, cbChanged, this, [this](int index) { idx2l(index, afSettings.UI.TCLayoutNew.Line1); });
+	connect(ui->screenFoxyTC1Check, &QCheckBox::stateChanged, this, [this](int state) { cb2l(state, afSettings.UI.TCLayoutNew.Line1); });
+	connect(ui->screenFoxyTC2Combo, cbChanged, this, [this](int index) { idx2l(index, afSettings.UI.TCLayoutNew.Line2); });
+	connect(ui->screenFoxyTC2Check, &QCheckBox::stateChanged, this, [this](int state) { cb2l(state, afSettings.UI.TCLayoutNew.Line2); });
+	connect(ui->screenFoxyTC3Combo, cbChanged, this, [this](int index) { idx2l(index, afSettings.UI.TCLayoutNew.Line3); });
+	connect(ui->screenFoxyTC3Check, &QCheckBox::stateChanged, this, [this](int state) { cb2l(state, afSettings.UI.TCLayoutNew.Line3); });
 
 	// Stealth
 	connect(ui->screenStealthModeCheck, &QCheckBox::stateChanged, this, [this](int state) {
@@ -224,12 +199,10 @@ void Screen::addHandlers() {
 		afSettings.UI.SaverInStealth = (state == Qt::Checked) ? 1 : 0;
 	});
 	// Regional
-	connect(
-		ui->screenRegionalDateFormatCombo, cbChanged, this, [this](int index) { afSettings.UI.DateFormat = index; });
+	connect(ui->screenRegionalDateFormatCombo, cbChanged, this, [this](int index) { afSettings.UI.DateFormat = index; });
 	connect(ui->screenRegionalTempUnitsCombo, cbChanged, this, [this](int index) {
 		afSettings.UI.IsCelsius = index;
 		ui->profileTempDegreesLabel->setText(afSettings.UI.IsCelsius ? "°C" : "°F");
 	});
-	connect(
-		ui->screenRegionalTimeFormatCombo, cbChanged, this, [this](int index) { afSettings.UI.TimeFormat = index; });
+	connect(ui->screenRegionalTimeFormatCombo, cbChanged, this, [this](int index) { afSettings.UI.TimeFormat = index; });
 }

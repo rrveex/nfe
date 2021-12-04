@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(nfe VERSION 0.1 LANGUAGES CXX)
+project(nfe VERSION 0.2 LANGUAGES CXX)
 
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Release" CACHE STRING	"Default build type: Release" FORCE)
@@ -23,31 +23,41 @@ find_package(QT NAMES Qt5 COMPONENTS Widgets Charts REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Charts REQUIRED)
 
 set(PROJECT_SOURCES
+	src/advanced.cpp
+	src/advanced.h
+	src/afdata.h
+	src/chartview.h
+	src/chartview.cpp
+	src/controls.cpp
+	src/controls.h
+	src/device.cpp
+	src/device.h
 	src/main.cpp
 	src/mainwindow.cpp
 	src/mainwindow.h
 	src/mainwindow.ui
+	src/powercurvedialog.h
+	src/powercurvedialog.cpp
+	src/powercurvedialog.ui
 	src/profiles.cpp
 	src/profiles.h
 	src/screen.cpp
 	src/screen.h
-	src/controls.cpp
-	src/controls.h
-	src/advanced.cpp
-	src/advanced.h
 	src/smartstat.cpp
 	src/smartstat.h
-	src/afdata.h
-	src/chartview.h
-	src/chartview.cpp
-	src/powercurvedialog.h
-	src/powercurvedialog.cpp
-	src/powercurvedialog.ui
 	src/tfrdialog.h
 	src/tfrdialog.cpp
 	src/tfrdialog.ui
-	src/device.cpp
-	src/device.h
+	src/theme/display.h
+	src/theme/display.cpp
+	src/theme/renderarea.h
+	src/theme/renderarea.cpp
+	src/theme/iconengine.h
+	src/theme/iconengine.cpp
+	src/theme/themedialog.h
+	src/theme/themedialog.cpp
+	src/theme/themedialog.ui
+	nfe.qrc
 )
 
 add_executable(nfe
