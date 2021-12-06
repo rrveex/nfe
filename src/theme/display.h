@@ -1,7 +1,10 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
-
+#ifdef AF
 #include "src/afdata.h"
+#else
+#include "src/rpdata.h"
+#endif
 
 #include <QColor>
 #include <QMap>

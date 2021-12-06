@@ -2,6 +2,7 @@
 #include "./ui_mainwindow.h"
 #include "theme/themedialog.h"
 #include <QByteArray>
+#include <QDebug>
 #include <QFileDialog>
 #include <QFont>
 #include <QFontDatabase>
@@ -15,24 +16,39 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	QFontDatabase::addApplicationFont(":/res/fontawesome-5.otf");
 
 	// instantiate all other ui classes
-	profiles = new Profiles(this, ui, afSettings);
-	screen = new Screen(ui, afSettings);
-	advanced = new Advanced(this, ui, afSettings);
-	controls = new Controls(ui, afSettings);
-	smartstat = new SmartStat(ui, afSettings);
+	profiles = new Profiles(this, ui, settings);
+	screen = new Screen(ui, settings);
+	advanced = new Advanced(this, ui, settings);
+	controls = new Controls(ui, settings);
+	smartstat = new SmartStat(ui, settings);
 
-	device = new Device(afSettings, afTheme);
-	connect(device, &Device::deviceConnected, this, &MainWindow::onDeviceConnected);
-	connect(device, &Device::deviceDisconnected, this, &MainWindow::onDeviceDisconnected);
-	connect(device, &Device::readingSettings, this, &MainWindow::onDeviceReadingSettings);
-
+	device = new Device(settings, afTheme);
 	connect(ui->readSettingsBtn, &QPushButton::clicked, device, &Device::readSettings);
 	connect(ui->writeSettingsBtn, &QPushButton::clicked, device, &Device::writeSettings);
-	connect(device, &Device::doneWriteSettings, this, &MainWindow::onWriteSettings);
+	connect(device, &Device::doneWriteSettings, this, [this](bool, QString msg) { ui->statusbar->showMessage(msg, msg_duration); });
 	connect(device, &Device::doneReadSettings, this, [this](bool ok, QString msg) {
-		ui->statusbar->showMessage(msg, msg_duration);
-		if (ok) deviceSettingsAvailable();
+		if (ok) {
+			connectionLabel->setText("Device is connected");
+
+			// show device name in UI
+			ui->deviceNameEdit->setText(device->getName());
+
+			ui->writeSettingsBtn->setEnabled(true);
+			ui->readSettingsBtn->setEnabled(true);
+
+			deviceSettingsAvailable();
+			ui->statusbar->showMessage(msg, msg_duration);
+		} else {
+			connectionLabel->setText(msg);
+		}
 	});
+	connect(device, &Device::deviceDisconnected, this, [this] {
+		connectionLabel->setText("No device found");
+		ui->tabWidget->setEnabled(false);
+		ui->readSettingsBtn->setEnabled(false);
+		ui->writeSettingsBtn->setEnabled(false);
+	});
+	connect(device, &Device::readingSettings, this, [this]() { connectionLabel->setText("Reading settings from device..."); });
 
 	connect(ui->configLoadBtn, &QPushButton::clicked, this, &MainWindow::onLoadConfig);
 	connect(ui->configSaveBtn, &QPushButton::clicked, this, &MainWindow::onSaveConfig);
@@ -61,45 +77,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	ui->writeSettingsBtn->setEnabled(false);
 }
 
-void MainWindow::onDeviceConnected() {
-	connectionLabel->setText("Device is connected");
-
-	// show device name in UI
-	ui->deviceNameEdit->setText(device->getName());
-
-	ui->writeSettingsBtn->setEnabled(true);
-	ui->readSettingsBtn->setEnabled(true);
-
-	deviceSettingsAvailable();
-}
-
 void MainWindow::deviceSettingsAvailable() {
 	ui->tabWidget->setEnabled(true);
 	// hw/fw versions
-	ui->fwVerEdit->setText(QString::number(afSettings.DeviceInfo.FirmwareBuild));
-	ui->hwVerEdit->setText(QString::number((float)afSettings.DeviceInfo.HardwareVersion / 100));
+	ui->fwVerEdit->setText(QString::number(settings.DeviceInfo.FirmwareBuild));
+	ui->hwVerEdit->setText(QString::number((float)settings.DeviceInfo.HardwareVersion / 100));
 
 	profiles->deviceSettingsAvailable();
 	screen->deviceSettingsAvailable();
 	advanced->deviceSettingsAvailable();
 	controls->deviceSettingsAvailable();
 	smartstat->deviceSettingsAvailable();
-}
-
-void MainWindow::onDeviceDisconnected() {
-	connectionLabel->setText("No device found");
-	ui->tabWidget->setEnabled(false);
-	ui->readSettingsBtn->setEnabled(false);
-	ui->writeSettingsBtn->setEnabled(false);
-}
-
-void MainWindow::onDeviceReadingSettings() {
-	connectionLabel->setText("Reading settings from device...");
-}
-
-void MainWindow::onWriteSettings(bool ok, QString msg) {
-	Q_UNUSED(ok);
-	ui->statusbar->showMessage(msg, msg_duration);
 }
 
 void MainWindow::onSaveConfig() {

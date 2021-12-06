@@ -1,11 +1,14 @@
 #ifndef DEVICE_H
 #define DEVICE_H
+#ifdef AF
 #include "afdata.h"
+#else
+#include "rpdata.h"
+#endif
 #include "hidapi/hidapi.h"
 #include <QByteArray>
 #include <QMap>
 #include <QObject>
-#include <QPair>
 #include <QString>
 #include <QTimer>
 #include <stdio.h>
@@ -20,7 +23,7 @@ enum class Chipset
 class Device : public QObject {
 	Q_OBJECT
   public:
-	Device(dSettings &afSettings, sColorTheme &afTheme);
+	Device(dSettings &settings, sColorTheme &afTheme);
 	~Device();
 
 	QByteArray createCommand(uint8_t ccode, uint32_t arg1, uint32_t arg2);
@@ -52,26 +55,31 @@ class Device : public QObject {
   private:
 	enum BufferType
 	{
-		settings,
+		sett,
 		theme
 	};
+	struct Res {
+		bool ok;
+		QString msg;
+	};
+
 	QTimer *findDeviceTimer;
 	QTimer *checkDisconnectTimer;
 	hid_device *handle = nullptr;
 
-	dSettings &afSettings;
+	dSettings &settings;
 	sColorTheme &afTheme;
 
-	QMap<BufferType, unsigned> transfer_size = {{settings, 1088}, {theme, 128}};
-	QMap<BufferType, uint8_t> read_cmd = {{settings, 0x60}, {theme, 0x90}};
-	QMap<BufferType, uint8_t> write_cmd = {{settings, 0x61}, {theme, 0x91}};
-	QMap<BufferType, void *> data_ptr = {{settings, &afSettings}, {theme, &afTheme}};
-	QMap<BufferType, size_t> data_size = {{settings, sizeof(afSettings)}, {theme, sizeof(afTheme)}};
+	QMap<BufferType, unsigned> transfer_size = {{sett, 1088}, {theme, 128}};
+	QMap<BufferType, uint8_t> read_cmd = {{sett, 0x60}, {theme, 0x90}};
+	QMap<BufferType, uint8_t> write_cmd = {{sett, 0x61}, {theme, 0x91}};
+	QMap<BufferType, void *> data_ptr = {{sett, &settings}, {theme, &afTheme}};
+	QMap<BufferType, size_t> data_size = {{sett, sizeof(settings)}, {theme, sizeof(afTheme)}};
 
 	static constexpr unsigned theme_struct_size = 84;
 
-	QPair<bool, QString> readBuffer(BufferType);
-	QPair<bool, QString> writeBuffer(BufferType);
+	Res readBuffer(BufferType);
+	Res writeBuffer(BufferType);
 
 	//	std::map<QString, QString> deviceStringMap = {
 	QMap<QString, QString> deviceStringMap = {

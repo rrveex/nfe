@@ -4,7 +4,11 @@
 #include "display.h"
 #include "iconengine.h"
 #include "renderarea.h"
+#ifdef AF
 #include "src/afdata.h"
+#else
+#include "src/rpdata.h"
+#endif
 #include <QBrush>
 #include <QDialog>
 #include <QItemSelection>

@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <wchar.h>
 
-Device::Device(dSettings &afSettings, sColorTheme &afTheme) : afSettings(afSettings), afTheme(afTheme) {
+Device::Device(dSettings &settings, sColorTheme &afTheme) : settings(settings), afTheme(afTheme) {
 
 	findDeviceTimer = new QTimer(this);
 	checkDisconnectTimer = new QTimer(this);
@@ -30,7 +30,7 @@ Device::~Device() {
 void Device::onFindDeviceTimerTimeout() {
 	if (findDevice()) {
 		findDeviceTimer->stop();
-		emit deviceConnected();
+		//		emit deviceConnected();
 		if (chipset != Chipset::_file) checkDisconnectTimer->start(1000);
 	}
 }
@@ -59,6 +59,12 @@ bool Device::findDevice() {
 	auto [vid, pid] = vpid[chipset];
 	hidDevices = hid_enumerate(vid, pid);
 
+	if (!hidDevices) {
+		chipset = Chipset::nuvoton;
+		std::tie(vid, pid) = vpid[chipset];
+		hidDevices = hid_enumerate(vid, pid);
+	}
+
 	if (hidDevices) {
 		emit readingSettings();
 		qApp->processEvents(); // show status message before reading
@@ -73,7 +79,7 @@ bool Device::findDevice() {
 QString Device::getName() {
 	// find device name
 	char s[5] = {0, 0, 0, 0, 0};
-	memcpy(s, &afSettings.DeviceInfo.ProductId, 4);
+	memcpy(s, &settings.DeviceInfo.ProductId, 4);
 
 	if (deviceStringMap.contains(s)) {
 		return deviceStringMap[s];
@@ -105,11 +111,28 @@ void Device::closehid() {
 }
 
 void Device::readSettings() {
-	QPair<bool, QString> res = readBuffer(settings);
-	emit doneReadSettings(res.first, res.second);
+	Res res = readBuffer(sett);
+	if (res.ok) {
+		qDebug() << "SettingsVersion: " << settings.DeviceInfo.SettingsVersion;
+		qDebug() << "ProductId: " << settings.DeviceInfo.ProductId;
+		qDebug() << "HardwareVersion: " << settings.DeviceInfo.HardwareVersion;
+		qDebug() << "MaxPower: " << settings.DeviceInfo.MaxPower;
+		qDebug() << "NumberOfBatteries: " << settings.DeviceInfo.NumberOfBatteries;
+#ifdef AF
+		qDebug() << "DisplayModel: " << settings.DeviceInfo.DisplayModel;
+#endif
+		qDebug() << "FirmwareVersion: " << settings.DeviceInfo.FirmwareVersion;
+		qDebug() << "FirmwareBuild: " << settings.DeviceInfo.FirmwareBuild;
+	}
+
+	if (settings.DeviceInfo.SettingsVersion != S_VERSION) {
+		res.ok = false;
+		res.msg = "Error: Wrong ArcticFox / RedPanda or FW version < 190602";
+	}
+	emit doneReadSettings(res.ok, res.msg);
 }
 
-QPair<bool, QString> Device::readBuffer(BufferType bType) {
+Device::Res Device::readBuffer(BufferType bType) {
 	if (!handle) openhid();
 	if (!handle) return {false, "no handle"};
 
@@ -150,10 +173,10 @@ QPair<bool, QString> Device::readBuffer(BufferType bType) {
 }
 
 void Device::writeSettings() {
-	QPair<bool, QString> res = writeBuffer(settings);
+	Res res = writeBuffer(sett);
 
-	if (!res.first) {
-		emit doneWriteSettings(res.first, res.second);
+	if (!res.ok) {
+		emit doneWriteSettings(res.ok, res.msg);
 		return;
 	}
 	// re-read from device; first attempt will fail (?), second (hopefully)
@@ -161,8 +184,8 @@ void Device::writeSettings() {
 	for (int i = 0; i < 5; i++) {
 		QThread::currentThread()->sleep(1);
 		qDebug() << "read after write... " << i;
-		res = readBuffer(settings);
-		if (res.first) {
+		res = readBuffer(sett);
+		if (res.ok) {
 			emit doneWriteSettings(true, "Write settings OK.");
 			return;
 		}
@@ -171,10 +194,10 @@ void Device::writeSettings() {
 }
 
 void Device::writeTheme() {
-	QPair<bool, QString> res = writeBuffer(theme);
+	Res res = writeBuffer(theme);
 
-	if (!res.first) {
-		emit doneWriteTheme(res.first, res.second);
+	if (!res.ok) {
+		emit doneWriteTheme(res.ok, res.msg);
 		return;
 	}
 	// re-read from device; first attempt will fail (?), second (hopefully)
@@ -183,7 +206,7 @@ void Device::writeTheme() {
 		QThread::currentThread()->sleep(1);
 		qDebug() << "read after write... " << i;
 		res = readBuffer(theme);
-		if (res.first) {
+		if (res.ok) {
 			emit doneWriteTheme(true, "Write theme OK.");
 			return;
 		}
@@ -191,7 +214,7 @@ void Device::writeTheme() {
 	emit doneWriteTheme(false, "Write theme NOK.");
 }
 
-QPair<bool, QString> Device::writeBuffer(BufferType bType) {
+Device::Res Device::writeBuffer(BufferType bType) {
 	if (!handle) openhid();
 	if (!handle) return {false, "no handle"};
 
@@ -236,22 +259,22 @@ bool Device::saveConfig(QString filename) {
 	QFile f(filename);
 	if (!f.open(QIODevice::WriteOnly)) return false;
 
-	int res = f.write((char *)&afSettings, sizeof(afSettings));
-	return res == sizeof(afSettings);
+	int res = f.write((char *)&settings, sizeof(settings));
+	return res == sizeof(settings);
 }
 
 bool Device::loadConfig(QString filename) {
 	QFile f(filename);
 	if (!f.open(QIODevice::ReadOnly)) return false;
 
-	int res = f.read((char *)&afSettings, sizeof(afSettings));
-	return res == sizeof(afSettings);
+	int res = f.read((char *)&settings, sizeof(settings));
+	return res == sizeof(settings);
 }
 
 void Device::readTheme() {
 	static_assert(sizeof(afTheme) == theme_struct_size, "packed afTheme size!");
-	QPair<bool, QString> res = readBuffer(theme);
-	emit doneReadTheme(res.first, res.second);
+	Res res = readBuffer(theme);
+	emit doneReadTheme(res.ok, res.msg);
 }
 
 QByteArray Device::createCommand(uint8_t ccode, uint32_t arg1, uint32_t arg2) {

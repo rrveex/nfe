@@ -7,7 +7,6 @@
 #define __AFDATA_H__
 
 #include <cstdint>
-
 typedef struct __attribute__((packed)) {
 	uint8_t SettingsVersion;
 	uint32_t ProductId;
@@ -464,5 +463,4 @@ typedef struct {
 	uint16_t Charge_Temp;
 	uint16_t Charge_Clock;
 } sColorTheme; // 84 bytes
-
 #endif // __AFDATA_H__

@@ -5,8 +5,8 @@
 #include <QTextStream>
 #include <cstring>
 
-TfrDialog::TfrDialog(QWidget *parent, dSettings &afSettings, int curveId)
-	: QDialog(parent), ui(new Ui::TfrDialog), afSettings(afSettings), curveId(curveId) {
+TfrDialog::TfrDialog(QWidget *parent, dSettings &Settings, int curveId)
+	: QDialog(parent), ui(new Ui::TfrDialog), Settings(Settings), curveId(curveId) {
 	ui->setupUi(this);
 
 	chart = new QChart();
@@ -32,7 +32,7 @@ TfrDialog::TfrDialog(QWidget *parent, dSettings &afSettings, int curveId)
 
 	for (int i = 0; i < no_points; i++) {
 		// x value matters here because of populating -> signal -> min/max range for spin
-		series->append(afSettings.Advanced.TFR_Tables[curveId].TFR[i].temp, 1);
+		series->append(Settings.Advanced.TFR_Tables[curveId].TFR[i].temp, 1);
 	}
 
 	chart->addSeries(series);
@@ -101,15 +101,15 @@ TfrDialog::TfrDialog(QWidget *parent, dSettings &afSettings, int curveId)
 			chartView->repaint();
 		});
 
-		t_arr[i]->setValue(afSettings.Advanced.TFR_Tables[curveId].TFR[i].temp);
+		t_arr[i]->setValue(Settings.Advanced.TFR_Tables[curveId].TFR[i].temp);
 		if (i > 0) {
 			t_arr[i - 1]->setMaximum(t_arr[i]->value() - 0.1);
 			t_arr[i]->setMinimum(t_arr[i - 1]->value() + 0.1);
 		}
-		f_arr[i]->setValue((double)afSettings.Advanced.TFR_Tables[curveId].TFR[i].res / 10000);
+		f_arr[i]->setValue((double)Settings.Advanced.TFR_Tables[curveId].TFR[i].res / 10000);
 	}
 	char c[5] = {0, 0, 0, 0, 0};
-	std::strncpy(c, (char *)afSettings.Advanced.TFR_Tables[curveId].Name, sizeof(afSettings.Advanced.TFR_Tables[curveId].Name));
+	std::strncpy(c, (char *)Settings.Advanced.TFR_Tables[curveId].Name, sizeof(Settings.Advanced.TFR_Tables[curveId].Name));
 	ui->curveNameEdit->setText(c);
 }
 
@@ -160,12 +160,12 @@ void TfrDialog::hovered(const QPointF &point, bool state) {
 
 void TfrDialog::onSave() {
 	std::string s = ui->curveNameEdit->text().toStdString();
-	std::strncpy((char *)afSettings.Advanced.TFR_Tables[curveId].Name, s.c_str(), sizeof(afSettings.Advanced.TFR_Tables[curveId].Name));
+	std::strncpy((char *)Settings.Advanced.TFR_Tables[curveId].Name, s.c_str(), sizeof(Settings.Advanced.TFR_Tables[curveId].Name));
 
 	auto points = series->points();
 	for (int i = 0; i < no_points; i++) {
-		afSettings.Advanced.TFR_Tables[curveId].TFR[i].temp = points.at(i).x();
-		afSettings.Advanced.TFR_Tables[curveId].TFR[i].res = (uint16_t)(points.at(i).y() * 10000);
+		Settings.Advanced.TFR_Tables[curveId].TFR[i].temp = points.at(i).x();
+		Settings.Advanced.TFR_Tables[curveId].TFR[i].res = (uint16_t)(points.at(i).y() * 10000);
 	}
 	done(QDialog::Accepted);
 }

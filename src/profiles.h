@@ -6,7 +6,11 @@
 #include <QObject>
 #include <QPushButton>
 
+#ifdef AF
 #include "afdata.h"
+#else
+#include "rpdata.h"
+#endif
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -17,13 +21,13 @@ QT_END_NAMESPACE
 class Profiles : public QObject {
 	Q_OBJECT
   public:
-	Profiles(QWidget *parent, Ui::MainWindow *ui, dSettings &afSettings);
+	Profiles(QWidget *parent, Ui::MainWindow *ui, dSettings &Settings);
 	void deviceSettingsAvailable();
 
   private:
 	QWidget *mainwindow;
 	Ui::MainWindow *ui;
-	dSettings &afSettings;
+	dSettings &Settings;
 
 	int currentProfileId = 0;
 
@@ -43,8 +47,7 @@ class ProfileNameValidator : public QValidator {
 	virtual QValidator::State validate(QString &input, int &pos) const {
 		input = input.toUpper();
 		Q_UNUSED(pos);
-		if (input.size() > 8)
-			return QValidator::Invalid;
+		if (input.size() > 8) return QValidator::Invalid;
 
 		for (char ch : input.toStdString()) {
 			switch (ch) {

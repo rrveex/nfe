@@ -1,7 +1,11 @@
 #ifndef ADVANCED_H
 #define ADVANCED_H
 
+#ifdef AF
 #include "afdata.h"
+#else
+#include "rpdata.h"
+#endif
 
 #include <QButtonGroup>
 #include <QComboBox>
@@ -17,13 +21,13 @@ QT_END_NAMESPACE
 class Advanced : public QObject {
 	Q_OBJECT
   public:
-	Advanced(QWidget *parent, Ui::MainWindow *ui, dSettings &afSettings);
+	Advanced(QWidget *parent, Ui::MainWindow *ui, dSettings &settings);
 	void deviceSettingsAvailable();
 
   private:
 	QWidget *mainwindow;
 	Ui::MainWindow *ui;
-	dSettings &afSettings;
+	dSettings &settings;
 	QPushButton *tfrButtons[8];
 	QPushButton *pcButtons[8];
 

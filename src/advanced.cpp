@@ -6,7 +6,7 @@
 #include <QDebug>
 #include <cstring>
 
-Advanced::Advanced(QWidget *parent, Ui::MainWindow *ui, dSettings &afSettings) : mainwindow(parent), ui(ui), afSettings(afSettings) {
+Advanced::Advanced(QWidget *parent, Ui::MainWindow *ui, dSettings &settings) : mainwindow(parent), ui(ui), settings(settings) {
 
 	addHandlers();
 }
@@ -14,29 +14,33 @@ Advanced::Advanced(QWidget *parent, Ui::MainWindow *ui, dSettings &afSettings) :
 void Advanced::deviceSettingsAvailable() {
 	// --- Settings ---
 	// Power Limit
-	ui->advPowerLimitSpin->setValue(afSettings.Advanced.PowerLimit / 10);
+	ui->advPowerLimitSpin->setValue(settings.Advanced.PowerLimit / 10);
 	// Puff Cut-Off
-	ui->advPuffCutoffSpin->setValue(afSettings.Advanced.PuffCutOff);
+	ui->advPuffCutoffSpin->setValue(settings.Advanced.PuffCutOff);
 	// Shunt Correction
-	ui->advShuntCorrectionSpin->setValue(afSettings.Advanced.ShuntCorrection);
+	ui->advShuntCorrectionSpin->setValue(settings.Advanced.ShuntCorrection);
 	// Internal Resistance
-	ui->advInternalResistanceSpin->setValue(afSettings.Advanced.InternalRes / 1000);
+	ui->advInternalResistanceSpin->setValue(settings.Advanced.InternalRes / 1000);
 	// Battery Model
-	ui->advBatteryModelCombo->setCurrentIndex(afSettings.Advanced.BatteryModel);
+	ui->advBatteryModelCombo->setCurrentIndex(settings.Advanced.BatteryModel);
+#ifdef AF
 	// RTC Mode
-	ui->advRTCModeCombo->setCurrentIndex(afSettings.Advanced.RTCMode);
+	ui->advRTCModeCombo->setCurrentIndex(settings.Advanced.RTCMode);
+#else
+	ui->advRTCModeCombo->setEnabled(false);
+#endif
 	// RCOBC
-	ui->advRCOBCCheck->setChecked(afSettings.Advanced.ResetCountersOnStartup);
+	ui->advRCOBCCheck->setChecked(settings.Advanced.ResetCountersOnStartup);
 	// Deep Sleep Behavior
-	ui->advDeepSleepBehaviorCombo->setCurrentIndex(afSettings.Advanced.DeepSleepMode);
+	ui->advDeepSleepBehaviorCombo->setCurrentIndex(settings.Advanced.DeepSleepMode);
 	// Deep Sleep Delay
-	ui->advDeepSleepDelaySpin->setValue(afSettings.Advanced.DeepSleepDelay);
+	ui->advDeepSleepDelaySpin->setValue(settings.Advanced.DeepSleepDelay);
 	// USB No Sleep
-	ui->advUsbNoSleepCheck->setChecked(afSettings.Advanced.USBNoSleep);
+	ui->advUsbNoSleepCheck->setChecked(settings.Advanced.USBNoSleep);
 	// USB Charging
-	ui->advUsbChargeCheck->setChecked(afSettings.Advanced.USBCharging);
+	ui->advUsbChargeCheck->setChecked(settings.Advanced.USBCharging);
 	// USB Max Charging Current: 50 - 0.5A, 100 - 1A, 150 - 1.5A, 200 - 2A
-	ui->advUsbMaxCurrCombo->setCurrentIndex(afSettings.Advanced.ChargingCurrent / 50 - 1);
+	ui->advUsbMaxCurrCombo->setCurrentIndex(settings.Advanced.ChargingCurrent / 50 - 1);
 
 	// --- Power Curves ---
 	const QRegularExpression re_pc("pc(\\d)Btn"); // pc0Btn .. pc7Btn
@@ -46,7 +50,7 @@ void Advanced::deviceSettingsAvailable() {
 			int id = match.captured(1).toInt();
 			pcButtons[id] = qobject_cast<QPushButton *>(btn);
 			char c[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-			std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[id].Name, sizeof(afSettings.Advanced.PowerCurves[id].Name));
+			std::strncpy(c, (char *)settings.Advanced.PowerCurves[id].Name, sizeof(settings.Advanced.PowerCurves[id].Name));
 			pcButtons[id]->setText(c);
 			ui->pcButtonGroup->setId(pcButtons[id], id);
 		}
@@ -60,17 +64,17 @@ void Advanced::deviceSettingsAvailable() {
 			int id = match.captured(1).toInt();
 			tfrButtons[id] = qobject_cast<QPushButton *>(btn);
 			char c[5] = {0, 0, 0, 0, 0};
-			std::strncpy(c, (char *)afSettings.Advanced.TFR_Tables[id].Name, sizeof(afSettings.Advanced.TFR_Tables[id].Name));
+			std::strncpy(c, (char *)settings.Advanced.TFR_Tables[id].Name, sizeof(settings.Advanced.TFR_Tables[id].Name));
 			tfrButtons[id]->setText(QString("[TCR] ") + c);
 		}
 	}
 	// --- BVO ---
-	ui->advBvoSpin1->setValue((double)afSettings.Advanced.BVOffset[0] / 100);
-	ui->advBvoSpin2->setValue((double)afSettings.Advanced.BVOffset[1] / 100);
-	ui->advBvoSpin3->setValue((double)afSettings.Advanced.BVOffset[2] / 100);
-	ui->advBvoSpin4->setValue((double)afSettings.Advanced.BVOffset[3] / 100);
+	ui->advBvoSpin1->setValue((double)settings.Advanced.BVOffset[0] / 100);
+	ui->advBvoSpin2->setValue((double)settings.Advanced.BVOffset[1] / 100);
+	ui->advBvoSpin3->setValue((double)settings.Advanced.BVOffset[2] / 100);
+	ui->advBvoSpin4->setValue((double)settings.Advanced.BVOffset[3] / 100);
 
-	switch (afSettings.DeviceInfo.NumberOfBatteries) {
+	switch (settings.DeviceInfo.NumberOfBatteries) {
 	case 1:
 		ui->advBvoLabel2->hide();
 		ui->advBvoLabel2v->hide();
@@ -92,42 +96,42 @@ void Advanced::addHandlers() {
 	auto dsbChanged = static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged);
 
 	// Power Limit
-	connect(ui->advPowerLimitSpin, dsbChanged, this, [this](double val) { afSettings.Advanced.PowerLimit = (uint16_t)(val * 10); });
+	connect(ui->advPowerLimitSpin, dsbChanged, this, [this](double val) { settings.Advanced.PowerLimit = (uint16_t)(val * 10); });
 
 	// Puff Cut-Off
-	connect(ui->advPuffCutoffSpin, sbChanged, this, [this](int val) { afSettings.Advanced.PuffCutOff = val; });
+	connect(ui->advPuffCutoffSpin, sbChanged, this, [this](int val) { settings.Advanced.PuffCutOff = val; });
 
 	// Shunt Correction
-	connect(ui->advShuntCorrectionSpin, sbChanged, this, [this](int val) { afSettings.Advanced.ShuntCorrection = (uint16_t)(val * 10); });
+	connect(ui->advShuntCorrectionSpin, sbChanged, this, [this](int val) { settings.Advanced.ShuntCorrection = (uint16_t)(val * 10); });
 
 	// Internal Resistance
 	connect(
-		ui->advInternalResistanceSpin, dsbChanged, this, [this](double val) { afSettings.Advanced.InternalRes = (uint16_t)(val * 1000); });
+		ui->advInternalResistanceSpin, dsbChanged, this, [this](double val) { settings.Advanced.InternalRes = (uint16_t)(val * 1000); });
 
 	// Battery Model
-	connect(ui->advBatteryModelCombo, cbChanged, this, [this](int index) { afSettings.Advanced.BatteryModel = index; });
-
+	connect(ui->advBatteryModelCombo, cbChanged, this, [this](int index) { settings.Advanced.BatteryModel = index; });
+#ifdef AF
 	// RTC Mode
-	connect(ui->advRTCModeCombo, cbChanged, this, [this](int index) { afSettings.Advanced.RTCMode = index; });
-
+	connect(ui->advRTCModeCombo, cbChanged, this, [this](int index) { settings.Advanced.RTCMode = index; });
+#endif
 	// RCOBC
 	connect(ui->advRCOBCCheck, &QCheckBox::stateChanged, this, [this](int state) {
-		afSettings.Advanced.ResetCountersOnStartup = (state == Qt::Checked) ? 1 : 0;
+		settings.Advanced.ResetCountersOnStartup = (state == Qt::Checked) ? 1 : 0;
 	});
 
 	// Deep Sleep Delay
-	connect(ui->advDeepSleepDelaySpin, sbChanged, this, [this](int val) { afSettings.Advanced.DeepSleepDelay = val; });
+	connect(ui->advDeepSleepDelaySpin, sbChanged, this, [this](int val) { settings.Advanced.DeepSleepDelay = val; });
 
 	// USB No Sleep
 	connect(ui->advUsbNoSleepCheck, &QCheckBox::stateChanged, this, [this](int state) {
-		afSettings.Advanced.USBNoSleep = (state == Qt::Checked) ? 1 : 0;
+		settings.Advanced.USBNoSleep = (state == Qt::Checked) ? 1 : 0;
 	});
 	// USB Charging
 	connect(ui->advUsbChargeCheck, &QCheckBox::stateChanged, this, [this](int state) {
-		afSettings.Advanced.USBCharging = (state == Qt::Checked) ? 1 : 0;
+		settings.Advanced.USBCharging = (state == Qt::Checked) ? 1 : 0;
 	});
 	// USB Max Charging Current: 50 - 0.5A, 100 - 1A, 150 - 1.5A, 200 - 2A
-	connect(ui->advUsbMaxCurrCombo, cbChanged, this, [this](int index) { afSettings.Advanced.ChargingCurrent = (index + 1) * 50; });
+	connect(ui->advUsbMaxCurrCombo, cbChanged, this, [this](int index) { settings.Advanced.ChargingCurrent = (index + 1) * 50; });
 	// --- Power Curves ---
 	const QRegularExpression re_pc("pc(\\d)Btn"); // pc0Btn .. pc7Btn
 	foreach (auto *btn, ui->pcButtonGroup->buttons()) {
@@ -150,28 +154,28 @@ void Advanced::addHandlers() {
 	}
 
 	// --- BVO ---
-	connect(ui->advBvoSpin1, dsbChanged, this, [this](double val) { afSettings.Advanced.BVOffset[0] = (uint16_t)(val * 100); });
-	connect(ui->advBvoSpin2, dsbChanged, this, [this](double val) { afSettings.Advanced.BVOffset[1] = (uint16_t)(val * 100); });
-	connect(ui->advBvoSpin3, dsbChanged, this, [this](double val) { afSettings.Advanced.BVOffset[2] = (uint16_t)(val * 100); });
-	connect(ui->advBvoSpin4, dsbChanged, this, [this](double val) { afSettings.Advanced.BVOffset[3] = (uint16_t)(val * 100); });
+	connect(ui->advBvoSpin1, dsbChanged, this, [this](double val) { settings.Advanced.BVOffset[0] = (uint16_t)(val * 100); });
+	connect(ui->advBvoSpin2, dsbChanged, this, [this](double val) { settings.Advanced.BVOffset[1] = (uint16_t)(val * 100); });
+	connect(ui->advBvoSpin3, dsbChanged, this, [this](double val) { settings.Advanced.BVOffset[2] = (uint16_t)(val * 100); });
+	connect(ui->advBvoSpin4, dsbChanged, this, [this](double val) { settings.Advanced.BVOffset[3] = (uint16_t)(val * 100); });
 }
 
 void Advanced::editPc(int id) {
-	PowerCurveDialog pcd(mainwindow, afSettings, id);
+	PowerCurveDialog pcd(mainwindow, settings, id);
 	if (pcd.exec() == QDialog::Rejected) return;
 
-	// settings are in afSettings; set possibly modified curve name in combo box
+	// settings are in settings; set possibly modified curve name in combo box
 	char c[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-	std::strncpy(c, (char *)afSettings.Advanced.PowerCurves[id].Name, sizeof(afSettings.Advanced.PowerCurves[id].Name));
+	std::strncpy(c, (char *)settings.Advanced.PowerCurves[id].Name, sizeof(settings.Advanced.PowerCurves[id].Name));
 	pcButtons[id]->setText(c);
 	ui->profilePreheatCurveCombo->setItemText(id, c);
 }
 
 void Advanced::editTfr(int id) {
-	TfrDialog tcrd(mainwindow, afSettings, id);
+	TfrDialog tcrd(mainwindow, settings, id);
 	if (tcrd.exec() == QDialog::Rejected) return;
 
 	char c[5] = {0, 0, 0, 0, 0};
-	std::strncpy(c, (char *)afSettings.Advanced.TFR_Tables[id].Name, sizeof(afSettings.Advanced.TFR_Tables[id].Name));
+	std::strncpy(c, (char *)settings.Advanced.TFR_Tables[id].Name, sizeof(settings.Advanced.TFR_Tables[id].Name));
 	tfrButtons[id]->setText(c);
 }

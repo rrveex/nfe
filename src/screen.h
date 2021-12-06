@@ -6,7 +6,11 @@
 #include <QObject>
 #include <QPushButton>
 
+#ifdef AF
 #include "afdata.h"
+#else
+#include "rpdata.h"
+#endif
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -17,13 +21,13 @@ QT_END_NAMESPACE
 class Screen : public QObject {
 	Q_OBJECT
   public:
-	Screen(Ui::MainWindow *ui, dSettings &afSettings);
+	Screen(Ui::MainWindow *ui, dSettings &Settings);
 
 	void deviceSettingsAvailable();
 
   private:
 	Ui::MainWindow *ui;
-	dSettings &afSettings;
+	dSettings &settings;
 
 	bool notImplementedShown = false;
 	int l2idx(uint8_t line);

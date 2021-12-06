@@ -21,6 +21,7 @@ configure_file("res/nfe.png" ${CMAKE_CURRENT_BINARY_DIR}/nfe.png COPYONLY)
 
 find_package(QT NAMES Qt5 COMPONENTS Widgets Charts REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Charts REQUIRED)
+#find_package(hidapi REQUIRED)
 
 set(PROJECT_SOURCES
 	src/advanced.cpp
@@ -41,6 +42,7 @@ set(PROJECT_SOURCES
 	src/powercurvedialog.ui
 	src/profiles.cpp
 	src/profiles.h
+	src/rpdata.h
 	src/screen.cpp
 	src/screen.h
 	src/smartstat.cpp
@@ -60,10 +62,29 @@ set(PROJECT_SOURCES
 	nfe.qrc
 )
 
-add_executable(nfe
-	${PROJECT_SOURCES}
+set(LIBS
+	Qt${QT_VERSION_MAJOR}::Widgets
+	Qt${QT_VERSION_MAJOR}::Charts
+#	hidapi::hidraw
+	-lhidapi-hidraw
 )
 
-target_link_libraries(nfe PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-target_link_libraries(nfe PRIVATE Qt${QT_VERSION_MAJOR}::Charts)
-target_link_libraries(nfe PRIVATE -lhidapi-hidraw)
+
+add_executable(af
+	${PROJECT_SOURCES}
+)
+target_compile_definitions(af
+	PRIVATE AF
+	PRIVATE S_VERSION=12
+)
+target_link_libraries(af PRIVATE ${LIBS})
+
+add_executable(rp
+	${PROJECT_SOURCES}
+)
+target_compile_definitions(rp
+	PRIVATE RP
+	PRIVATE S_VERSION=2
+)
+
+target_link_libraries(rp PRIVATE ${LIBS})

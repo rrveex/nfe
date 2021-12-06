@@ -2,7 +2,11 @@
 #define MAINWINDOW_H
 
 #include "advanced.h"
+#ifdef AF
 #include "afdata.h"
+#else
+#include "rpdata.h"
+#endif
 #include "controls.h"
 #include "device.h"
 #include "hidapi/hidapi.h"
@@ -34,7 +38,7 @@ class MainWindow : public QMainWindow {
 
   private:
 	Ui::MainWindow *ui;
-	dSettings afSettings;
+	dSettings settings;
 	sColorTheme afTheme;
 	Profiles *profiles;
 	Screen *screen;
@@ -49,12 +53,8 @@ class MainWindow : public QMainWindow {
 	static constexpr int msg_duration = 5000;
 
   private slots:
-	void onDeviceConnected();
-	void onDeviceDisconnected();
-	void onDeviceReadingSettings();
 	void deviceSettingsAvailable();
 	void onSaveConfig();
 	void onLoadConfig();
-	void onWriteSettings(bool ok, QString msg);
 };
 #endif // MAINWINDOW_H
