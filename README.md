@@ -2,7 +2,8 @@
 
 ![](res/nfe_ss.png)
 
-This is an **UNOFFICIAL** configuration utility for devices running the ArtixFox Firmware, especially the STM32 branch.
+This is an **UNOFFICIAL** configuration utility for devices running the ArtixFox and RedPanda (not yet complete) **FW version >= 190602**
+
 Please see the official forum here:
 https://nfeteam.org/forum
 and the STM32 thread:
@@ -12,8 +13,8 @@ https://nfeteam.org/forum/threads/lost-vape-quest-chip-grus-ursa-cyborg-btb-thel
 I wrote this for myself and I use Linux exclussively. It only needs Qt5 and hidapi, both available for Windows/Apple too, should be portable.
 
 # Warning
-The official tools know things about firmare versions and device models and capabilities and stuff. This tool doesn't.
-Even though it probably won't brick your device, I don't recommand using it on other devices than STM32.
+This being Linux (less users who report bugs) _and_ unofficial (I don't have all the insights), will have more bugs than the official release.
+I'm using this myself and don't want to brick my devices, so I've taken care... but can't promise you anything.
 
 # Installation
 You'll have to build this yourselves.
@@ -43,7 +44,7 @@ mkdir build && cd build
 cmake ..
 make -j
 ```
-That's it. You should have the `nfe` executable, which you can put anywhere.
+That's it. You should have the `af` (for devices running ArcticFox) and `rp` (for RedPanda) executables, which you can put anywhere.
 
 ## Copyright
 I got the logo picture from here: https://github.com/TBXin/NFirmwareEditor/blob/master/src/NToolbox/Resources/arcticfox_logo.png

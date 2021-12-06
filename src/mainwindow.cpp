@@ -63,6 +63,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 		diag.exec();
 	});
 
+	// connect(ui->writeSettingsBtn, &QPushButton::clicked, device, &Device::writeSettings);
+	connect(ui->setTimeBtn, &QPushButton::clicked, device, &Device::writeTime);
+	connect(device, &Device::doneWriteTime, this, [this](bool ok, QString msg) {
+		if (ok) {
+			ui->statusbar->showMessage("Date/Time written to device.", msg_duration);
+		} else {
+			ui->statusbar->showMessage(msg, msg_duration);
+		}
+	});
+
 	connectionLabel = new QLabel("No device found");
 	ui->statusbar->addPermanentWidget(connectionLabel);
 

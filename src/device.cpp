@@ -1,6 +1,7 @@
 #include "device.h"
 #include <QApplication>
 #include <QDataStream>
+#include <QDateTime>
 #include <QDebug>
 #include <QFile>
 #include <QIODevice>
@@ -212,6 +213,21 @@ void Device::writeTheme() {
 		}
 	}
 	emit doneWriteTheme(false, "Write theme NOK.");
+}
+
+void Device::writeTime() {
+
+	QDateTime now = QDateTime::currentDateTime();
+
+	datetime.Hour = (uint16_t)now.date().year();
+	datetime.Month = (uint8_t)now.date().month();
+	datetime.Day = (uint8_t)now.date().day();
+	datetime.Hour = (uint8_t)now.time().hour();
+	datetime.Minute = (uint8_t)now.time().minute();
+	datetime.Second = (uint8_t)now.time().second();
+
+	Res res = writeBuffer(time);
+	emit doneWriteTime(res.ok, res.msg);
 }
 
 Device::Res Device::writeBuffer(BufferType bType) {
