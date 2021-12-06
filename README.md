@@ -48,3 +48,5 @@ That's it. You should have the `af` (for devices running ArcticFox) and `rp` (fo
 
 ## Copyright
 I got the logo picture from here: https://github.com/TBXin/NFirmwareEditor/blob/master/src/NToolbox/Resources/arcticfox_logo.png
+
+And the fontawesome.otf from here: https://fontawesome.com/download (free for desktop)
