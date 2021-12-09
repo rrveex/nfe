@@ -1,6 +1,7 @@
 #include "controls.h"
 #include "./ui_mainwindow.h"
 #include "mainwindow.h"
+#include <QDebug>
 
 Controls::Controls(Ui::MainWindow *ui, dSettings &settings) : ui(ui), settings(settings) {
 	addHandlers();
@@ -79,78 +80,36 @@ void Controls::addHandlers() {
 	connect(ui->controlsMulti5Combo, cbChanged, this, [this](int index) { settings.UI.FiveClicksLock = index; });
 
 	// Shortcuts VW
-	connect(ui->controlsVWStandbyMCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsVW[0].InStandby = index;
-	});
-	connect(ui->controlsVWStandbyPCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsVW[1].InStandby = index;
-	});
-	connect(ui->controlsVWStandbyPMCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsVW[2].InStandby = index;
-	});
+	connect(ui->controlsVWStandbyMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsVW[0].InStandby = index; });
+	connect(ui->controlsVWStandbyPCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsVW[1].InStandby = index; });
+	connect(ui->controlsVWStandbyPMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsVW[2].InStandby = index; });
 
-	connect(
-		ui->controlsVWMenuMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsVW[0].InMenu = index; });
-	connect(
-		ui->controlsVWMenuPCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsVW[1].InMenu = index; });
-	connect(
-		ui->controlsVWMenuPMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsVW[2].InMenu = index; });
+	connect(ui->controlsVWMenuMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsVW[0].InMenu = index; });
+	connect(ui->controlsVWMenuPCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsVW[1].InMenu = index; });
+	connect(ui->controlsVWMenuPMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsVW[2].InMenu = index; });
 
-	connect(ui->controlsVWEditMCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsVW[0].InEditMain = index;
-	});
-	connect(ui->controlsVWEditPCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsVW[1].InEditMain = index;
-	});
-	connect(ui->controlsVWEditPMCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsVW[2].InEditMain = index;
-	});
+	connect(ui->controlsVWEditMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsVW[0].InEditMain = index; });
+	connect(ui->controlsVWEditPCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsVW[1].InEditMain = index; });
+	connect(ui->controlsVWEditPMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsVW[2].InEditMain = index; });
 
-	connect(ui->controlsVWProfileMCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsVW[0].InSelector = index;
-	});
-	connect(ui->controlsVWProfilePCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsVW[1].InSelector = index;
-	});
-	connect(ui->controlsVWProfilePMCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsVW[2].InSelector = index;
-	});
+	connect(ui->controlsVWProfileMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsVW[0].InSelector = index; });
+	connect(ui->controlsVWProfilePCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsVW[1].InSelector = index; });
+	connect(ui->controlsVWProfilePMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsVW[2].InSelector = index; });
 
 	// Shortcuts TC
-	connect(ui->controlsTCStandbyMCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsTC[0].InStandby = index;
-	});
-	connect(ui->controlsTCStandbyPCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsTC[1].InStandby = index;
-	});
-	connect(ui->controlsTCStandbyPMCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsTC[2].InStandby = index;
-	});
+	connect(ui->controlsTCStandbyMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsTC[0].InStandby = index; });
+	connect(ui->controlsTCStandbyPCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsTC[1].InStandby = index; });
+	connect(ui->controlsTCStandbyPMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsTC[2].InStandby = index; });
 
-	connect(
-		ui->controlsTCMenuMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsTC[0].InMenu = index; });
-	connect(
-		ui->controlsTCMenuPCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsTC[1].InMenu = index; });
-	connect(
-		ui->controlsTCMenuPMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsTC[2].InMenu = index; });
+	connect(ui->controlsTCMenuMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsTC[0].InMenu = index; });
+	connect(ui->controlsTCMenuPCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsTC[1].InMenu = index; });
+	connect(ui->controlsTCMenuPMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsTC[2].InMenu = index; });
 
-	connect(ui->controlsTCEditMCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsTC[0].InEditMain = index;
-	});
-	connect(ui->controlsTCEditPCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsTC[1].InEditMain = index;
-	});
-	connect(ui->controlsTCEditPMCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsTC[2].InEditMain = index;
-	});
+	connect(ui->controlsTCEditMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsTC[0].InEditMain = index; });
+	connect(ui->controlsTCEditPCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsTC[1].InEditMain = index; });
+	connect(ui->controlsTCEditPMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsTC[2].InEditMain = index; });
 
-	connect(ui->controlsTCProfileMCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsTC[0].InSelector = index;
-	});
-	connect(ui->controlsTCProfilePCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsTC[1].InSelector = index;
-	});
-	connect(ui->controlsTCProfilePMCombo, cbChanged, this, [this](int index) {
-		settings.UI.ShortcutsTC[2].InSelector = index;
-	});
+	connect(ui->controlsTCProfileMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsTC[0].InSelector = index; });
+	connect(ui->controlsTCProfilePCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsTC[1].InSelector = index; });
+	connect(ui->controlsTCProfilePMCombo, cbChanged, this, [this](int index) { settings.UI.ShortcutsTC[2].InSelector = index; });
 }

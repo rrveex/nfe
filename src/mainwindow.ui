@@ -3260,12 +3260,37 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Main Menu</string>
+                   <string>Edit</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>Edit</string>
+                   <string>Select Profile</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>TDom</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Show Clock</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Device On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>LSL On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Main Menu</string>
                   </property>
                  </item>
                  <item>
@@ -3280,7 +3305,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Select Profile</string>
+                   <string>Smart On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Info Screen</string>
                   </property>
                  </item>
                  <item>
@@ -3290,7 +3320,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>TDom</string>
+                   <string>Stealth On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Key Lock / Unlock</string>
                   </property>
                  </item>
                  <item>
@@ -3300,7 +3335,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Autofire</string>
+                   <string>Power Bank</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Device Lock / Unlock</string>
                   </property>
                  </item>
                  <item>
@@ -3315,47 +3355,7 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Show Clock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Info Screen</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Power Bank</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Stealth On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Smart On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>LSL On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Key Lock / Unlock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Device Lock / Unlock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Device On / Off</string>
+                   <string>Autofire</string>
                   </property>
                  </item>
                 </widget>
@@ -3383,12 +3383,37 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Main Menu</string>
+                   <string>Edit</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>Edit</string>
+                   <string>Select Profile</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>TDom</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Show Clock</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Device On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>LSL On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Main Menu</string>
                   </property>
                  </item>
                  <item>
@@ -3403,7 +3428,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Select Profile</string>
+                   <string>Smart On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Info Screen</string>
                   </property>
                  </item>
                  <item>
@@ -3413,7 +3443,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>TDom</string>
+                   <string>Stealth On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Key Lock / Unlock</string>
                   </property>
                  </item>
                  <item>
@@ -3423,7 +3458,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Autofire</string>
+                   <string>Power Bank</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Device Lock / Unlock</string>
                   </property>
                  </item>
                  <item>
@@ -3438,47 +3478,7 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Show Clock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Info Screen</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Power Bank</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Stealth On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Smart On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>LSL On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Key Lock / Unlock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Device Lock / Unlock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Device On / Off</string>
+                   <string>Autofire</string>
                   </property>
                  </item>
                 </widget>
@@ -3492,12 +3492,37 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Main Menu</string>
+                   <string>Edit</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>Edit</string>
+                   <string>Select Profile</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>TDom</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Show Clock</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Device On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>LSL On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Main Menu</string>
                   </property>
                  </item>
                  <item>
@@ -3512,7 +3537,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Select Profile</string>
+                   <string>Smart On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Info Screen</string>
                   </property>
                  </item>
                  <item>
@@ -3522,7 +3552,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>TDom</string>
+                   <string>Stealth On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Key Lock / Unlock</string>
                   </property>
                  </item>
                  <item>
@@ -3532,7 +3567,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Autofire</string>
+                   <string>Power Bank</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Device Lock / Unlock</string>
                   </property>
                  </item>
                  <item>
@@ -3547,47 +3587,7 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Show Clock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Info Screen</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Power Bank</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Stealth On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Smart On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>LSL On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Key Lock / Unlock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Device Lock / Unlock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Device On / Off</string>
+                   <string>Autofire</string>
                   </property>
                  </item>
                 </widget>
@@ -3631,12 +3631,37 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Main Menu</string>
+                   <string>Edit</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>Edit</string>
+                   <string>Select Profile</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>TDom</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Show Clock</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Device On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>LSL On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Main Menu</string>
                   </property>
                  </item>
                  <item>
@@ -3651,7 +3676,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Select Profile</string>
+                   <string>Smart On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Info Screen</string>
                   </property>
                  </item>
                  <item>
@@ -3661,7 +3691,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>TDom</string>
+                   <string>Stealth On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Key Lock / Unlock</string>
                   </property>
                  </item>
                  <item>
@@ -3671,7 +3706,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Autofire</string>
+                   <string>Power Bank</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Device Lock / Unlock</string>
                   </property>
                  </item>
                  <item>
@@ -3686,47 +3726,7 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Show Clock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Info Screen</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Power Bank</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Stealth On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Smart On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>LSL On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Key Lock / Unlock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Device Lock / Unlock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Device On / Off</string>
+                   <string>Autofire</string>
                   </property>
                  </item>
                 </widget>
@@ -3740,12 +3740,37 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Main Menu</string>
+                   <string>Edit</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>Edit</string>
+                   <string>Select Profile</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>TDom</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Show Clock</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Device On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>LSL On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Main Menu</string>
                   </property>
                  </item>
                  <item>
@@ -3760,7 +3785,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Select Profile</string>
+                   <string>Smart On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Info Screen</string>
                   </property>
                  </item>
                  <item>
@@ -3770,7 +3800,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>TDom</string>
+                   <string>Stealth On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Key Lock / Unlock</string>
                   </property>
                  </item>
                  <item>
@@ -3780,7 +3815,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Autofire</string>
+                   <string>Power Bank</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Device Lock / Unlock</string>
                   </property>
                  </item>
                  <item>
@@ -3795,47 +3835,7 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Show Clock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Info Screen</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Power Bank</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Stealth On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Smart On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>LSL On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Key Lock / Unlock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Device Lock / Unlock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Device On / Off</string>
+                   <string>Autofire</string>
                   </property>
                  </item>
                 </widget>
@@ -3849,12 +3849,37 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Main Menu</string>
+                   <string>Edit</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>Edit</string>
+                   <string>Select Profile</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>TDom</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Show Clock</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Device On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>LSL On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Main Menu</string>
                   </property>
                  </item>
                  <item>
@@ -3869,7 +3894,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Select Profile</string>
+                   <string>Smart On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Info Screen</string>
                   </property>
                  </item>
                  <item>
@@ -3879,7 +3909,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>TDom</string>
+                   <string>Stealth On / Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Key Lock / Unlock</string>
                   </property>
                  </item>
                  <item>
@@ -3889,7 +3924,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Autofire</string>
+                   <string>Power Bank</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Device Lock / Unlock</string>
                   </property>
                  </item>
                  <item>
@@ -3904,47 +3944,7 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Show Clock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Info Screen</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Power Bank</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Stealth On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Smart On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>LSL On / Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Key Lock / Unlock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Device Lock / Unlock</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Device On / Off</string>
+                   <string>Autofire</string>
                   </property>
                  </item>
                 </widget>
@@ -4019,12 +4019,37 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Main Menu</string>
+                     <string>Edit</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>Edit</string>
+                     <string>Select Profile</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>TDom</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Show Clock</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Device On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>LSL On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Main Menu</string>
                     </property>
                    </item>
                    <item>
@@ -4039,7 +4064,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Select Profile</string>
+                     <string>Smart On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Info Screen</string>
                     </property>
                    </item>
                    <item>
@@ -4049,7 +4079,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>TDom</string>
+                     <string>Stealth On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Key Lock / Unlock</string>
                     </property>
                    </item>
                    <item>
@@ -4059,7 +4094,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Autofire</string>
+                     <string>Power Bank</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Device Lock / Unlock</string>
                     </property>
                    </item>
                    <item>
@@ -4074,47 +4114,7 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Show Clock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Info Screen</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Power Bank</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Stealth On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Smart On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>LSL On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Key Lock / Unlock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Device Lock / Unlock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Device On / Off</string>
+                     <string>Autofire</string>
                     </property>
                    </item>
                   </widget>
@@ -4128,12 +4128,37 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Main Menu</string>
+                     <string>Edit</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>Edit</string>
+                     <string>Select Profile</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>TDom</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Show Clock</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Device On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>LSL On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Main Menu</string>
                     </property>
                    </item>
                    <item>
@@ -4148,7 +4173,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Select Profile</string>
+                     <string>Smart On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Info Screen</string>
                     </property>
                    </item>
                    <item>
@@ -4158,7 +4188,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>TDom</string>
+                     <string>Stealth On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Key Lock / Unlock</string>
                     </property>
                    </item>
                    <item>
@@ -4168,7 +4203,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Autofire</string>
+                     <string>Power Bank</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Device Lock / Unlock</string>
                     </property>
                    </item>
                    <item>
@@ -4183,47 +4223,7 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Show Clock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Info Screen</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Power Bank</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Stealth On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Smart On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>LSL On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Key Lock / Unlock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Device Lock / Unlock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Device On / Off</string>
+                     <string>Autofire</string>
                     </property>
                    </item>
                   </widget>
@@ -4251,12 +4251,37 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Main Menu</string>
+                     <string>Edit</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>Edit</string>
+                     <string>Select Profile</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>TDom</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Show Clock</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Device On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>LSL On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Main Menu</string>
                     </property>
                    </item>
                    <item>
@@ -4271,7 +4296,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Select Profile</string>
+                     <string>Smart On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Info Screen</string>
                     </property>
                    </item>
                    <item>
@@ -4281,7 +4311,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>TDom</string>
+                     <string>Stealth On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Key Lock / Unlock</string>
                     </property>
                    </item>
                    <item>
@@ -4291,7 +4326,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Autofire</string>
+                     <string>Power Bank</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Device Lock / Unlock</string>
                     </property>
                    </item>
                    <item>
@@ -4306,47 +4346,7 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Show Clock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Info Screen</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Power Bank</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Stealth On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Smart On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>LSL On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Key Lock / Unlock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Device Lock / Unlock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Device On / Off</string>
+                     <string>Autofire</string>
                     </property>
                    </item>
                   </widget>
@@ -4631,12 +4631,37 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Main Menu</string>
+                     <string>Edit</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>Edit</string>
+                     <string>Select Profile</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>TDom</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Show Clock</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Device On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>LSL On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Main Menu</string>
                     </property>
                    </item>
                    <item>
@@ -4651,7 +4676,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Select Profile</string>
+                     <string>Smart On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Info Screen</string>
                     </property>
                    </item>
                    <item>
@@ -4661,7 +4691,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>TDom</string>
+                     <string>Stealth On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Key Lock / Unlock</string>
                     </property>
                    </item>
                    <item>
@@ -4671,7 +4706,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Autofire</string>
+                     <string>Power Bank</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Device Lock / Unlock</string>
                     </property>
                    </item>
                    <item>
@@ -4686,47 +4726,7 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Show Clock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Info Screen</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Power Bank</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Stealth On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Smart On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>LSL On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Key Lock / Unlock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Device Lock / Unlock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Device On / Off</string>
+                     <string>Autofire</string>
                     </property>
                    </item>
                   </widget>
@@ -4740,12 +4740,37 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Main Menu</string>
+                     <string>Edit</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>Edit</string>
+                     <string>Select Profile</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>TDom</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Show Clock</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Device On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>LSL On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Main Menu</string>
                     </property>
                    </item>
                    <item>
@@ -4760,7 +4785,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Select Profile</string>
+                     <string>Smart On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Info Screen</string>
                     </property>
                    </item>
                    <item>
@@ -4770,7 +4800,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>TDom</string>
+                     <string>Stealth On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Key Lock / Unlock</string>
                     </property>
                    </item>
                    <item>
@@ -4780,7 +4815,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Autofire</string>
+                     <string>Power Bank</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Device Lock / Unlock</string>
                     </property>
                    </item>
                    <item>
@@ -4795,47 +4835,7 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Show Clock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Info Screen</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Power Bank</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Stealth On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Smart On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>LSL On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Key Lock / Unlock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Device Lock / Unlock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Device On / Off</string>
+                     <string>Autofire</string>
                     </property>
                    </item>
                   </widget>
@@ -4863,12 +4863,37 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Main Menu</string>
+                     <string>Edit</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>Edit</string>
+                     <string>Select Profile</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>TDom</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Show Clock</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Device On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>LSL On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Main Menu</string>
                     </property>
                    </item>
                    <item>
@@ -4883,7 +4908,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Select Profile</string>
+                     <string>Smart On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Info Screen</string>
                     </property>
                    </item>
                    <item>
@@ -4893,7 +4923,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>TDom</string>
+                     <string>Stealth On / Off</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Key Lock / Unlock</string>
                     </property>
                    </item>
                    <item>
@@ -4903,7 +4938,12 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Autofire</string>
+                     <string>Power Bank</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Device Lock / Unlock</string>
                     </property>
                    </item>
                    <item>
@@ -4918,47 +4958,7 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Show Clock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Info Screen</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Power Bank</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Stealth On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Smart On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>LSL On / Off</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Key Lock / Unlock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Device Lock / Unlock</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Device On / Off</string>
+                     <string>Autofire</string>
                     </property>
                    </item>
                   </widget>
@@ -6097,8 +6097,8 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="tfrButtonGroup"/>
-  <buttongroup name="pcButtonGroup"/>
   <buttongroup name="profilesButtonGroup"/>
+  <buttongroup name="pcButtonGroup"/>
+  <buttongroup name="tfrButtonGroup"/>
  </buttongroups>
 </ui>
