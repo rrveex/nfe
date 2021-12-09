@@ -7,6 +7,8 @@
 #include <QFont>
 #include <QFontDatabase>
 #include <QFontDialog>
+#include <QMessageBox>
+#include <QProcess>
 #include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -39,7 +41,20 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 			deviceSettingsAvailable();
 			ui->statusbar->showMessage(msg, msg_duration);
 		} else {
-			connectionLabel->setText(msg);
+			if (msg == "OTHER") {
+				// try to start the other af/rp executable instead
+#ifdef AF
+				QString prog = QDir().filePath("rp");
+#else
+				QString prog = QDir().filePath("af");
+#endif
+				if (!QProcess::startDetached(prog, QStringList())) {
+					QMessageBox::critical(0, "Fail", "Failed to start \n" + prog);
+				}
+				QApplication::instance()->quit();
+			} else {
+				connectionLabel->setText(msg);
+			}
 		}
 	});
 	connect(device, &Device::deviceDisconnected, this, [this] {
@@ -118,6 +133,7 @@ void MainWindow::onSaveConfig() {
 }
 
 void MainWindow::onLoadConfig() {
+
 	QFileDialog dialog;
 	dialog.setFileMode(QFileDialog::ExistingFile);
 	dialog.setNameFilter("*.afdata");

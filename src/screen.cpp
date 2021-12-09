@@ -28,9 +28,7 @@ int Screen::l2idx(uint8_t line) {
 	assert(0);
 	if (!notImplementedShown) {
 		notImplementedShown = true;
-		QMessageBox msgBox;
-		msgBox.setText("Screen layout not implemented!");
-		msgBox.exec();
+		QMessageBox::critical(0, "error", "Screen layout not implemented!");
 	}
 	return -1;
 	/*

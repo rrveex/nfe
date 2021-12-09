@@ -128,7 +128,11 @@ void Device::readSettings() {
 
 	if (settings.DeviceInfo.SettingsVersion != S_VERSION) {
 		res.ok = false;
-		res.msg = "Error: Wrong ArcticFox / RedPanda or FW version < 190602";
+		if (settings.DeviceInfo.SettingsVersion == OTHER_VERSION) {
+			res.msg = "OTHER";
+		} else {
+			res.msg = "Error: FW version < 190602";
+		}
 	}
 	emit doneReadSettings(res.ok, res.msg);
 }

@@ -76,6 +76,7 @@ add_executable(af
 target_compile_definitions(af
 	PRIVATE AF
 	PRIVATE S_VERSION=12
+	PRIVATE OTHER_VERSION=2
 )
 target_link_libraries(af PRIVATE ${LIBS})
 
@@ -85,6 +86,7 @@ add_executable(rp
 target_compile_definitions(rp
 	PRIVATE RP
 	PRIVATE S_VERSION=2
+	PRIVATE OTHER_VERSION=12
 )
 
 target_link_libraries(rp PRIVATE ${LIBS})
