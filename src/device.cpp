@@ -219,7 +219,7 @@ void Device::writeTime() {
 
 	QDateTime now = QDateTime::currentDateTime();
 
-	datetime.Hour = (uint16_t)now.date().year();
+	datetime.Year = (uint16_t)now.date().year();
 	datetime.Month = (uint8_t)now.date().month();
 	datetime.Day = (uint8_t)now.date().day();
 	datetime.Hour = (uint8_t)now.time().hour();
