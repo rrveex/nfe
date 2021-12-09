@@ -27,7 +27,7 @@ class Profiles : public QObject {
   private:
 	QWidget *mainwindow;
 	Ui::MainWindow *ui;
-	dSettings &Settings;
+	dSettings &settings;
 
 	int currentProfileId = 0;
 

@@ -132,7 +132,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -713,6 +713,24 @@
              <widget class="QPushButton" name="profilePreheatCurveEditBtn">
               <property name="text">
                <string>Edit</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="10" column="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_11">
+            <item>
+             <widget class="QPushButton" name="profileTfrBtn">
+              <property name="text">
+               <string>Edit</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="profileTcrSpin">
+              <property name="maximum">
+               <number>999</number>
               </property>
              </widget>
             </item>

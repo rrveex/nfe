@@ -2,10 +2,11 @@
 #include "./ui_mainwindow.h"
 #include "mainwindow.h"
 #include "powercurvedialog.h"
+#include "tfrdialog.h"
 #include <QtWidgets>
 #include <cstring>
 
-Profiles::Profiles(QWidget *parent, Ui::MainWindow *ui, dSettings &Settings) : mainwindow(parent), ui(ui), Settings(Settings) {
+Profiles::Profiles(QWidget *parent, Ui::MainWindow *ui, dSettings &settings) : mainwindow(parent), ui(ui), settings(settings) {
 
 	// replacement widgets
 	ui->profilePreheatCurveCombo->hide();
@@ -13,6 +14,9 @@ Profiles::Profiles(QWidget *parent, Ui::MainWindow *ui, dSettings &Settings) : m
 	connect(ui->profilePreheatCurveEditBtn, SIGNAL(clicked()), this, SLOT(onPreheatEdit()));
 	ui->profilePreheatCurveEditBtn->hide();
 	ui->profileNameEdit->setValidator(new ProfileNameValidator);
+
+	ui->profileTfrBtn->hide();
+	ui->profileTcrSpin->hide();
 
 	// set button IDs in buttonGroup to get profile ID when pressed
 	const QRegularExpression re("profile(\\d)Btn"); // profile0Btn .. profile7Btn
@@ -26,22 +30,22 @@ Profiles::Profiles(QWidget *parent, Ui::MainWindow *ui, dSettings &Settings) : m
 }
 
 void Profiles::onPreheatEdit() {
-	PowerCurveDialog pcd(mainwindow, Settings, ui->profilePreheatCurveCombo->currentIndex());
+	PowerCurveDialog pcd(mainwindow, settings, ui->profilePreheatCurveCombo->currentIndex());
 	if (pcd.exec() == QDialog::Rejected) return;
 
 	// settings are in Settings; set possibly modified curve name in combo box
 	char c[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 	std::strncpy(
 		c,
-		(char *)Settings.Advanced.PowerCurves[ui->profilePreheatCurveCombo->currentIndex()].Name,
-		sizeof(Settings.Advanced.PowerCurves[ui->profilePreheatCurveCombo->currentIndex()].Name));
+		(char *)settings.Advanced.PowerCurves[ui->profilePreheatCurveCombo->currentIndex()].Name,
+		sizeof(settings.Advanced.PowerCurves[ui->profilePreheatCurveCombo->currentIndex()].Name));
 	ui->profilePreheatCurveCombo->setItemText(ui->profilePreheatCurveCombo->currentIndex(), c);
 	ui->pcButtonGroup->button(ui->profilePreheatCurveCombo->currentIndex())->setText(c);
 }
 
 void Profiles::deviceSettingsAvailable() {
 
-	int actProfile = Settings.General.ActiveProfile;
+	int actProfile = settings.General.ActiveProfile;
 	assert(actProfile >= 0 && actProfile < 8);
 
 	// set active profile in combo
@@ -51,18 +55,18 @@ void Profiles::deviceSettingsAvailable() {
 	QStandardItemModel *model = qobject_cast<QStandardItemModel *>(ui->profileActiveCombo->model());
 	for (int i = 0; i < 8; i++) {
 		auto flags = model->item(i)->flags();
-		flags.setFlag(Qt::ItemIsEnabled, Settings.General.Profiles[i].Flags.enabled);
+		flags.setFlag(Qt::ItemIsEnabled, settings.General.Profiles[i].Flags.enabled);
 		model->item(i)->setFlags(flags);
 	}
 
 	// click active profile to select it
 	ui->profilesButtonGroup->button(actProfile)->click();
-	ui->profilePowerSpin->setMaximum((double)Settings.DeviceInfo.MaxPower / 10);
+	ui->profilePowerSpin->setMaximum((double)settings.DeviceInfo.MaxPower / 10);
 
 	// populate curve names
 	char c[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 	for (int i = 0; i < 8; i++) {
-		std::strncpy(c, (char *)Settings.Advanced.PowerCurves[i].Name, sizeof(Settings.Advanced.PowerCurves[i].Name));
+		std::strncpy(c, (char *)settings.Advanced.PowerCurves[i].Name, sizeof(settings.Advanced.PowerCurves[i].Name));
 		ui->profilePreheatCurveCombo->addItem(QString(c));
 	}
 }
@@ -70,36 +74,39 @@ void Profiles::deviceSettingsAvailable() {
 void Profiles::onProfileSelected() {
 	currentProfileId = ui->profilesButtonGroup->checkedId();
 	// profile enabled
-	ui->profileEnabledCheck->setChecked(Settings.General.Profiles[currentProfileId].Flags.enabled);
-	ui->profileEnabledCheck->setEnabled(currentProfileId != Settings.General.ActiveProfile);
+	ui->profileEnabledCheck->setChecked(settings.General.Profiles[currentProfileId].Flags.enabled);
+	ui->profileEnabledCheck->setEnabled(currentProfileId != settings.General.ActiveProfile);
 	char s[9];
 	memset(s, 0, 9);
-	memcpy(s, Settings.General.Profiles[currentProfileId].Name, 8);
+	memcpy(s, settings.General.Profiles[currentProfileId].Name, 8);
 	// profile name
 	ui->profileNameEdit->setText(s);
 	// power
-	ui->profilePowerSpin->setValue((double)Settings.General.Profiles[currentProfileId].Power / 10);
+	ui->profilePowerSpin->setValue((double)settings.General.Profiles[currentProfileId].Power / 10);
 	// power step
-	ui->profilePowerStepCombo->setCurrentIndex(Settings.General.Profiles[currentProfileId].Flags2.step1w);
+	ui->profilePowerStepCombo->setCurrentIndex(settings.General.Profiles[currentProfileId].Flags2.step1w);
 	// preheat type
-	ui->profilePreheatTypeCombo->setCurrentIndex(Settings.General.Profiles[currentProfileId].PreheatType);
+	ui->profilePreheatTypeCombo->setCurrentIndex(settings.General.Profiles[currentProfileId].PreheatType);
 	// preheat smart
-	ui->profilePreheatSmartCheck->setChecked(Settings.General.Profiles[currentProfileId].Flags.regain);
+	ui->profilePreheatSmartCheck->setChecked(settings.General.Profiles[currentProfileId].Flags.regain);
 	// preheat power
-	ui->profilePreheatPowerSpin->setValue(Settings.General.Profiles[currentProfileId].PreheatPwr);
+	ui->profilePreheatPowerSpin->setValue(settings.General.Profiles[currentProfileId].PreheatPwr);
 	// preheat time
-	ui->profilePreheatTimeSpin->setValue((double)Settings.General.Profiles[currentProfileId].PreheatTime / 100);
+	ui->profilePreheatTimeSpin->setValue((double)settings.General.Profiles[currentProfileId].PreheatTime / 100);
 	// preheat delay
-	ui->profilePreheatDelaySpin->setValue(Settings.General.Profiles[currentProfileId].PreheatDelay);
+	ui->profilePreheatDelaySpin->setValue(settings.General.Profiles[currentProfileId].PreheatDelay);
 	// resistance
-	ui->profileResistanceSpin->setValue((double)Settings.General.Profiles[currentProfileId].Resistance / 1000);
+	ui->profileResistanceSpin->setValue((double)settings.General.Profiles[currentProfileId].Resistance / 1000);
 	// resistance lock
-	ui->profileResistanceLockCheck->setCheckState(Settings.General.Profiles[currentProfileId].Flags.locked ? Qt::Checked : Qt::Unchecked);
+	ui->profileResistanceLockCheck->setCheckState(settings.General.Profiles[currentProfileId].Flags.locked ? Qt::Checked : Qt::Unchecked);
 
 	// mode
-	last_material = Settings.General.Profiles[currentProfileId].Flags.material;
+	last_material = settings.General.Profiles[currentProfileId].Flags.material;
 	ui->profileModeCombo->setCurrentIndex(last_material ? 1 : 0);
-	onModeCombo(last_material ? 1 : 0); // force in case index doesn't change
+	// tcr
+	ui->profileTcrSpin->setValue(settings.General.Profiles[currentProfileId].TCR);
+	// force in case index doesn't change
+	onModeCombo(last_material ? 1 : 0);
 }
 
 void Profiles::addHandlers() {
@@ -110,7 +117,7 @@ void Profiles::addHandlers() {
 	connect(ui->profilesButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked), this, &Profiles::onProfileSelected);
 
 	connect(ui->profileActiveCombo, cbChanged, this, [this](int index) -> void {
-		Settings.General.ActiveProfile = index;
+		settings.General.ActiveProfile = index;
 		ui->profileEnabledCheck->setEnabled(index != currentProfileId);
 	});
 
@@ -119,7 +126,7 @@ void Profiles::addHandlers() {
 
 	// profile enabled
 	connect(ui->profileEnabledCheck, &QCheckBox::stateChanged, this, [this](int state) -> void {
-		Settings.General.Profiles[currentProfileId].Flags.enabled = (state == Qt::Checked) ? 1 : 0;
+		settings.General.Profiles[currentProfileId].Flags.enabled = (state == Qt::Checked) ? 1 : 0;
 
 		// prevent selecting disabled profile in active profile combo
 		QStandardItemModel *model = qobject_cast<QStandardItemModel *>(ui->profileActiveCombo->model());
@@ -130,54 +137,52 @@ void Profiles::addHandlers() {
 
 	// profile name
 	connect(ui->profileNameEdit, &QLineEdit::textEdited, this, [this](const QString &text) -> void {
-		memset(Settings.General.Profiles[currentProfileId].Name, 0, 8);
+		memset(settings.General.Profiles[currentProfileId].Name, 0, 8);
 		int len = std::max((int)text.size(), 8);
-		memcpy(Settings.General.Profiles[currentProfileId].Name, text.toStdString().c_str(), len);
+		memcpy(settings.General.Profiles[currentProfileId].Name, text.toStdString().c_str(), len);
 	});
 
 	// power
 	connect(ui->profilePowerSpin, dsbChanged, this, [this](double val) {
-		Settings.General.Profiles[currentProfileId].Power = (uint16_t)(val * 10);
+		settings.General.Profiles[currentProfileId].Power = (uint16_t)(val * 10);
 	});
 
 	// power step
-	connect(ui->profilePowerStepCombo, cbChanged, this, [this](int index) -> void {
-		Settings.General.Profiles[currentProfileId].Flags2.step1w = index;
+	connect(ui->profilePowerStepCombo, cbChanged, this, [this](int index) {
+		settings.General.Profiles[currentProfileId].Flags2.step1w = index;
 	});
 
 	// preheat type
-	connect(ui->profilePreheatTypeCombo, cbChanged, this, [this](int index) -> void {
-		Settings.General.Profiles[currentProfileId].PreheatType = index;
+	connect(ui->profilePreheatTypeCombo, cbChanged, this, [this](int index) {
+		settings.General.Profiles[currentProfileId].PreheatType = index;
 	});
 
 	// preheat smart
-	connect(ui->profilePreheatSmartCheck, &QCheckBox::stateChanged, this, [this](int state) -> void {
-		Settings.General.Profiles[currentProfileId].Flags.regain = (state == Qt::Checked) ? 1 : 0;
+	connect(ui->profilePreheatSmartCheck, &QCheckBox::stateChanged, this, [this](int state) {
+		settings.General.Profiles[currentProfileId].Flags.regain = (state == Qt::Checked) ? 1 : 0;
 	});
 
 	// preheat power
-	connect(ui->profilePreheatPowerSpin, sbChanged, this, [this](int val) -> void {
-		Settings.General.Profiles[currentProfileId].PreheatPwr = val;
-	});
+	connect(
+		ui->profilePreheatPowerSpin, sbChanged, this, [this](int val) { settings.General.Profiles[currentProfileId].PreheatPwr = val; });
 
 	// preheat time
-	connect(ui->profilePreheatTimeSpin, dsbChanged, this, [this](double val) -> void {
-		Settings.General.Profiles[currentProfileId].PreheatTime = val * 100;
+	connect(ui->profilePreheatTimeSpin, dsbChanged, this, [this](double val) {
+		settings.General.Profiles[currentProfileId].PreheatTime = val * 100;
 	});
 
 	// preheat delay
-	connect(ui->profilePreheatDelaySpin, sbChanged, this, [this](int val) -> void {
-		Settings.General.Profiles[currentProfileId].PreheatDelay = val;
-	});
+	connect(
+		ui->profilePreheatDelaySpin, sbChanged, this, [this](int val) { settings.General.Profiles[currentProfileId].PreheatDelay = val; });
 
 	// resistance
-	connect(ui->profileResistanceSpin, dsbChanged, this, [this](double val) -> void {
-		Settings.General.Profiles[currentProfileId].Resistance = val * 1000;
+	connect(ui->profileResistanceSpin, dsbChanged, this, [this](double val) {
+		settings.General.Profiles[currentProfileId].Resistance = val * 1000;
 	});
 
 	// resistance lock
-	connect(ui->profileResistanceLockCheck, &QCheckBox::stateChanged, this, [this](int state) -> void {
-		Settings.General.Profiles[currentProfileId].Flags.locked = (state == Qt::Checked) ? 1 : 0;
+	connect(ui->profileResistanceLockCheck, &QCheckBox::stateChanged, this, [this](int state) {
+		settings.General.Profiles[currentProfileId].Flags.locked = (state == Qt::Checked) ? 1 : 0;
 	});
 
 	// mode (VW/TC)
@@ -186,12 +191,26 @@ void Profiles::addHandlers() {
 	// coil material
 	connect(ui->profileCoilMaterialCombo, cbChanged, this, &Profiles::onCoilMaterialCombo);
 
+	// TCR
+	connect(ui->profileTcrSpin, sbChanged, this, [this](int val) { settings.General.Profiles[currentProfileId].TCR = val; });
+
+	// TFR
+	connect(ui->profileTfrBtn, &QPushButton::clicked, this, [this] {
+		int id = ui->profileCoilMaterialCombo->currentIndex() - 4;
+		TfrDialog tcrd(mainwindow, settings, id);
+		if (tcrd.exec() == QDialog::Rejected) return;
+
+		char c[5] = {0, 0, 0, 0, 0};
+		std::strncpy(c, (char *)settings.Advanced.TFR_Tables[id].Name, sizeof(settings.Advanced.TFR_Tables[id].Name));
+		ui->profileCoilMaterialCombo->setItemText(ui->profileCoilMaterialCombo->currentIndex(), QString("[TFR] ") + c);
+	});
+
 	// temperature
-	connect(ui->profileTempSpin, sbChanged, this, [this](int val) -> void { Settings.General.Profiles[currentProfileId].Temp = val; });
+	connect(ui->profileTempSpin, sbChanged, this, [this](int val) -> void { settings.General.Profiles[currentProfileId].Temp = val; });
 
 	// temperature dominant
 	connect(ui->profileTempDomCheck, &QCheckBox::stateChanged, this, [this](int state) -> void {
-		Settings.General.Profiles[currentProfileId].Flags.tempdom = (state == Qt::Checked) ? 1 : 0;
+		settings.General.Profiles[currentProfileId].Flags.tempdom = (state == Qt::Checked) ? 1 : 0;
 	});
 }
 
@@ -207,17 +226,17 @@ void Profiles::onModeCombo(int idx) {
 		ui->profileTempLabel->show();
 		ui->profileTempSpin->show();
 		ui->profileTempDegreesLabel->show();
-		ui->profileTempSpin->setValue(Settings.General.Profiles[currentProfileId].Temp);
+		ui->profileTempSpin->setValue(settings.General.Profiles[currentProfileId].Temp);
 
 		ui->profileTempStepLabel->show();
 		ui->profileTempStepCombo->show();
-		ui->profileTempStepCombo->setCurrentIndex(Settings.General.Profiles[currentProfileId].Flags2.step1c2f);
+		ui->profileTempStepCombo->setCurrentIndex(settings.General.Profiles[currentProfileId].Flags2.step1c2f);
 
 		ui->profileTempDomCheck->show();
-		ui->profileTempDomCheck->setChecked(Settings.General.Profiles[currentProfileId].Flags.tempdom);
+		ui->profileTempDomCheck->setChecked(settings.General.Profiles[currentProfileId].Flags.tempdom);
 
 		// material: 0 - VariWatt, 1 - Nickel, 2 - Titanium, 3 - Stainless Steel, 4 - Custom TCR, 5..12 - TFRs
-		Settings.General.Profiles[currentProfileId].Flags.material = last_material;
+		settings.General.Profiles[currentProfileId].Flags.material = last_material;
 
 	} else { // VW
 		ui->profileModeSetupBtn->hide();
@@ -234,13 +253,15 @@ void Profiles::onModeCombo(int idx) {
 
 		ui->profileTempDomCheck->hide();
 
-		Settings.General.Profiles[currentProfileId].Flags.material = 0;
+		settings.General.Profiles[currentProfileId].Flags.material = 0;
 	}
 }
 
 void Profiles::onCoilMaterialCombo(int idx) {
-	Settings.General.Profiles[currentProfileId].Flags.material = idx + 1;
+	settings.General.Profiles[currentProfileId].Flags.material = idx + 1;
 	last_material = idx + 1;
+	ui->profileTcrSpin->setVisible(idx == 3);
+	ui->profileTfrBtn->setVisible(idx > 3);
 }
 
 void Profiles::onPreheatTypeCombo(int idx) {
