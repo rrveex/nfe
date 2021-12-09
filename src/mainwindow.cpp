@@ -44,9 +44,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 			if (msg == "OTHER") {
 				// try to start the other af/rp executable instead
 #ifdef AF
-				QString prog = QDir().filePath("rp");
+				QString prog = QDir(QCoreApplication::applicationDirPath()).filePath("rp");
 #else
-				QString prog = QDir().filePath("af");
+				QString prog = QDir(QCoreApplication::applicationDirPath()).filePath("af");
 #endif
 				if (!QProcess::startDetached(prog, QStringList())) {
 					QMessageBox::critical(0, "Fail", "Failed to start \n" + prog);
