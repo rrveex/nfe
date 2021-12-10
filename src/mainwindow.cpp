@@ -26,7 +26,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 	device = new Device(settings, afTheme);
 	connect(ui->readSettingsBtn, &QPushButton::clicked, device, &Device::readSettings);
-	connect(ui->writeSettingsBtn, &QPushButton::clicked, device, &Device::writeSettings);
+	connect(ui->writeSettingsBtn, &QPushButton::clicked, this, [this] {
+		ui->statusbar->showMessage("Writing...");
+		qApp->processEvents();
+		device->writeSettings();
+	});
 	connect(device, &Device::doneWriteSettings, this, [this](bool, QString msg) { ui->statusbar->showMessage(msg, msg_duration); });
 	connect(device, &Device::doneReadSettings, this, [this](bool ok, QString msg) {
 		if (ok) {
@@ -78,7 +82,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 		diag.exec();
 	});
 
-	// connect(ui->writeSettingsBtn, &QPushButton::clicked, device, &Device::writeSettings);
 	connect(ui->setTimeBtn, &QPushButton::clicked, device, &Device::writeTime);
 	connect(device, &Device::doneWriteTime, this, [this](bool ok, QString msg) {
 		if (ok) {

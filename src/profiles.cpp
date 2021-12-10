@@ -15,9 +15,6 @@ Profiles::Profiles(QWidget *parent, Ui::MainWindow *ui, dSettings &settings) : m
 	ui->profilePreheatCurveEditBtn->hide();
 	ui->profileNameEdit->setValidator(new ProfileNameValidator);
 
-	ui->profileTfrBtn->hide();
-	ui->profileTcrSpin->hide();
-
 	// set button IDs in buttonGroup to get profile ID when pressed
 	const QRegularExpression re("profile(\\d)Btn"); // profile0Btn .. profile7Btn
 	foreach (auto *btn, ui->profilesButtonGroup->buttons()) {
@@ -72,6 +69,7 @@ void Profiles::deviceSettingsAvailable() {
 }
 
 void Profiles::onProfileSelected() {
+
 	currentProfileId = ui->profilesButtonGroup->checkedId();
 	// profile enabled
 	ui->profileEnabledCheck->setChecked(settings.General.Profiles[currentProfileId].Flags.enabled);
@@ -105,6 +103,8 @@ void Profiles::onProfileSelected() {
 	ui->profileModeCombo->setCurrentIndex(last_material ? 1 : 0);
 	// tcr
 	ui->profileTcrSpin->setValue(settings.General.Profiles[currentProfileId].TCR);
+	// show/hide spin/button
+	onCoilMaterialCombo(last_material - 1);
 	// force in case index doesn't change
 	onModeCombo(last_material ? 1 : 0);
 }
