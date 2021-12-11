@@ -132,7 +132,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -5350,10 +5350,10 @@
               <item row="1" column="1">
                <widget class="QSpinBox" name="advPuffCutoffSpin">
                 <property name="minimum">
-                 <number>10</number>
+                 <number>1</number>
                 </property>
                 <property name="maximum">
-                 <number>600</number>
+                 <number>60</number>
                 </property>
                </widget>
               </item>

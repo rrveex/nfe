@@ -16,7 +16,7 @@ void Advanced::deviceSettingsAvailable() {
 	// Power Limit
 	ui->advPowerLimitSpin->setValue(settings.Advanced.PowerLimit / 10);
 	// Puff Cut-Off
-	ui->advPuffCutoffSpin->setValue(settings.Advanced.PuffCutOff);
+	ui->advPuffCutoffSpin->setValue(settings.Advanced.PuffCutOff / 10);
 	// Shunt Correction
 	ui->advShuntCorrectionSpin->setValue(settings.Advanced.ShuntCorrection);
 	// Internal Resistance
@@ -99,7 +99,7 @@ void Advanced::addHandlers() {
 	connect(ui->advPowerLimitSpin, dsbChanged, this, [this](double val) { settings.Advanced.PowerLimit = (uint16_t)(val * 10); });
 
 	// Puff Cut-Off
-	connect(ui->advPuffCutoffSpin, sbChanged, this, [this](int val) { settings.Advanced.PuffCutOff = val; });
+	connect(ui->advPuffCutoffSpin, sbChanged, this, [this](int val) { settings.Advanced.PuffCutOff = (uint16_t)(val * 10); });
 
 	// Shunt Correction
 	connect(ui->advShuntCorrectionSpin, sbChanged, this, [this](int val) { settings.Advanced.ShuntCorrection = (uint16_t)(val * 10); });

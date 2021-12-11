@@ -102,6 +102,7 @@ class Device : public QObject {
 		{"W069", "Wismec Reuleaux RX300"},	  {"W073", "Wismec Reuleaux RXmini"},  {"W078", "Wismec Predator"},
 		{"W010", "Vaporflask Classic"},		  {"W011", "Vaporflask Lite"},		   {"W013", "Vaporflask Stout"},
 		{"W016", "Beyondvape Centurion"},	  {"W043", "Vaponaute La Petit Box"},  {"W057", "Vapor Shark SwitchBox RX"},
+		{"W091", "Wismec Reuleaux RX Gen3"},
 
 		{"J056", "Wismec Sinuous Ravage230"}, {"GRUS", "Lost Vape Grus"},		   {"THLM", "Lost Vape Thelema"},
 	};
