@@ -137,6 +137,15 @@ void Device::readSettings() {
 	emit doneReadSettings(res.ok, res.msg);
 }
 
+void Device::readMonitor() {
+	Res res = readBuffer(monitor);
+	emit doneReadMonitor(true, monitorData);
+}
+
+void Device::cmdPuff(int secs) {
+	if (secs > 0 && secs < 10) writeBuffer(puff, secs);
+}
+
 Device::Res Device::readBuffer(BufferType bType) {
 	if (!handle) openhid();
 	if (!handle) return {false, "no handle"};
@@ -162,7 +171,7 @@ Device::Res Device::readBuffer(BufferType bType) {
 		if (res <= 0) break;
 		offs += res;
 	}
-	qDebug() << "read: " << offs << " bytes";
+	//	qDebug() << "read: " << offs << " bytes";
 
 	if (offs < transfer_size[bType]) {
 		qDebug() << "read read just" << offs << "bytes, retrying";
@@ -234,7 +243,7 @@ void Device::writeTime() {
 	emit doneWriteTime(res.ok, res.msg);
 }
 
-Device::Res Device::writeBuffer(BufferType bType) {
+Device::Res Device::writeBuffer(BufferType bType, uint32_t arg1) {
 	if (!handle) openhid();
 	if (!handle) return {false, "no handle"};
 
@@ -242,13 +251,17 @@ Device::Res Device::writeBuffer(BufferType bType) {
 
 	const int size_to_send = transfer_size[bType] + 1; // +1 first byte 0 report id
 
-	QByteArray arr = createCommand(write_cmd[bType], 0, size_to_send);
+	QByteArray arr = createCommand(write_cmd[bType], arg1, size_to_send);
 	int res = hid_write(handle, (unsigned char *)arr.data(), arr.size());
 
 	if (res < 0) {
 		QString err = "write request: " + QString::fromWCharArray(hid_error(handle));
 		closehid();
 		return {false, err};
+	}
+	if (bType == puff) {
+		checkDisconnectTimer->start();
+		return {true, "Command OK"};
 	}
 
 	uint8_t buf[size_to_send];

@@ -32,7 +32,7 @@ class TfrDialog : public QDialog {
 	QSpinBox *t_arr[no_points];
 	QDoubleSpinBox *f_arr[no_points];
 
-	dSettings &Settings;
+	dSettings &settings;
 	int curveId;
   private slots:
 	void hovered(const QPointF &point, bool state);

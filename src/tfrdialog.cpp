@@ -6,7 +6,7 @@
 #include <cstring>
 
 TfrDialog::TfrDialog(QWidget *parent, dSettings &Settings, int curveId)
-	: QDialog(parent), ui(new Ui::TfrDialog), Settings(Settings), curveId(curveId) {
+	: QDialog(parent), ui(new Ui::TfrDialog), settings(Settings), curveId(curveId) {
 	ui->setupUi(this);
 
 	chart = new QChart();
@@ -160,12 +160,12 @@ void TfrDialog::hovered(const QPointF &point, bool state) {
 
 void TfrDialog::onSave() {
 	std::string s = ui->curveNameEdit->text().toStdString();
-	std::strncpy((char *)Settings.Advanced.TFR_Tables[curveId].Name, s.c_str(), sizeof(Settings.Advanced.TFR_Tables[curveId].Name));
+	std::strncpy((char *)settings.Advanced.TFR_Tables[curveId].Name, s.c_str(), sizeof(settings.Advanced.TFR_Tables[curveId].Name));
 
 	auto points = series->points();
 	for (int i = 0; i < no_points; i++) {
-		Settings.Advanced.TFR_Tables[curveId].TFR[i].temp = points.at(i).x();
-		Settings.Advanced.TFR_Tables[curveId].TFR[i].res = (uint16_t)(points.at(i).y() * 10000);
+		settings.Advanced.TFR_Tables[curveId].TFR[i].temp = points.at(i).x();
+		settings.Advanced.TFR_Tables[curveId].TFR[i].res = (uint16_t)(points.at(i).y() * 10000);
 	}
 	done(QDialog::Accepted);
 }

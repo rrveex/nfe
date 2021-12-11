@@ -39,6 +39,8 @@ class Device : public QObject {
 	void readTheme();
 	void writeTheme();
 	void writeTime();
+	void readMonitor();
+	void cmdPuff(int secs);
 
   signals:
 	void deviceConnected();
@@ -54,12 +56,16 @@ class Device : public QObject {
 	void doneWriteTheme(bool ok, QString msg);
 	void doneWriteTime(bool ok, QString msg);
 
+	void doneReadMonitor(bool ok, sMonitoringData data);
+
   private:
 	enum BufferType
 	{
 		sett,
 		theme,
-		time
+		time,
+		monitor,
+		puff
 	};
 	struct Res {
 		bool ok;
@@ -73,17 +79,19 @@ class Device : public QObject {
 	dSettings &settings;
 	sColorTheme &afTheme;
 	sDateTime datetime;
+	sMonitoringData monitorData;
 
-	QMap<BufferType, unsigned> transfer_size = {{sett, 1088}, {theme, 128}, {time, 64}};
-	QMap<BufferType, uint8_t> read_cmd = {{sett, 0x60}, {theme, 0x90}};
-	QMap<BufferType, uint8_t> write_cmd = {{sett, 0x61}, {theme, 0x91}, {time, 0x64}};
-	QMap<BufferType, void *> data_ptr = {{sett, &settings}, {theme, &afTheme}, {time, &datetime}};
-	QMap<BufferType, size_t> data_size = {{sett, sizeof(settings)}, {theme, sizeof(afTheme)}, {time, sizeof(datetime)}};
+	QMap<BufferType, unsigned> transfer_size = {{sett, 1088}, {theme, 128}, {time, 64}, {monitor, 64}, {puff, 0}};
+	QMap<BufferType, uint8_t> read_cmd = {{sett, 0x60}, {theme, 0x90}, {monitor, 0x66}};
+	QMap<BufferType, uint8_t> write_cmd = {{sett, 0x61}, {theme, 0x91}, {time, 0x64}, {puff, 0x44}};
+	QMap<BufferType, void *> data_ptr = {{sett, &settings}, {theme, &afTheme}, {time, &datetime}, {monitor, &monitorData}};
+	QMap<BufferType, size_t> data_size = {
+		{sett, sizeof(settings)}, {theme, sizeof(afTheme)}, {time, sizeof(datetime)}, {monitor, sizeof(monitorData)}};
 
 	static constexpr unsigned theme_struct_size = 84;
 
 	Res readBuffer(BufferType);
-	Res writeBuffer(BufferType);
+	Res writeBuffer(BufferType, uint32_t arg1 = 0);
 
 	//	std::map<QString, QString> deviceStringMap = {
 	QMap<QString, QString> deviceStringMap = {

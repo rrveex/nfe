@@ -391,7 +391,7 @@ typedef struct __attribute__((packed)) {
 	uint16_t Resistance;	 // X * 1000
 	uint16_t RealResistance; // X * 1000
 
-	uint8_t BoardTemperature; // пересчитывается в зависимости от IsCelcius
+	uint8_t BoardTemperature; // recalculated depending on IsCelcius
 } sMonitoringData;
 
 // Write up to 64 bytes
@@ -463,4 +463,4 @@ typedef struct {
 	uint16_t Charge_Temp;
 	uint16_t Charge_Clock;
 } sColorTheme; // 84 bytes
-#endif // __AFDATA_H__
+#endif		   // __AFDATA_H__

@@ -37,6 +37,16 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="monitorBtn">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Monitor...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="themeBtn">
         <property name="text">
          <string>Theme...</string>

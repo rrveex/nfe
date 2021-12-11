@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include "monitor/monitordialog.h"
 #include "theme/themedialog.h"
 #include <QByteArray>
 #include <QDebug>
@@ -24,7 +25,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	controls = new Controls(ui, settings);
 	smartstat = new SmartStat(ui, settings);
 
+	qRegisterMetaType<sMonitoringData>("sMonitoringData");
+
 	device = new Device(settings, afTheme);
+	device->moveToThread(&workerThread);
+	workerThread.start();
+
 	connect(ui->readSettingsBtn, &QPushButton::clicked, device, &Device::readSettings);
 	connect(ui->writeSettingsBtn, &QPushButton::clicked, this, [this] {
 		ui->statusbar->showMessage("Writing...");
@@ -66,6 +72,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 		ui->tabWidget->setEnabled(false);
 		ui->readSettingsBtn->setEnabled(false);
 		ui->writeSettingsBtn->setEnabled(false);
+		ui->monitorBtn->setEnabled(false);
 	});
 	connect(device, &Device::readingSettings, this, [this]() { connectionLabel->setText("Reading settings from device..."); });
 
@@ -79,6 +86,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 		connect(device, &Device::doneWriteTheme, &diag, &ThemeDialog::onWriteTheme);
 		connect(device, &Device::deviceConnected, &diag, &ThemeDialog::onDeviceConnected);
 		connect(device, &Device::deviceDisconnected, &diag, &ThemeDialog::onDeviceDisconnected);
+		diag.exec();
+	});
+
+	connect(ui->monitorBtn, &QPushButton::clicked, this, [this] {
+		MonitorDialog diag(this, settings.DeviceInfo.NumberOfBatteries); // = new MonitorDialog(this);
+		connect(&diag, &MonitorDialog::doReadMonitorData, device, &Device::readMonitor);
+		connect(&diag, &MonitorDialog::doPuff, device, &Device::cmdPuff);
+		connect(device, &Device::doneReadMonitor, &diag, &MonitorDialog::onMonitorDataAvailable);
 		diag.exec();
 	});
 
@@ -116,6 +131,8 @@ void MainWindow::deviceSettingsAvailable() {
 	advanced->deviceSettingsAvailable();
 	controls->deviceSettingsAvailable();
 	smartstat->deviceSettingsAvailable();
+
+	ui->monitorBtn->setEnabled(true);
 }
 
 void MainWindow::onSaveConfig() {
@@ -148,5 +165,7 @@ void MainWindow::onLoadConfig() {
 }
 
 MainWindow::~MainWindow() {
+	workerThread.quit();
+	workerThread.wait();
 	delete ui;
 }

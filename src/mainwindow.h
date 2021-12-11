@@ -19,6 +19,7 @@
 #include <QLabel>
 #include <QMainWindow>
 #include <QPushButton>
+#include <QThread>
 #include <string>
 
 QT_BEGIN_NAMESPACE
@@ -51,6 +52,7 @@ class MainWindow : public QMainWindow {
 	QLabel *connectionLabel;
 
 	static constexpr int msg_duration = 5000;
+	QThread workerThread;
 
   private slots:
 	void deviceSettingsAvailable();

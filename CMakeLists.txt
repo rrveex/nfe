@@ -50,6 +50,13 @@ set(PROJECT_SOURCES
 	src/tfrdialog.h
 	src/tfrdialog.cpp
 	src/tfrdialog.ui
+
+	src/monitor/callout.h
+	src/monitor/callout.cpp
+	src/monitor/monitordialog.h
+	src/monitor/monitordialog.cpp
+	src/monitor/monitordialog.ui
+
 	src/theme/display.h
 	src/theme/display.cpp
 	src/theme/renderarea.h

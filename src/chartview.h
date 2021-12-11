@@ -1,6 +1,8 @@
 #ifndef CHARTVIEW_H
 #define CHARTVIEW_H
 
+#include "monitor/callout.h"
+
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QValueAxis>
@@ -14,10 +16,15 @@ class ChartView : public QChartView {
 	explicit ChartView(QChart *chart, QWidget *parent = nullptr);
 
   protected:
+	virtual void resizeEvent(QResizeEvent *event);
 	virtual void mouseMoveEvent(QMouseEvent *event);
 
   signals:
 	void mouseMoved(QMouseEvent *event);
+	void viewResized(QResizeEvent *event);
+
+  private:
+	QChart *m_chart;
 };
 
 extern bool near_point(QPointF a, QPointF b);
