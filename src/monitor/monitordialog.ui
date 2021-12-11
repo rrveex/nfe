@@ -575,11 +575,11 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0">
+         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0,0">
           <item>
            <widget class="QPushButton" name="puffBtn">
             <property name="text">
-             <string>Puff...</string>
+             <string>Puff</string>
             </property>
            </widget>
           </item>
@@ -590,6 +590,13 @@
             </property>
             <property name="maximum">
              <number>9</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>seconds</string>
             </property>
            </widget>
           </item>
