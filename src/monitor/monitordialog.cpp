@@ -1,8 +1,11 @@
 #include "monitordialog.h"
 #include "ui_monitordialog.h"
 #include <QComboBox>
+#include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QSettings>
+#include <QTime>
 
 Sensor::Sensor(QLabel *l, QCheckBox *cb, QColor c, qreal ymin, qreal ymax)
 	: label(l), check(cb), series(new QLineSeries), axy(new QValueAxis), color(c), val(0), ymin(ymin), ymax(ymax) {
@@ -20,6 +23,8 @@ Sensor::Sensor(QLabel *l, QCheckBox *cb, QColor c, qreal ymin, qreal ymax)
 	label->setStyleSheet(QString("QLabel { color: %1; }").arg(color.name()));
 	check->setStyleSheet(QString("QCheckBox { color: %1; }").arg(color.name()));
 	tooltip = nullptr;
+	QSettings conf("nfe");
+	check->setChecked(conf.value(QString("sensors/check/") + check->text(), true).toBool());
 }
 
 void Sensor::setValue(u_int32_t ts, qreal v) {
@@ -139,6 +144,14 @@ MonitorDialog::MonitorDialog(QWidget *parent, int numbat) : QDialog(parent), ui(
 	ui->vScrollBar->setMaximum(200);
 	ui->vScrollBar->setValue(100);
 
+	QSettings conf("nfe");
+	ui->xAxisCombo->setCurrentIndex(conf.value("sensors/x_axis_range", 1).toInt());
+	ui->yAxisCombo->setCurrentIndex(conf.value("sensors/y_axis_range", 4).toInt());
+	ui->puffSpin->setValue(conf.value("sensors/puff_duration", 1).toInt());
+	ui->showPuffsBoundCheck->setChecked(conf.value("sensors/puff_boundaries", false).toBool());
+	ui->showXAxisCheck->setChecked(conf.value("sensors/show_x_axis", false).toBool());
+	ui->showYAxisCheck->setChecked(conf.value("sensors/show_y_axis", false).toBool());
+
 	addHandlers();
 }
 
@@ -147,13 +160,8 @@ void MonitorDialog::addHandlers() {
 		running = !running;
 		ui->pauseBtn->setText(running ? "Pause" : "Resume");
 		if (running) {
-			qDebug() << "before: " << starttime;
-			//			starttime += pauseAt.msecsTo(QTime::currentTime()) / 10 - 10;
 			justResumed = true;
-			qDebug() << "after: " << starttime;
 			emit doReadMonitorData();
-		} else {
-			//			pauseAt = QTime::currentTime();
 		}
 	});
 
@@ -278,8 +286,13 @@ void MonitorDialog::addHandlers() {
 
 void MonitorDialog::onMonitorDataAvailable(bool ok, sMonitoringData data) {
 	if (!ok) {
-		qDebug() << "nok!";
+		qDebug() << "read monitor data nok!";
 		return;
+	}
+
+	if (data.Timestamp == 0) {
+		// workaround for stm32 not sending timestamp
+		data.Timestamp = QDateTime::currentMSecsSinceEpoch() / 10;
 	}
 
 	if (!starttime) {
@@ -366,6 +379,21 @@ void MonitorDialog::onMonitorDataAvailable(bool ok, sMonitoringData data) {
 void MonitorDialog::showEvent(QShowEvent *event) {
 	QDialog::showEvent(event);
 	emit doReadMonitorData();
+}
+
+void MonitorDialog::closeEvent(QCloseEvent *event) {
+	QSettings conf("nfe");
+	conf.setValue("sensors/x_axis_range", ui->xAxisCombo->currentIndex());
+	conf.setValue("sensors/y_axis_range", ui->yAxisCombo->currentIndex());
+	conf.setValue("sensors/puff_duration", ui->puffSpin->value());
+	conf.setValue("sensors/puff_boundaries", ui->showPuffsBoundCheck->isChecked());
+	conf.setValue("sensors/show_x_axis", ui->showXAxisCheck->isChecked());
+	conf.setValue("sensors/show_y_axis", ui->showYAxisCheck->isChecked());
+
+	for (auto &s : sensors) {
+		conf.setValue(QString("sensors/check/") + s.check->text(), s.check->isChecked());
+	}
+	event->accept();
 }
 
 MonitorDialog::~MonitorDialog() {

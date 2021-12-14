@@ -41,6 +41,7 @@ enum class SID
 };
 
 class Sensor {
+
   public:
 	Sensor(){};
 	Sensor(QLabel *l, QCheckBox *cb, QColor c, qreal ymin, qreal ymax);
@@ -54,6 +55,9 @@ class Sensor {
 	qreal ymin, ymax;
 	void setValue(u_int32_t ts, qreal v);
 	void setFahrenheit() { axy->setRange(axy->min() * 9 / 5 + 32, axy->max() * 9 / 5 + 32); }
+
+	//  private:
+	//	QSettings conf;
 };
 
 class MonitorDialog : public QDialog {
@@ -71,6 +75,7 @@ class MonitorDialog : public QDialog {
 
   protected:
 	virtual void showEvent(QShowEvent *event) override;
+	virtual void closeEvent(QCloseEvent *event) override;
 
   private:
 	Ui::MonitorDialog *ui;
