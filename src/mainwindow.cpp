@@ -35,8 +35,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	connect(ui->writeSettingsBtn, &QPushButton::clicked, this, [this] {
 		ui->statusbar->showMessage("Writing...");
 		qApp->processEvents();
-		device->writeSettings();
 	});
+	connect(ui->writeSettingsBtn, &QPushButton::clicked, device, &Device::writeSettings);
+
 	connect(device, &Device::doneWriteSettings, this, [this](bool, QString msg) { ui->statusbar->showMessage(msg, msg_duration); });
 	connect(device, &Device::doneReadSettings, this, [this](bool ok, QString msg) {
 		if (ok) {
