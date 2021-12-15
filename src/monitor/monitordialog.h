@@ -110,7 +110,8 @@ class MonitorDialog : public QDialog {
 
 	QFile recordFile;
 
-	//	dSettings &settings;
+  private slots:
+	void onVScroll(int, bool first = false);
 };
 
 #endif // MONITORDIALOG_H

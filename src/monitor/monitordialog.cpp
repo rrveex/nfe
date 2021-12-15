@@ -145,17 +145,18 @@ MonitorDialog::MonitorDialog(QWidget *parent, int numbat) : QDialog(parent), ui(
 
 	ui->vScrollBar->setMinimum(0);
 	ui->vScrollBar->setMaximum(200);
-	ui->vScrollBar->setValue(100);
 
 	QSettings conf("nfe");
 	ui->xAxisCombo->setCurrentIndex(conf.value("sensors/x_axis_range", 1).toInt());
 	ui->yAxisCombo->setCurrentIndex(conf.value("sensors/y_axis_range", 4).toInt());
 	ui->puffSpin->setValue(conf.value("sensors/puff_duration", 1).toInt());
 	ui->showPuffsBoundCheck->setChecked(conf.value("sensors/puff_boundaries", false).toBool());
-	ui->showXAxisCheck->setChecked(conf.value("sensors/show_x_axis", false).toBool());
-	ui->showYAxisCheck->setChecked(conf.value("sensors/show_y_axis", false).toBool());
+	ui->vScrollBar->setValue(conf.value("sensors/v_scroll", 100).toInt());
+	onVScroll(ui->vScrollBar->value(), true);
 
 	addHandlers();
+	ui->showXAxisCheck->setChecked(conf.value("sensors/show_x_axis", false).toBool());
+	ui->showYAxisCheck->setChecked(conf.value("sensors/show_y_axis", false).toBool());
 }
 
 void MonitorDialog::addHandlers() {
@@ -244,19 +245,8 @@ void MonitorDialog::addHandlers() {
 		ui->vScrollBar->setValue(100);
 	});
 
-	connect(ui->vScrollBar, &QAbstractSlider::valueChanged, this, [this](int val) {
-		for (auto &s : sensors) {
-			qreal mid = (s.ymin + s.ymax) / 2;
-			qreal scrollPerc = ((qreal)val - 100) / 100;
-			mid *= scrollPerc;
-			s.axy->setRange(s.ymin - mid, s.ymax - mid);
-		}
-		const auto callouts = m_callouts;
-		for (Callout *callout : callouts)
-			callout->updateGeometry();
-		for (auto &s : sensors)
-			s.tooltip->updateGeometry();
-	});
+	//	connect(ui->vScrollBar, &QAbstractSlider::valueChanged, this, &MonitorDialog::onVScroll);
+	connect(ui->vScrollBar, &QAbstractSlider::valueChanged, this, [this](int val) { onVScroll(val, false); });
 
 	connect(ui->recordBtn, &QPushButton::clicked, this, [this]() {
 		if (recordFile.isOpen()) {
@@ -288,6 +278,21 @@ void MonitorDialog::addHandlers() {
 		stream << "BatteryPack,Power,PowerSet,Temperature,TemperatureSet,OutputCurrent,"
 				  "OutputVolts,Resistance,RealResistance,BoardTemperature\n";
 	});
+}
+void MonitorDialog::onVScroll(int val, bool first) {
+
+	for (auto &s : sensors) {
+		qreal mid = (s.ymin + s.ymax) / 2;
+		qreal scrollPerc = ((qreal)val - 100) / 100;
+		mid *= scrollPerc;
+		s.axy->setRange(s.ymin - mid, s.ymax - mid);
+	}
+	const auto callouts = m_callouts;
+	for (Callout *callout : callouts)
+		callout->updateGeometry();
+	if (first) return;
+	for (auto &s : sensors)
+		s.tooltip->updateGeometry();
 }
 
 void MonitorDialog::onMonitorDataAvailable(bool ok, sMonitoringData data) {
@@ -395,6 +400,7 @@ void MonitorDialog::closeEvent(QCloseEvent *event) {
 	conf.setValue("sensors/puff_boundaries", ui->showPuffsBoundCheck->isChecked());
 	conf.setValue("sensors/show_x_axis", ui->showXAxisCheck->isChecked());
 	conf.setValue("sensors/show_y_axis", ui->showYAxisCheck->isChecked());
+	conf.setValue("sensors/v_scroll", ui->vScrollBar->value());
 
 	for (auto &s : sensors) {
 		conf.setValue(QString("sensors/check/") + s.check->text(), s.check->isChecked());
