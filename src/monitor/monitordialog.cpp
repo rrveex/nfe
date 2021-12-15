@@ -24,7 +24,9 @@ Sensor::Sensor(QLabel *l, QCheckBox *cb, QColor c, qreal ymin, qreal ymax)
 	check->setStyleSheet(QString("QCheckBox { color: %1; }").arg(color.name()));
 	tooltip = nullptr;
 	QSettings conf("nfe");
-	check->setChecked(conf.value(QString("sensors/check/") + check->text(), true).toBool());
+	bool show = conf.value(QString("sensors/check/") + check->text(), true).toBool();
+	check->setChecked(show);
+	series->setVisible(show);
 }
 
 void Sensor::setValue(u_int32_t ts, qreal v) {
@@ -36,6 +38,7 @@ void Sensor::setValue(u_int32_t ts, qreal v) {
 	QString sval = QString("%1").arg(v, 0, 'f', precision, '0');
 
 	label->setText(sval);
+	if (!check->isChecked()) return;
 
 	series->append(ts, v);
 
@@ -211,7 +214,10 @@ void MonitorDialog::addHandlers() {
 			m_callouts.append(m_tooltip);
 			m_tooltip = new Callout(chart, s.series, s.color);
 		});
-		connect(s.check, &QCheckBox::stateChanged, this, [s](int state) { s.series->setVisible(state == Qt::Checked); });
+		connect(s.check, &QCheckBox::stateChanged, this, [s](int state) {
+			s.series->setVisible(state == Qt::Checked);
+			s.tooltip->setVisible(state == Qt::Checked);
+		});
 	}
 
 	connect(chartView, &ChartView::viewResized, this, [this]() {
