@@ -101,6 +101,7 @@ void Callout::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 }
 
 void Callout::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+	hide();
 	event->setAccepted(true);
 }
 
