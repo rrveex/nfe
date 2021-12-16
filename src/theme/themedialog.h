@@ -31,7 +31,7 @@ class ThemeDialog : public QDialog {
 	explicit ThemeDialog(QWidget *parent, sColorTheme &afTheme);
 	~ThemeDialog();
   public slots:
-	void onReadTheme(bool ok, QString msg);
+	void onThemeWritten(bool ok, QString msg);
 	void onWriteTheme(bool ok, QString msg);
 	void onDeviceConnected();
 	void onDeviceDisconnected();

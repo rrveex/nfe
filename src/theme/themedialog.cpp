@@ -42,7 +42,11 @@ void ThemeDialog::addHandlers() {
 	connect(ui->pageCombo, cbChanged, this, &ThemeDialog::onPageCombo);
 	connect(ui->lv->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ThemeDialog::onLvSelection);
 	connect(ui->readBtn, &QPushButton::clicked, this, [this]() { emit doReadTheme(); });
-	connect(ui->writeBtn, &QPushButton::clicked, this, [this]() { emit doWriteTheme(); });
+	connect(ui->writeBtn, &QPushButton::clicked, this, [this]() {
+		ui->statusLabel->setText("Writing...");
+		qApp->processEvents();
+		emit doWriteTheme();
+	});
 	connect(ui->exportBtn, &QPushButton::clicked, this, &ThemeDialog::exportConfig);
 	connect(ui->importBtn, &QPushButton::clicked, this, &ThemeDialog::importConfig);
 	connect(ui->colorBtn, &QPushButton::clicked, this, &ThemeDialog::onChooseColor);
@@ -64,7 +68,6 @@ void ThemeDialog::onChooseColor() {
 	display.dispItems[page][listIdx].setColor(color);
 
 	// make new icon
-	QVariant qv = QVariant(color);
 	QIcon icon = QIcon(IconEngine::instance(color));
 
 	// set button
@@ -90,7 +93,7 @@ void ThemeDialog::onLvSelection(const QItemSelection &selected, const QItemSelec
 	ui->colorBtn->setText(display.dispItems[page][listIdx].hex + " " + hex);
 }
 
-void ThemeDialog::onReadTheme(bool ok, QString msg) {
+void ThemeDialog::onThemeWritten(bool ok, QString msg) {
 	if (ok) {
 		ui->statusLabel->setText("Read theme OK.");
 		display.populateItems();
@@ -167,6 +170,6 @@ void ThemeDialog::importConfig() {
 
 	int res = f.read((char *)&afTheme, sizeof(afTheme));
 	if (res == sizeof(afTheme)) {
-		onReadTheme(true, "");
+		onThemeWritten(true, "");
 	}
 }

@@ -83,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 		ThemeDialog diag(this, afTheme);
 		connect(&diag, &ThemeDialog::doReadTheme, device, &Device::readTheme);
 		connect(&diag, &ThemeDialog::doWriteTheme, device, &Device::writeTheme);
-		connect(device, &Device::doneReadTheme, &diag, &ThemeDialog::onReadTheme);
+		connect(device, &Device::doneReadTheme, &diag, &ThemeDialog::onThemeWritten);
 		connect(device, &Device::doneWriteTheme, &diag, &ThemeDialog::onWriteTheme);
 		connect(device, &Device::deviceConnected, &diag, &ThemeDialog::onDeviceConnected);
 		connect(device, &Device::deviceDisconnected, &diag, &ThemeDialog::onDeviceDisconnected);
