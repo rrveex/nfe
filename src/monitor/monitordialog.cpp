@@ -151,10 +151,9 @@ MonitorDialog::MonitorDialog(QWidget *parent, int numbat) : QDialog(parent), ui(
 	ui->yAxisCombo->setCurrentIndex(conf.value("sensors/y_axis_range", 4).toInt());
 	ui->puffSpin->setValue(conf.value("sensors/puff_duration", 1).toInt());
 	ui->showPuffsBoundCheck->setChecked(conf.value("sensors/puff_boundaries", false).toBool());
-	ui->vScrollBar->setValue(conf.value("sensors/v_scroll", 100).toInt());
-	onVScroll(ui->vScrollBar->value(), true);
 
 	addHandlers();
+	ui->vScrollBar->setValue(conf.value("sensors/v_scroll", 100).toInt());
 	ui->showXAxisCheck->setChecked(conf.value("sensors/show_x_axis", false).toBool());
 	ui->showYAxisCheck->setChecked(conf.value("sensors/show_y_axis", false).toBool());
 }
@@ -234,19 +233,8 @@ void MonitorDialog::addHandlers() {
 	});
 	connect(ui->puffBtn, &QPushButton::clicked, this, [this]() { emit doPuff(ui->puffSpin->value()); });
 
-	connect(ui->yAxisCombo, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, [this](int idx) {
-		qreal factor = ui->yAxisCombo->itemData(idx).toDouble();
-		for (auto &s : sensors) {
-			qreal mid = (s.ymin + s.ymax) / 2;
-			qreal half = (s.ymax - s.ymin) / 2;
-			half *= factor;
-			s.axy->setRange(mid - half, mid + half);
-		}
-		ui->vScrollBar->setValue(100);
-	});
-
-	//	connect(ui->vScrollBar, &QAbstractSlider::valueChanged, this, &MonitorDialog::onVScroll);
-	connect(ui->vScrollBar, &QAbstractSlider::valueChanged, this, [this](int val) { onVScroll(val, false); });
+	connect(ui->yAxisCombo, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &MonitorDialog::updateY);
+	connect(ui->vScrollBar, &QAbstractSlider::valueChanged, this, &MonitorDialog::updateY);
 
 	connect(ui->recordBtn, &QPushButton::clicked, this, [this]() {
 		if (recordFile.isOpen()) {
@@ -279,18 +267,19 @@ void MonitorDialog::addHandlers() {
 				  "OutputVolts,Resistance,RealResistance,BoardTemperature\n";
 	});
 }
-void MonitorDialog::onVScroll(int val, bool first) {
 
+void MonitorDialog::updateY(int) {
+	int scroll = ui->vScrollBar->value();
+	qreal zoom = ui->yAxisCombo->currentData().toDouble();
 	for (auto &s : sensors) {
-		qreal mid = (s.ymin + s.ymax) / 2;
-		qreal scrollPerc = ((qreal)val - 100) / 100;
-		mid *= scrollPerc;
-		s.axy->setRange(s.ymin - mid, s.ymax - mid);
+		qreal interval = s.ymax - s.ymin;
+		qreal scrollPerc = ((qreal)scroll - 100) / 100; // -1 .. 1
+		qreal move = interval * scrollPerc;
+		s.axy->setRange(s.ymin * zoom - move, s.ymax * zoom - move);
 	}
 	const auto callouts = m_callouts;
 	for (Callout *callout : callouts)
 		callout->updateGeometry();
-	if (first) return;
 	for (auto &s : sensors)
 		s.tooltip->updateGeometry();
 }

@@ -87,7 +87,6 @@ class MonitorDialog : public QDialog {
 
 	bool running = true;
 
-	void addHandlers();
 	int i = 0;
 	QValueAxis *axisX;
 	int xrange;
@@ -99,8 +98,6 @@ class MonitorDialog : public QDialog {
 	Callout *m_tooltip = nullptr;
 	QList<Callout *> m_callouts;
 
-	//	QTime pauseAt;
-
 	QXYSeries *barSeries;
 	QValueAxis *barAxy;
 
@@ -109,9 +106,9 @@ class MonitorDialog : public QDialog {
 	bool justResumed = false;
 
 	QFile recordFile;
-
+	void addHandlers();
   private slots:
-	void onVScroll(int, bool first = false);
+	void updateY(int);
 };
 
 #endif // MONITORDIALOG_H
