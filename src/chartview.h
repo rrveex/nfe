@@ -16,12 +16,14 @@ class ChartView : public QChartView {
 	explicit ChartView(QChart *chart, QWidget *parent = nullptr);
 
   protected:
-	virtual void resizeEvent(QResizeEvent *event);
-	virtual void mouseMoveEvent(QMouseEvent *event);
+	virtual void resizeEvent(QResizeEvent *event) override;
+	virtual void mouseMoveEvent(QMouseEvent *event) override;
+	virtual void wheelEvent(QWheelEvent *event) override;
 
   signals:
 	void mouseMoved(QMouseEvent *event);
 	void viewResized(QResizeEvent *event);
+	void wheeled(int degrees);
 
   private:
 	QChart *m_chart;

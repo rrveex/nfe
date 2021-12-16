@@ -14,6 +14,10 @@ void ChartView::mouseMoveEvent(QMouseEvent *event) {
 
 	QChartView::mouseMoveEvent(event);
 }
+void ChartView::wheelEvent(QWheelEvent *event) {
+	emit wheeled((event->angleDelta() / 8).y());
+	event->accept();
+}
 
 bool near_point(QPointF a, QPointF b) {
 	constexpr qreal ex = 0.1;

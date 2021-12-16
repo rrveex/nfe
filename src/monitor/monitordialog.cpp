@@ -159,6 +159,8 @@ MonitorDialog::MonitorDialog(QWidget *parent, int numbat) : QDialog(parent), ui(
 }
 
 void MonitorDialog::addHandlers() {
+	connect(chartView, &ChartView::wheeled, this, [this](int angle) { ui->vScrollBar->setValue(ui->vScrollBar->value() - angle); });
+
 	connect(ui->pauseBtn, &QPushButton::clicked, this, [this]() {
 		running = !running;
 		ui->pauseBtn->setText(running ? "Pause" : "Resume");
