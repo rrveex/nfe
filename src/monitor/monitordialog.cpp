@@ -58,9 +58,6 @@ MonitorDialog::MonitorDialog(QWidget *parent, int numbat) : QDialog(parent), ui(
 
 	sensors = {
 		{SID::Battery1, {ui->batt1Label, ui->batt1Check, Qt::darkGray, 2, 5}},
-		{SID::Battery2, {ui->batt2Label, ui->batt2Check, Qt::gray, 2, 5}},
-		{SID::Battery3, {ui->batt3Label, ui->batt3Check, Qt::darkGray, 2, 5}},
-		{SID::Battery4, {ui->batt4Label, ui->batt4Check, Qt::gray, 2, 5}},
 		{SID::BatteryPack, {ui->battPackLabel, ui->battPackCheck, Qt::black, 3, 20}},
 		{SID::Power, {ui->powerLabel, ui->powerCheck, Qt::green, 10, 300}},
 		{SID::PowerSet, {ui->powerSetLabel, ui->powerSetCheck, Qt::darkGreen, 10, 300}},
@@ -73,20 +70,26 @@ MonitorDialog::MonitorDialog(QWidget *parent, int numbat) : QDialog(parent), ui(
 		{SID::BoardTemperature, {ui->boardTempLabel, ui->boardTempCheck, Qt::darkYellow, 0, 50}},
 	};
 
-	if (numbat < 4) {
-		ui->batt4Check->hide();
-		ui->batt4Label->hide();
-		ui->batt4UnitLabel->hide();
+	if (numbat < 2) {
+		ui->batt2Check->hide();
+		ui->batt2Label->hide();
+		ui->batt2UnitLabel->hide();
+	} else {
+		sensors[SID::Battery2] = {ui->batt2Label, ui->batt2Check, Qt::gray, 2, 5};
 	}
 	if (numbat < 3) {
 		ui->batt3Check->hide();
 		ui->batt3Label->hide();
 		ui->batt3UnitLabel->hide();
+	} else {
+		sensors[SID::Battery3] = {ui->batt3Label, ui->batt3Check, Qt::darkGray, 2, 5};
 	}
-	if (numbat < 2) {
-		ui->batt2Check->hide();
-		ui->batt2Label->hide();
-		ui->batt2UnitLabel->hide();
+	if (numbat < 4) {
+		ui->batt4Check->hide();
+		ui->batt4Label->hide();
+		ui->batt4UnitLabel->hide();
+	} else {
+		sensors[SID::Battery4] = {ui->batt4Label, ui->batt4Check, Qt::gray, 2, 5};
 	}
 
 	chart->legend()->hide();
