@@ -1,5 +1,5 @@
 #include "smartstat.h"
-#include "./ui_mainwindow.h"
+#include "ui_mainwindow.h"
 #include "mainwindow.h"
 
 SmartStat::SmartStat(Ui::MainWindow *ui, dSettings &Settings) : ui(ui), Settings(Settings) {
@@ -35,9 +35,7 @@ void SmartStat::addHandlers() {
 	connect(ui->statsPuffCountSpin, sbChanged, this, [this](int val) { Settings.Counters.PuffsCount = val; });
 
 	// Total Puffs Count
-	connect(ui->screenPuffDelay, dsbChanged, this, [this](double val) {
-		Settings.Counters.PuffsTime = (uint32_t)(val * 10);
-	});
+	connect(ui->screenPuffDelay, dsbChanged, this, [this](double val) { Settings.Counters.PuffsTime = (uint32_t)(val * 10); });
 
 	// Puffs Time Format
 	connect(ui->statsPuffFormatCombo, cbChanged, this, [this](int index) { Settings.UI.PuffsTimeFormat = index; });

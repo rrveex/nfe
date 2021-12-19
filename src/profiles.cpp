@@ -1,5 +1,5 @@
 #include "profiles.h"
-#include "./ui_mainwindow.h"
+#include "ui_mainwindow.h"
 #include "mainwindow.h"
 #include "powercurvedialog.h"
 #include "tfrdialog.h"

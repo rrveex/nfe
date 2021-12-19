@@ -1,7 +1,7 @@
 #include "mainwindow.h"
-#include "./ui_mainwindow.h"
 #include "monitor/monitordialog.h"
 #include "theme/themedialog.h"
+#include "ui_mainwindow.h"
 #include <QByteArray>
 #include <QDebug>
 #include <QFileDialog>
@@ -114,8 +114,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	ui->tabWidget_screen->setCurrentIndex(0);
 	ui->tabWidget_3->setCurrentIndex(0);
 	ui->tabWidget_4->setCurrentIndex(0);
+#ifdef AF
 	ui->tabWidget_layout->setCurrentIndex(1);
-
+#endif
 	ui->tabWidget->setEnabled(false);
 	ui->readSettingsBtn->setEnabled(false);
 	ui->writeSettingsBtn->setEnabled(false);

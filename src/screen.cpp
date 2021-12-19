@@ -1,6 +1,6 @@
 #include "screen.h"
-#include "./ui_mainwindow.h"
 #include "mainwindow.h"
+#include "ui_mainwindow.h"
 #include <QMessageBox>
 
 Screen::Screen(Ui::MainWindow *ui, dSettings &Settings) : ui(ui), settings(Settings) {
@@ -69,11 +69,9 @@ void Screen::cb2l(int state, uint8_t &line) {
 }
 
 void Screen::deviceSettingsAvailable() {
-// Settings tab
+	// Settings tab
 #ifdef AF
 	ui->screenBrightnessSlider->setValue(settings.UI.Brightness);
-#else
-	ui->screenBrightnessSlider->setEnabled(false);
 #endif
 	ui->screenIdleSpin->setValue(settings.UI.DimTimeout);
 	ui->screenIdleLockedSpin->setValue(settings.UI.DimTimeoutLocked);
@@ -108,30 +106,15 @@ void Screen::deviceSettingsAvailable() {
 	ui->screenFoxyTC3Combo->setCurrentIndex(l2idx(settings.UI.VWLayoutNew.Line3));
 	ui->screenFoxyTC3Check->setChecked(settings.UI.TCLayoutNew.Line3 & IL_FIRE_MSK);
 #else
-	ui->screenSkinCombo->setEnabled(false);
-	ui->screenShowLogoCheck->setEnabled(false);
-	ui->screenLogoDelaySpin->setEnabled(false);
-	ui->screenShowClockCheck->setEnabled(false);
-	ui->screenClockDelaySpin->setEnabled(false);
-	ui->screenClockTypeCombo->setEnabled(false);
-	ui->screenChargeScreenCombo->setEnabled(false);
-	ui->screenChargeExtraCombo->setEnabled(false);
-	ui->screenSaverTimeSpin->setEnabled(false);
-
-	// Layout tab
-	ui->screenFoxyVW1Combo->setEnabled(false);
-	ui->screenFoxyVW1Check->setEnabled(false);
-	ui->screenFoxyVW2Combo->setEnabled(false);
-	ui->screenFoxyVW2Check->setEnabled(false);
-	ui->screenFoxyVW3Combo->setEnabled(false);
-	ui->screenFoxyVW3Check->setEnabled(false);
-
-	ui->screenFoxyTC1Combo->setEnabled(false);
-	ui->screenFoxyTC1Check->setEnabled(false);
-	ui->screenFoxyTC2Combo->setEnabled(false);
-	ui->screenFoxyTC2Check->setEnabled(false);
-	ui->screenFoxyTC3Combo->setEnabled(false);
-	ui->screenFoxyTC3Check->setEnabled(false);
+	ui->screenVWL1Combo->setCurrentIndex(settings.UI.VWLayout.Line1 - 49);
+	ui->screenVWL2Combo->setCurrentIndex(settings.UI.VWLayout.Line2 - 49);
+	ui->screenVWL3Combo->setCurrentIndex(settings.UI.VWLayout.Line3 - 49);
+	ui->screenVWL4Combo->setCurrentIndex(settings.UI.VWLayout.Line4 - 49);
+	ui->screenTCL1Combo->setCurrentIndex(settings.UI.TCLayout.Line1 - 49);
+	ui->screenTCL2Combo->setCurrentIndex(settings.UI.TCLayout.Line2 - 49);
+	ui->screenTCL3Combo->setCurrentIndex(settings.UI.TCLayout.Line3 - 49);
+	ui->screenTCL4Combo->setCurrentIndex(settings.UI.TCLayout.Line4 - 49);
+	ui->screenPuffTimerLocCombo->setCurrentIndex(settings.UI.PuffTimePos);
 #endif
 
 	// Stealth
@@ -218,6 +201,15 @@ void Screen::addHandlers() {
 	connect(ui->screenFoxyTC2Check, &QCheckBox::stateChanged, this, [this](int state) { cb2l(state, settings.UI.TCLayoutNew.Line2); });
 	connect(ui->screenFoxyTC3Combo, cbChanged, this, [this](int index) { idx2l(index, settings.UI.TCLayoutNew.Line3); });
 	connect(ui->screenFoxyTC3Check, &QCheckBox::stateChanged, this, [this](int state) { cb2l(state, settings.UI.TCLayoutNew.Line3); });
+#else
+	connect(ui->screenVWL1Combo, cbChanged, this, [this](int index) { settings.UI.VWLayout.Line1 = index + 49; });
+	connect(ui->screenVWL2Combo, cbChanged, this, [this](int index) { settings.UI.VWLayout.Line2 = index + 49; });
+	connect(ui->screenVWL3Combo, cbChanged, this, [this](int index) { settings.UI.VWLayout.Line3 = index + 49; });
+	connect(ui->screenVWL4Combo, cbChanged, this, [this](int index) { settings.UI.VWLayout.Line4 = index + 49; });
+	connect(ui->screenTCL1Combo, cbChanged, this, [this](int index) { settings.UI.TCLayout.Line1 = index + 49; });
+	connect(ui->screenTCL2Combo, cbChanged, this, [this](int index) { settings.UI.TCLayout.Line2 = index + 49; });
+	connect(ui->screenTCL3Combo, cbChanged, this, [this](int index) { settings.UI.TCLayout.Line3 = index + 49; });
+	connect(ui->screenTCL4Combo, cbChanged, this, [this](int index) { settings.UI.TCLayout.Line4 = index + 49; });
 #endif
 	// Stealth
 	connect(ui->screenStealthModeCheck, &QCheckBox::stateChanged, this, [this](int state) {

@@ -1,8 +1,8 @@
 #include "advanced.h"
-#include "./ui_mainwindow.h"
 #include "mainwindow.h"
 #include "powercurvedialog.h"
 #include "tfrdialog.h"
+#include "ui_mainwindow.h"
 #include <QDebug>
 #include <cstring>
 
@@ -17,17 +17,23 @@ void Advanced::deviceSettingsAvailable() {
 	ui->advPowerLimitSpin->setValue(settings.Advanced.PowerLimit / 10);
 	// Puff Cut-Off
 	ui->advPuffCutoffSpin->setValue(settings.Advanced.PuffCutOff / 10);
+#ifdef RP
+	// Puff Cut-Off Action
+	ui->advPuffCutoffActionCombo->setCurrentIndex(settings.Advanced.CutOffAction);
+#endif
 	// Shunt Correction
 	ui->advShuntCorrectionSpin->setValue(settings.Advanced.ShuntCorrection);
 	// Internal Resistance
 	ui->advInternalResistanceSpin->setValue(settings.Advanced.InternalRes / 1000);
+#ifdef RP
+	// Power Bank Add. Voltage
+	ui->advPowerBankAddVoltSpin->setValue((double)settings.Advanced.PowerBankOffset / 100);
+#endif
 	// Battery Model
 	ui->advBatteryModelCombo->setCurrentIndex(settings.Advanced.BatteryModel);
 #ifdef AF
 	// RTC Mode
 	ui->advRTCModeCombo->setCurrentIndex(settings.Advanced.RTCMode);
-#else
-	ui->advRTCModeCombo->setEnabled(false);
 #endif
 	// RCOBC
 	ui->advRCOBCCheck->setChecked(settings.Advanced.ResetCountersOnStartup);
@@ -100,14 +106,21 @@ void Advanced::addHandlers() {
 
 	// Puff Cut-Off
 	connect(ui->advPuffCutoffSpin, sbChanged, this, [this](int val) { settings.Advanced.PuffCutOff = (uint16_t)(val * 10); });
-
+#ifdef RP
+	// Puff Cut-Off Action
+	connect(ui->advPuffCutoffActionCombo, cbChanged, this, [this](int index) { settings.Advanced.CutOffAction = index; });
+#endif
 	// Shunt Correction
 	connect(ui->advShuntCorrectionSpin, sbChanged, this, [this](int val) { settings.Advanced.ShuntCorrection = (uint16_t)(val * 10); });
 
 	// Internal Resistance
 	connect(
 		ui->advInternalResistanceSpin, dsbChanged, this, [this](double val) { settings.Advanced.InternalRes = (uint16_t)(val * 1000); });
-
+#ifdef RP
+	// Power Bank Add. Voltage
+	connect(
+		ui->advPowerBankAddVoltSpin, dsbChanged, this, [this](double val) { settings.Advanced.PowerBankOffset = (uint16_t)(val * 100); });
+#endif
 	// Battery Model
 	connect(ui->advBatteryModelCombo, cbChanged, this, [this](int index) { settings.Advanced.BatteryModel = index; });
 #ifdef AF
