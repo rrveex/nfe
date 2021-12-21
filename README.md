@@ -1,6 +1,8 @@
 # NFE (ArcticFox Configuration)
 
 ![](res/nfe_ss.png)
+![](res/nfe_dm_ss.png)
+![](res/nfe_theme_ss.png)
 
 This is an **UNOFFICIAL** configuration utility for devices running the ArtixFox and RedPanda (not yet complete) **FW version >= 190602**
 
@@ -44,7 +46,7 @@ mkdir build && cd build
 cmake ..
 make -j
 ```
-That's it. You should have the `af` (for devices running ArcticFox) and `rp` (for RedPanda) executables, which you can put anywhere.
+That's it. You only need the generated `nfe` executable (will autodetect ArcticFox/RedPanda).
 
 ## Copyright
 I got the logo picture from here: https://github.com/TBXin/NFirmwareEditor/blob/master/src/NToolbox/Resources/arcticfox_logo.png

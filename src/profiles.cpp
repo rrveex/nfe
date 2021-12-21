@@ -72,7 +72,8 @@ void Profiles::onProfileSelected() {
 
 	currentProfileId = ui->profilesButtonGroup->checkedId();
 	// profile enabled
-	ui->profileEnabledCheck->setChecked(settings.General.Profiles[currentProfileId].Flags.enabled);
+	ui->profileEnabledCheck->setChecked(
+		settings.General.Profiles[currentProfileId].Flags.enabled || currentProfileId == settings.General.ActiveProfile);
 	ui->profileEnabledCheck->setEnabled(currentProfileId != settings.General.ActiveProfile);
 	char s[9];
 	memset(s, 0, 9);

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(nfe VERSION 0.2 LANGUAGES CXX)
+project(nfe VERSION 0.3 LANGUAGES CXX)
 
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Release" CACHE STRING	"Default build type: Release" FORCE)
