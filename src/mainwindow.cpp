@@ -19,15 +19,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	QFontDatabase::addApplicationFont(":/res/fontawesome-5.otf");
 
 	// instantiate all other ui classes
-	profiles = new Profiles(this, ui, settings);
-	screen = new Screen(ui, settings);
-	advanced = new Advanced(this, ui, settings);
-	controls = new Controls(ui, settings);
-	smartstat = new SmartStat(ui, settings);
+	profiles = new Profiles(this, ui);
+	screen = new Screen(ui);
+	advanced = new Advanced(this, ui);
+	controls = new Controls(ui);
+	smartstat = new SmartStat(ui);
 
 	qRegisterMetaType<sMonitoringData>("sMonitoringData");
 
-	device = new Device(settings, afTheme);
+	device = new Device();
 	device->moveToThread(&workerThread);
 	workerThread.start();
 
@@ -36,6 +36,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 		ui->statusbar->showMessage("Writing...");
 		qApp->processEvents();
 	});
+	connect(ui->resetDefaultsBtn, &QPushButton::clicked, this, [this] {
+		QMessageBox msgBox;
+		msgBox.setText("Restore device to default settings?");
+		msgBox.setInformativeText("Settings/theme will be lost.\nDon't forget to backup!");
+		msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+		msgBox.setDefaultButton(QMessageBox::Ok);
+		connect(msgBox.defaultButton(), &QPushButton::clicked, device, &Device::cmdResetDefaults);
+		msgBox.exec();
+	});
+
 	connect(ui->writeSettingsBtn, &QPushButton::clicked, device, &Device::writeSettings);
 
 	connect(device, &Device::doneWriteSettings, this, [this](bool, QString msg) { ui->statusbar->showMessage(msg, msg_duration); });
@@ -48,24 +58,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 			ui->writeSettingsBtn->setEnabled(true);
 			ui->readSettingsBtn->setEnabled(true);
+			ui->resetDefaultsBtn->setEnabled(true);
 
 			deviceSettingsAvailable();
 			ui->statusbar->showMessage(msg, msg_duration);
 		} else {
-			if (msg == "OTHER") {
-				// try to start the other af/rp executable instead
-#ifdef AF
-				QString prog = QDir(QCoreApplication::applicationDirPath()).filePath("rp");
-#else
-				QString prog = QDir(QCoreApplication::applicationDirPath()).filePath("af");
-#endif
-				if (!QProcess::startDetached(prog, QStringList())) {
-					QMessageBox::critical(0, "Fail", "Failed to start \n" + prog);
-				}
-				QApplication::instance()->quit();
-			} else {
-				connectionLabel->setText(msg);
-			}
+			connectionLabel->setText(msg);
 		}
 	});
 	connect(device, &Device::deviceDisconnected, this, [this] {
@@ -74,13 +72,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 		ui->readSettingsBtn->setEnabled(false);
 		ui->writeSettingsBtn->setEnabled(false);
 		ui->monitorBtn->setEnabled(false);
+		ui->resetDefaultsBtn->setEnabled(false);
 	});
 	connect(device, &Device::readingSettings, this, [this]() { connectionLabel->setText("Reading settings from device..."); });
 
 	connect(ui->configLoadBtn, &QPushButton::clicked, this, &MainWindow::onLoadConfig);
 	connect(ui->configSaveBtn, &QPushButton::clicked, this, &MainWindow::onSaveConfig);
 	connect(ui->themeBtn, &QPushButton::clicked, this, [this] {
-		ThemeDialog diag(this, afTheme);
+		ThemeDialog diag(this);
 		connect(&diag, &ThemeDialog::doReadTheme, device, &Device::readTheme);
 		connect(&diag, &ThemeDialog::doWriteTheme, device, &Device::writeTheme);
 		connect(device, &Device::doneReadTheme, &diag, &ThemeDialog::onThemeWritten);
@@ -91,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	});
 
 	connect(ui->monitorBtn, &QPushButton::clicked, this, [this] {
-		MonitorDialog diag(this, settings.DeviceInfo.NumberOfBatteries); // = new MonitorDialog(this);
+		MonitorDialog diag(this, Settings::instance().DeviceInfo.NumberOfBatteries); // = new MonitorDialog(this);
 		connect(&diag, &MonitorDialog::doReadMonitorData, device, &Device::readMonitor);
 		connect(&diag, &MonitorDialog::doPuff, device, &Device::cmdPuff);
 		connect(device, &Device::doneReadMonitor, &diag, &MonitorDialog::onMonitorDataAvailable);
@@ -111,22 +110,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	ui->statusbar->addPermanentWidget(connectionLabel);
 
 	ui->tabWidget->setCurrentIndex(0);
-	ui->tabWidget_screen->setCurrentIndex(0);
+	ui->screenTabWidget->setCurrentIndex(0);
 	ui->tabWidget_3->setCurrentIndex(0);
 	ui->tabWidget_4->setCurrentIndex(0);
-#ifdef AF
 	ui->tabWidget_layout->setCurrentIndex(1);
-#endif
 	ui->tabWidget->setEnabled(false);
 	ui->readSettingsBtn->setEnabled(false);
 	ui->writeSettingsBtn->setEnabled(false);
+	ui->resetDefaultsBtn->setEnabled(false);
 }
 
 void MainWindow::deviceSettingsAvailable() {
 	ui->tabWidget->setEnabled(true);
 	// hw/fw versions
-	ui->fwVerEdit->setText(QString::number(settings.DeviceInfo.FirmwareBuild));
-	ui->hwVerEdit->setText(QString::number((float)settings.DeviceInfo.HardwareVersion / 100));
+	ui->fwVerEdit->setText(QString::number(Settings::instance().DeviceInfo.FirmwareBuild));
+	ui->hwVerEdit->setText(QString::number((float)Settings::instance().DeviceInfo.HardwareVersion / 100));
 
 	profiles->deviceSettingsAvailable();
 	screen->deviceSettingsAvailable();
@@ -139,17 +137,18 @@ void MainWindow::deviceSettingsAvailable() {
 
 void MainWindow::onSaveConfig() {
 	QFileDialog dialog;
-	dialog.setNameFilter("*.afdata");
+	QString fileExtension = Settings::isAF() ? ".afdata" : ".rpdata";
+	dialog.setNameFilter(QString("*%1").arg(fileExtension));
 	if (dialog.exec()) {
 		QString fn = dialog.selectedFiles().at(0);
-		if (!fn.endsWith(".afdata")) {
-			fn += ".afdata";
+		if (!fn.endsWith(fileExtension)) {
+			fn += fileExtension;
 		}
 		bool ok = device->saveConfig(fn);
 		if (ok) {
-			ui->statusbar->showMessage("Settings written OK.", msg_duration);
+			ui->statusbar->showMessage("Settings saved OK.", msg_duration);
 		} else {
-			ui->statusbar->showMessage("Error writing do device!", msg_duration);
+			ui->statusbar->showMessage("Error saving settings!", msg_duration);
 		}
 	}
 }
@@ -158,7 +157,7 @@ void MainWindow::onLoadConfig() {
 
 	QFileDialog dialog;
 	dialog.setFileMode(QFileDialog::ExistingFile);
-	dialog.setNameFilter("*.afdata");
+	dialog.setNameFilter(Settings::isAF() ? "*.afdata" : "*.rpdata");
 	if (dialog.exec()) {
 		QString fn = dialog.selectedFiles().at(0);
 		device->loadConfig(fn);

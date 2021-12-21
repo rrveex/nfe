@@ -1,17 +1,13 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MAINWINDOWAF_H
+#define MAINWINDOWAF_H
 
 #include "advanced.h"
-#ifdef AF
-#include "afdata.h"
-#else
-#include "rpdata.h"
-#endif
 #include "controls.h"
 #include "device.h"
 #include "hidapi/hidapi.h"
 #include "profiles.h"
 #include "screen.h"
+#include "settings.h"
 #include "smartstat.h"
 
 #include <QButtonGroup>
@@ -39,8 +35,6 @@ class MainWindow : public QMainWindow {
 
   private:
 	Ui::MainWindow *ui;
-	dSettings settings;
-	sColorTheme afTheme;
 	Profiles *profiles;
 	Screen *screen;
 	Advanced *advanced;
@@ -59,4 +53,4 @@ class MainWindow : public QMainWindow {
 	void onSaveConfig();
 	void onLoadConfig();
 };
-#endif // MAINWINDOW_H
+#endif // MAINWINDOWAF_H

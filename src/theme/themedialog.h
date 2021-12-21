@@ -4,11 +4,7 @@
 #include "display.h"
 #include "iconengine.h"
 #include "renderarea.h"
-#ifdef AF
-#include "src/afdata.h"
-#else
-#include "src/rpdata.h"
-#endif
+#include "src/settings.h"
 #include <QBrush>
 #include <QDialog>
 #include <QItemSelection>
@@ -28,7 +24,7 @@ class ThemeDialog : public QDialog {
 
   public:
 	// sColorTheme afTheme
-	explicit ThemeDialog(QWidget *parent, sColorTheme &afTheme);
+	explicit ThemeDialog(QWidget *parent);
 	~ThemeDialog();
   public slots:
 	void onThemeWritten(bool ok, QString msg);
@@ -48,7 +44,6 @@ class ThemeDialog : public QDialog {
 	Ui::ThemeDialog *ui;
 	Display display;
 	RenderArea *renderArea;
-	sColorTheme &afTheme;
 	QStandardItemModel *model;
 
 	void addHandlers();

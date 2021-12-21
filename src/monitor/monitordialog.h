@@ -2,11 +2,9 @@
 #define MONITORDIALOG_H
 
 #include <QDialog>
-#ifdef AF
-#include "src/afdata.h"
-#else
-#include "src/rpdata.h"
-#endif
+
+#include "src/settings.h"
+
 #include "src/chartview.h"
 
 #include <QCheckBox>

@@ -1,9 +1,9 @@
 #include "controls.h"
-#include "ui_mainwindow.h"
 #include "mainwindow.h"
+#include "ui_mainwindow.h"
 #include <QDebug>
 
-Controls::Controls(Ui::MainWindow *ui, dSettings &settings) : ui(ui), settings(settings) {
+Controls::Controls(Ui::MainWindow *ui) : ui(ui), settings(Settings::instance()) {
 	addHandlers();
 }
 void Controls::deviceSettingsAvailable() {

@@ -1,11 +1,8 @@
 #ifndef POWERCURVEDIALOG_H
 #define POWERCURVEDIALOG_H
 
-#ifdef AF
-#include "afdata.h"
-#else
-#include "rpdata.h"
-#endif
+#include "settings.h"
+
 #include "chartview.h"
 
 #include <QDialog>
@@ -24,7 +21,7 @@ class PowerCurveDialog : public QDialog {
 	Q_OBJECT
 
   public:
-	PowerCurveDialog(QWidget *parent, dSettings &Settings, int curveId);
+	PowerCurveDialog(QWidget *parent, Settings &Settings, int curveId);
 	~PowerCurveDialog();
 
   private:
@@ -37,7 +34,7 @@ class PowerCurveDialog : public QDialog {
 	QDoubleSpinBox *t_arr[12];
 	QSpinBox *p_arr[12];
 
-	dSettings &Settings;
+	Settings &settings;
 	int curveId;
 
   private slots:

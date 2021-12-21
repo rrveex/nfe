@@ -1,16 +1,16 @@
-// Read/Write 1088 bytes
-// Hid Command 0x60 (params are ignored) - download settings from mod
-// Hid Command 0x61 (params are ignored) - upload settings to mod
+
 
 // AF_SETTINGS_VERSION	12
-#ifndef __AFDATA_H__
-#define __AFDATA_H__
+#ifndef __DATA_H__
+#define __DATA_H__
 
+#include "afdata.h"
+#include "rpdata.h"
+#include <QVector>
 #include <cstdint>
+#include <vector>
 
-namespace ArcticFox {
-
-typedef struct __attribute__((packed)) {
+typedef struct {
 	uint8_t SettingsVersion;
 	uint32_t ProductId;
 	uint32_t HardwareVersion;
@@ -48,7 +48,7 @@ typedef union {
 	};
 } sProfileFlags2;
 
-typedef struct __attribute__((packed)) { // 29 bytes
+typedef struct { // 29 bytes
 
 	uint8_t Name[8]; // ASCII chars "0..9", "A..Z", " ", ".", "+", "-"
 	sProfileFlags Flags;
@@ -67,14 +67,14 @@ typedef struct __attribute__((packed)) { // 29 bytes
 	uint16_t PIR_I;		  // PI Regulator: I coeff.,  0..9000
 } sProfile;
 
-typedef struct __attribute__((packed)) {
+typedef struct {
 	sProfile Profiles[8];
 	uint8_t ActiveProfile; // 0..7
 	uint8_t SmartMode;	   // 0 - Off, 1 - On, 2 - On, Lazy Mode
 	uint8_t SmartRange;	   // 1..15, percents
 } sGeneral;
 
-typedef struct __attribute__((packed)) {
+typedef struct {
 	uint8_t Line1; // Extended APT
 	uint8_t Line2;
 	uint8_t Line3;
@@ -118,7 +118,7 @@ typedef struct __attribute__((packed)) {
   *  Line4 = 0x40 | 0x80
 */
 
-typedef struct __attribute__((packed)) {
+typedef struct {
 	uint8_t Line1; // Extended APT
 	uint8_t Line2;
 	uint8_t Line3;
@@ -133,7 +133,7 @@ typedef struct __attribute__((packed)) {
 #define IL_BATT			0x40	battery
 */
 
-typedef struct __attribute__((packed)) {
+typedef struct {
 	uint8_t Line1; // Extended APT
 	uint8_t Line2;
 } sLinesContentSmall;
@@ -144,7 +144,7 @@ typedef struct __attribute__((packed)) {
 #define IL_APT			0x30	standard APT line
 */
 
-typedef struct __attribute__((packed)) {
+typedef struct {
 	uint8_t Line1; // Extended APT
 	uint8_t Line2;
 	uint8_t Line3;
@@ -156,11 +156,20 @@ typedef struct __attribute__((packed)) {
 #define IL_APT			0x30	standard APT line
 */
 
-typedef struct __attribute__((packed)) {
+typedef struct {
 	uint8_t Line1; // Extended APT
 	uint8_t Line2;
 	uint8_t Line3;
 } sLinesContentNew;
+
+// --- rp ---
+typedef struct // 4 bytes
+{
+	uint8_t Line1; // Extended APT
+	uint8_t Line2;
+	uint8_t Line3;
+	uint8_t Line4;
+} sLinesContent;
 
 /*
  * Line1..Line3 ( | IL_FIRE_MSK опционально):
@@ -179,7 +188,7 @@ typedef struct __attribute__((packed)) {
  * 10 - Coil Temperature
 */
 
-typedef struct __attribute__((packed)) {
+typedef struct {
 	uint8_t InStandby;	// в стендбае: стандартный мультиклик
 	uint8_t InEditMain; // в режиме ГЭВРР: 0 - нет действия, 1 - сброс счетчика
 	uint8_t InSelector; // в селекторе профилей: 0 - нет действия, 1 - сброс
@@ -187,7 +196,7 @@ typedef struct __attribute__((packed)) {
 	uint8_t InMenu;		// в главном меню: 0 - нет действия, 1 - назад, 2 - выход
 } sShortcut;
 
-typedef struct __attribute__((packed)) {
+typedef struct {
 	// Generic
 	uint8_t Brightness; // 0 - Min, 255 - Max
 	uint8_t IsFlipped;
@@ -248,6 +257,10 @@ typedef struct __attribute__((packed)) {
 	uint8_t SaverInStealth;		   // Show Saver in Stealth Mode: 0 - Off, 1 - On
 	uint8_t ClockOnClickInStealth; // Show Clock on Main Screen immediately on single
 								   // Fire click in Stealth Mode: 0 - Off, 1 - On
+								   // --- rp ---
+	sLinesContent VWLayout;
+	sLinesContent TCLayout;
+	uint8_t PuffTimePos;
 } sUI;
 /*
 0 - not assigned
@@ -273,7 +286,7 @@ typedef struct __attribute__((packed)) {
 20 - Autofire
 */
 
-typedef struct __attribute__((packed)) {
+typedef struct {
 	uint32_t PuffsCount; // max 99999
 	uint32_t PuffsTime;	 // Value multiplied by 10, max 359999
 	uint16_t Year;
@@ -284,12 +297,12 @@ typedef struct __attribute__((packed)) {
 	uint8_t Second;
 } sCounters;
 
-typedef struct __attribute__((packed)) {
+typedef struct {
 	uint16_t Percent; // Value from 0 to 100
 	uint16_t Voltage; // Value multiplied by 100, from 300 to 420
 } sPercentVoltage;
 
-typedef struct __attribute__((packed)) {
+typedef struct {
 	uint8_t Name[4]; // ASCII chars "0..9", "A..Z", " ", ".", "+", "-"
 	sPercentVoltage V2P[11];
 	uint16_t Cutoff; // Value multiplied by 100, from 275 to 350
@@ -335,7 +348,7 @@ typedef struct // 32 bytes
 	dCurve CurveData[12];
 } sCurve;
 
-typedef struct __attribute__((packed)) {
+typedef struct {
 	uint16_t PowerLimit; // Watts * 10
 	uint16_t PuffCutOff; // Value from 10 to 600
 	int8_t BVOffset[4];	 // BVO values, -30..30
@@ -359,61 +372,13 @@ typedef struct __attribute__((packed)) {
 	uint8_t DeepSleepMode;	// 0 - standard, 1 - Off before sleep, 2 - Lock before
 							// sleep
 	uint8_t DeepSleepDelay; // 1..30 minutes
+
+	// --- rp ---
+	uint8_t CutOffAction;	 // 0 - none, 1 - power off, 2 - device lock
+	uint8_t PowerBankOffset; // 0..25 by 5 output offset: 0 - 5.00 V, 5 - 5.05 V .. 25 - 5.25 V
+
 } sAdvanced;
-
-typedef struct __attribute__((packed)) {
-	sDeviceInfo DeviceInfo;
-	sGeneral General;
-	sUI UI;
-	sCounters Counters;
-	sAdvanced Advanced;
-} dSettings;
-
-// Read 64 bytes
-// Hid Command 0x66 (params are ignored) - download monitor data:
-
-typedef struct __attribute__((packed)) {
-	uint32_t Timestamp;
-
-	uint8_t IsFiring;
-	uint8_t IsCharging;
-	uint8_t IsCelcius;
-
-	uint8_t Battery1Voltage; // Offsetted by 275, 420 - 275 = value
-	uint8_t Battery2Voltage; // Offsetted by 275
-	uint8_t Battery3Voltage; // Offsetted by 275
-	uint8_t Battery4Voltage; // Offsetted by 275
-
-	uint16_t PowerSet; // X * 10
-	uint16_t TemperatureSet;
-	uint16_t Temperature;
-
-	uint16_t OutputVolts;	// X * 100
-	uint16_t OutputCurrent; // X * 100
-
-	uint16_t Resistance;	 // X * 1000
-	uint16_t RealResistance; // X * 1000
-
-	uint8_t BoardTemperature; // recalculated depending on IsCelcius
-} sMonitoringData;
-
-// Write up to 64 bytes
-// Hid Command 0x64 (params are ignored) - set date/time:
-
-typedef struct __attribute__((packed)) {
-	uint16_t Year;
-	uint8_t Month;
-	uint8_t Day;
-	uint8_t Hour;
-	uint8_t Minute;
-	uint8_t Second;
-} sDateTime;
-
-// sColorTheme: 84 (2 * 64 =128 actually) bytes.
-// scommands 0x90 (read from device) and 0x91 (write to device),
-
-// typedef struct __attribute__((packed)) {
-typedef struct {
+struct ColorTheme {
 	// Main View - 40 bytes
 	uint16_t Main_Background;
 	uint16_t Main_Divider;
@@ -465,8 +430,99 @@ typedef struct {
 	uint16_t Charge_Current;
 	uint16_t Charge_Temp;
 	uint16_t Charge_Clock;
-} sColorTheme; // 84 bytes
+}; // sColorTheme; // 84 bytes
 
-}; // namespace ArcticFox
+struct Settings {
+  public:
+	enum afrp
+	{
+		undefined,
+		af,
+		rp
+	};
 
-#endif // __AFDATA_H__
+	sDeviceInfo DeviceInfo;
+	sGeneral General;
+	sUI UI;
+	sCounters Counters;
+	sAdvanced Advanced;
+
+	bool read(const char *);
+	std::vector<char> getDataToWrite();
+
+	static Settings &instance() {
+		static Settings instance;
+		return instance;
+	}
+	static ColorTheme &getTheme() {
+		static ColorTheme theme;
+		return theme;
+	}
+	afrp type() { return fw_type; }
+	static bool isAF() { return instance().type() == af; }
+	static bool isRP() { return instance().type() == rp; }
+
+	Settings(Settings const &) = delete;
+	void operator=(Settings const &) = delete;
+
+  private:
+	afrp fw_type;
+	Settings() { fw_type = undefined; }
+	ArcticFox::dSettings afSettings;
+	RedPanda::dSettings rpSettings;
+
+	static constexpr uint8_t af_settings_version = 12;
+	static constexpr uint8_t rp_settings_version = 2;
+
+	void populateFromAF();
+	void populateFromRP();
+	void setToAFBuffer();
+	void setToRPBuffer();
+};
+
+// Read 64 bytes
+// Hid Command 0x66 (params are ignored) - download monitor data:
+
+typedef struct __attribute__((packed)) {
+	uint32_t Timestamp;
+
+	uint8_t IsFiring;
+	uint8_t IsCharging;
+	uint8_t IsCelcius;
+
+	uint8_t Battery1Voltage; // Offsetted by 275, 420 - 275 = value
+	uint8_t Battery2Voltage; // Offsetted by 275
+	uint8_t Battery3Voltage; // Offsetted by 275
+	uint8_t Battery4Voltage; // Offsetted by 275
+
+	uint16_t PowerSet; // X * 10
+	uint16_t TemperatureSet;
+	uint16_t Temperature;
+
+	uint16_t OutputVolts;	// X * 100
+	uint16_t OutputCurrent; // X * 100
+
+	uint16_t Resistance;	 // X * 1000
+	uint16_t RealResistance; // X * 1000
+
+	uint8_t BoardTemperature; // recalculated depending on IsCelcius
+} sMonitoringData;
+
+// Write up to 64 bytes
+// Hid Command 0x64 (params are ignored) - set date/time:
+
+typedef struct {
+	uint16_t Year;
+	uint8_t Month;
+	uint8_t Day;
+	uint8_t Hour;
+	uint8_t Minute;
+	uint8_t Second;
+} sDateTime;
+
+// sColorTheme: 84 (2 * 64 =128 actually) bytes.
+// scommands 0x90 (read from device) and 0x91 (write to device),
+
+// typedef struct __attribute__((packed)) {
+
+#endif // __DATA_H__

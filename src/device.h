@@ -1,13 +1,12 @@
 #ifndef DEVICE_H
 #define DEVICE_H
-#ifdef AF
-#include "afdata.h"
-#else
-#include "rpdata.h"
-#endif
+
+#include "settings.h"
+
 #include "hidapi/hidapi.h"
 #include <QByteArray>
 #include <QMap>
+#include <QMutexLocker>
 #include <QObject>
 #include <QString>
 #include <QTimer>
@@ -23,10 +22,8 @@ enum class Chipset
 class Device : public QObject {
 	Q_OBJECT
   public:
-	Device(dSettings &settings, sColorTheme &afTheme);
+	Device();
 	~Device();
-
-	QByteArray createCommand(uint8_t ccode, uint32_t arg1, uint32_t arg2);
 
 	QString getName();
 
@@ -40,7 +37,8 @@ class Device : public QObject {
 	void writeTheme();
 	void writeTime();
 	void readMonitor();
-	void cmdPuff(int secs);
+	void cmdPuff(unsigned secs);
+	void cmdResetDefaults();
 
   signals:
 	void deviceConnected();
@@ -59,39 +57,42 @@ class Device : public QObject {
 	void doneReadMonitor(bool ok, sMonitoringData data);
 
   private:
-	enum BufferType
-	{
-		sett,
-		theme,
-		time,
-		monitor,
-		puff
-	};
 	struct Res {
 		bool ok;
 		QString msg;
 	};
-
+	QMutex mutex;
 	QTimer *findDeviceTimer;
 	QTimer *checkDisconnectTimer;
 	hid_device *handle = nullptr;
 
-	dSettings &settings;
-	sColorTheme &afTheme;
+	//	Settings &settings;
 	sDateTime datetime;
 	sMonitoringData monitorData;
 
-	QMap<BufferType, unsigned> transfer_size = {{sett, 1088}, {theme, 128}, {time, 64}, {monitor, 64}, {puff, 0}};
-	QMap<BufferType, uint8_t> read_cmd = {{sett, 0x60}, {theme, 0x90}, {monitor, 0x66}};
-	QMap<BufferType, uint8_t> write_cmd = {{sett, 0x61}, {theme, 0x91}, {time, 0x64}, {puff, 0x44}};
-	QMap<BufferType, void *> data_ptr = {{sett, &settings}, {theme, &afTheme}, {time, &datetime}, {monitor, &monitorData}};
-	QMap<BufferType, size_t> data_size = {
-		{sett, sizeof(settings)}, {theme, sizeof(afTheme)}, {time, sizeof(datetime)}, {monitor, sizeof(monitorData)}};
+	static constexpr unsigned theme_packed_struct_size = 84;
+	static constexpr uint8_t cmd_read_settings = 0x60;
+	static constexpr uint8_t cmd_write_settings = 0x61;
+	static constexpr uint8_t cmd_read_theme = 0x90;
+	static constexpr uint8_t cmd_write_theme = 0x91;
+	static constexpr uint8_t cmd_read_monitor = 0x66;
+	static constexpr uint8_t cmd_write_clock = 0x64;
+	static constexpr uint8_t cmd_trigger_puff = 0x44;
+	static constexpr uint8_t cmd_reset_defaults = 0x7C;
+	QMap<uint8_t, unsigned> transfer_size = {
+		{cmd_read_settings, 1088},
+		{cmd_write_settings, 1088},
+		{cmd_read_theme, 128},
+		{cmd_write_theme, 128},
+		{cmd_write_clock, 64},
+		{cmd_read_monitor, 64},
+		{cmd_trigger_puff, 0},
+		{cmd_reset_defaults, 0},
+	};
 
-	static constexpr unsigned theme_struct_size = 84;
-
-	Res readBuffer(BufferType);
-	Res writeBuffer(BufferType, uint32_t arg1 = 0);
+	QByteArray createCommand(uint8_t ccode, uint32_t arg1, uint32_t arg2);
+	Res readBuffer(uint8_t cmd, char *dst, unsigned dst_size);
+	Res writeBuffer(uint8_t cmd, char *data, uint32_t data_size, uint32_t arg1 = 0);
 
 	//	std::map<QString, QString> deviceStringMap = {
 	QMap<QString, QString> deviceStringMap = {
@@ -129,7 +130,6 @@ class Device : public QObject {
 
 	void openhid();
 	void closehid();
-	bool findDevice();
 
   private slots:
 	void onFindDeviceTimerTimeout();

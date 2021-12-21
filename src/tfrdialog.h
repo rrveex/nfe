@@ -1,11 +1,7 @@
 #ifndef TFRDIALOG_H
 #define TFRDIALOG_H
-#ifdef AF
-#include "afdata.h"
-#else
-#include "rpdata.h"
-#endif
 #include "chartview.h"
+#include "settings.h"
 
 #include <QDialog>
 #include <QDoubleSpinBox>
@@ -18,7 +14,7 @@ class TfrDialog : public QDialog {
 	Q_OBJECT
 
   public:
-	explicit TfrDialog(QWidget *parent, dSettings &Settings, int curveId);
+	explicit TfrDialog(QWidget *parent, Settings &Settings, int curveId);
 	~TfrDialog();
 
   private:
@@ -32,7 +28,7 @@ class TfrDialog : public QDialog {
 	QSpinBox *t_arr[no_points];
 	QDoubleSpinBox *f_arr[no_points];
 
-	dSettings &settings;
+	Settings &settings;
 	int curveId;
   private slots:
 	void hovered(const QPointF &point, bool state);

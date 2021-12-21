@@ -5,7 +5,7 @@
 #include <QTextStream>
 #include <cstring>
 
-TfrDialog::TfrDialog(QWidget *parent, dSettings &Settings, int curveId)
+TfrDialog::TfrDialog(QWidget *parent, Settings &Settings, int curveId)
 	: QDialog(parent), ui(new Ui::TfrDialog), settings(Settings), curveId(curveId) {
 	ui->setupUi(this);
 

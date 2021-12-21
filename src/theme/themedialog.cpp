@@ -7,7 +7,7 @@
 #include <QMessageBox>
 #include <QTimer>
 
-ThemeDialog::ThemeDialog(QWidget *parent, sColorTheme &afTh) : QDialog(parent), ui(new Ui::ThemeDialog), display(afTh), afTheme(afTh) {
+ThemeDialog::ThemeDialog(QWidget *parent) : QDialog(parent), ui(new Ui::ThemeDialog), display() {
 	ui->setupUi(this);
 	renderArea = new RenderArea(this, display);
 	ui->renderLayout->insertWidget(0, renderArea);
@@ -139,16 +139,16 @@ void ThemeDialog::exportConfig() {
 	if (!dialog.exec()) return;
 
 	QString filename = dialog.selectedFiles().at(0);
-	if (!filename.endsWith(".aftheme")) filename += ".afdata";
+	if (!filename.endsWith(".aftheme")) filename += ".aftheme";
 
 	QFile f(filename);
 	if (!f.open(QIODevice::WriteOnly)) {
 		ui->statusLabel->setText("Can't open file.");
 		return;
 	}
-
-	int res = f.write((char *)&afTheme, sizeof(afTheme));
-	if (res == sizeof(afTheme)) {
+	ColorTheme &theme = Settings::getTheme();
+	int res = f.write((char *)&theme, sizeof(theme));
+	if (res == sizeof(theme)) {
 		ui->statusLabel->setText("Export theme OK.");
 	}
 	QTimer::singleShot(5000, this, [this] { ui->statusLabel->setText(""); });
@@ -167,9 +167,9 @@ void ThemeDialog::importConfig() {
 		QTimer::singleShot(5000, this, [this] { ui->statusLabel->setText(""); });
 		return;
 	}
-
-	int res = f.read((char *)&afTheme, sizeof(afTheme));
-	if (res == sizeof(afTheme)) {
+	ColorTheme &theme = Settings::getTheme();
+	int res = f.read((char *)&theme, sizeof(theme));
+	if (res == sizeof(theme)) {
 		onThemeWritten(true, "");
 	}
 }

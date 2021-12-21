@@ -6,11 +6,7 @@
 #include <QObject>
 #include <QPushButton>
 
-#ifdef AF
-#include "afdata.h"
-#else
-#include "rpdata.h"
-#endif
+#include "settings.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -21,13 +17,13 @@ QT_END_NAMESPACE
 class Profiles : public QObject {
 	Q_OBJECT
   public:
-	Profiles(QWidget *parent, Ui::MainWindow *ui, dSettings &Settings);
+	Profiles(QWidget *parent, Ui::MainWindow *ui);
 	void deviceSettingsAvailable();
 
   private:
 	QWidget *mainwindow;
 	Ui::MainWindow *ui;
-	dSettings &settings;
+	Settings &settings;
 
 	int currentProfileId = 0;
 

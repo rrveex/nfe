@@ -36,6 +36,7 @@ set(PROJECT_SOURCES
 	src/main.cpp
 	src/mainwindow.cpp
 	src/mainwindow.h
+	src/mainwindow.ui
 	src/powercurvedialog.h
 	src/powercurvedialog.cpp
 	src/powercurvedialog.ui
@@ -44,6 +45,8 @@ set(PROJECT_SOURCES
 	src/rpdata.h
 	src/screen.cpp
 	src/screen.h
+	src/settings.h
+	src/settings.cpp
 	src/smartstat.cpp
 	src/smartstat.h
 	src/tfrdialog.h
@@ -67,12 +70,6 @@ set(PROJECT_SOURCES
 	src/theme/themedialog.ui
 	nfe.qrc
 )
-set(AF_SOURCES
-	src/af/mainwindow.ui
-)
-set(RP_SOURCES
-	src/rp/mainwindow.ui
-)
 
 set(LIBS
 	Qt${QT_VERSION_MAJOR}::Widgets
@@ -81,28 +78,10 @@ set(LIBS
 	-lhidapi-hidraw
 )
 
-set(CMAKE_AUTOUIC_SEARCH_PATHS src/af)
-add_executable(af
+# set(CMAKE_AUTOUIC_SEARCH_PATHS src/af)
+add_executable(nfe
 	${PROJECT_SOURCES}
-	${AF_SOURCES}
 )
-target_compile_definitions(af
-	PRIVATE AF
-	PRIVATE S_VERSION=12
-	PRIVATE OTHER_VERSION=2
-)
-target_include_directories(af PRIVATE src/af)
-target_link_libraries(af PRIVATE ${LIBS})
 
-set(CMAKE_AUTOUIC_SEARCH_PATHS src/rp)
-add_executable(rp
-	${PROJECT_SOURCES}
-	${RP_SOURCES}
-)
-target_compile_definitions(rp
-	PRIVATE RP
-	PRIVATE S_VERSION=2
-	PRIVATE OTHER_VERSION=12
-)
-target_include_directories(af PRIVATE src/af)
-target_link_libraries(rp PRIVATE ${LIBS})
+target_include_directories(nfe PRIVATE src/af)
+target_link_libraries(nfe PRIVATE ${LIBS})

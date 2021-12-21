@@ -53,11 +53,12 @@ void DisplayItem::setColor(QColor c) {
 	rgb565 = colorToU16(c);
 }
 
-Display::Display(sColorTheme &afTheme) : afTheme(afTheme) {
+Display::Display() {
 	populateItems();
 }
 
 void Display::populateItems() {
+	ColorTheme &afTheme = Settings::getTheme();
 	dispItems = {
 		{Page::MainVW,
 		 {

@@ -8,6 +8,9 @@
 #define __RPDATA_H__
 
 #include <cstdint>
+
+namespace RedPanda {
+
 typedef struct __attribute__((packed)) { // 21 bytes
 
 	uint8_t SettingsVersion;
@@ -375,7 +378,7 @@ typedef struct __attribute__((packed)) {
 } sDateTime;
 
 // theme
-//typedef struct __attribute__((packed)) {
+// typedef struct __attribute__((packed)) {
 typedef struct {
 	// Main View - 40 bytes
 	uint16_t Main_Background;
@@ -429,4 +432,7 @@ typedef struct {
 	uint16_t Charge_Temp;
 	uint16_t Charge_Clock;
 } sColorTheme; // 84 bytes
+
+}; // namespace RedPanda
+
 #endif // __RPDATA_H__

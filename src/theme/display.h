@@ -1,10 +1,7 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
-#ifdef AF
-#include "src/afdata.h"
-#else
-#include "src/rpdata.h"
-#endif
+
+#include "src/settings.h"
 
 #include <QColor>
 #include <QMap>
@@ -45,8 +42,7 @@ struct DisplayItem {
 class Display : public QObject {
 	Q_OBJECT
   public:
-	sColorTheme &afTheme;
-	Display(sColorTheme &afTheme);
+	Display();
 	void populateItems();
 
 	QMap<Page, QVector<DisplayItem>> dispItems;

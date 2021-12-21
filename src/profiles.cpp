@@ -1,12 +1,12 @@
 #include "profiles.h"
-#include "ui_mainwindow.h"
 #include "mainwindow.h"
 #include "powercurvedialog.h"
 #include "tfrdialog.h"
+#include "ui_mainwindow.h"
 #include <QtWidgets>
 #include <cstring>
 
-Profiles::Profiles(QWidget *parent, Ui::MainWindow *ui, dSettings &settings) : mainwindow(parent), ui(ui), settings(settings) {
+Profiles::Profiles(QWidget *parent, Ui::MainWindow *ui) : mainwindow(parent), ui(ui), settings(Settings::instance()) {
 
 	// replacement widgets
 	ui->profilePreheatCurveCombo->hide();
@@ -56,9 +56,9 @@ void Profiles::deviceSettingsAvailable() {
 		model->item(i)->setFlags(flags);
 	}
 
+	ui->profilePowerSpin->setMaximum((double)settings.DeviceInfo.MaxPower / 10);
 	// click active profile to select it
 	ui->profilesButtonGroup->button(actProfile)->click();
-	ui->profilePowerSpin->setMaximum((double)settings.DeviceInfo.MaxPower / 10);
 
 	// populate curve names
 	char c[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};

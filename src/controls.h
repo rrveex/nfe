@@ -1,10 +1,7 @@
 #ifndef CONTROLS_H
 #define CONTROLS_H
-#ifdef AF
-#include "afdata.h"
-#else
-#include "rpdata.h"
-#endif
+
+#include "settings.h"
 
 #include <QObject>
 
@@ -17,12 +14,12 @@ QT_END_NAMESPACE
 class Controls : public QObject {
 	Q_OBJECT
   public:
-	Controls(Ui::MainWindow *ui, dSettings &settings);
+	Controls(Ui::MainWindow *ui);
 	void deviceSettingsAvailable();
 
   private:
 	Ui::MainWindow *ui;
-	dSettings &settings;
+	Settings &settings;
 	void addHandlers();
 };
 

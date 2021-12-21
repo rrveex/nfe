@@ -1,11 +1,7 @@
 #ifndef SMARTSTAT_H
 #define SMARTSTAT_H
 
-#ifdef AF
-#include "afdata.h"
-#else
-#include "rpdata.h"
-#endif
+#include "settings.h"
 
 #include <QObject>
 
@@ -18,12 +14,12 @@ QT_END_NAMESPACE
 class SmartStat : public QObject {
 	Q_OBJECT
   public:
-	SmartStat(Ui::MainWindow *ui, dSettings &Settings);
+	SmartStat(Ui::MainWindow *ui);
 	void deviceSettingsAvailable();
 
   private:
 	Ui::MainWindow *ui;
-	dSettings &Settings;
+	Settings &settings;
 	void addHandlers();
 };
 

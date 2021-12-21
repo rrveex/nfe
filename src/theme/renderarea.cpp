@@ -32,7 +32,6 @@ void RenderArea::paintEvent(QPaintEvent *event) {
 	painter.scale(scaleFactor, scaleFactor);
 
 	QFont fa = QFontDatabase::applicationFontFamilies(0).at(0); // fontawesome loaded from res
-	qDebug() << "fam: " << fa.family();
 	painter.setFont(QFont(fa.family(), 8));
 
 	auto &items = display.dispItems[page];

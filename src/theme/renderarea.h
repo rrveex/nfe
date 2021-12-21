@@ -7,11 +7,8 @@
 #include <QWidget>
 
 #include "display.h"
-#ifdef AF
-#include "src/afdata.h"
-#else
-#include "src/rpdata.h"
-#endif
+
+#include "src/settings.h"
 
 class RenderArea : public QWidget {
 	Q_OBJECT

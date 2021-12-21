@@ -2,8 +2,8 @@
 #include "ui_powercurvedialog.h"
 #include <cstring>
 
-PowerCurveDialog::PowerCurveDialog(QWidget *parent, dSettings &Settings, int curveId)
-	: QDialog(parent), ui(new Ui::PowerCurveDialog), Settings(Settings), curveId(curveId) {
+PowerCurveDialog::PowerCurveDialog(QWidget *parent, Settings &settings, int curveId)
+	: QDialog(parent), ui(new Ui::PowerCurveDialog), settings(settings), curveId(curveId) {
 	ui->setupUi(this);
 	chart = new QChart();
 
@@ -28,7 +28,7 @@ PowerCurveDialog::PowerCurveDialog(QWidget *parent, dSettings &Settings, int cur
 
 	for (int i = 0; i < 12; i++) {
 		// x value matters here because of populating -> signal -> min/max range for spin
-		series->append((double)Settings.Advanced.PowerCurves[curveId].CurveData[i].Time / 10, 0);
+		series->append((double)settings.Advanced.PowerCurves[curveId].CurveData[i].Time / 10, 0);
 	}
 
 	chart->addSeries(series);
@@ -95,26 +95,26 @@ PowerCurveDialog::PowerCurveDialog(QWidget *parent, dSettings &Settings, int cur
 			chartView->repaint();
 		});
 
-		t_arr[i]->setValue((double)Settings.Advanced.PowerCurves[curveId].CurveData[i].Time / 10);
+		t_arr[i]->setValue((double)settings.Advanced.PowerCurves[curveId].CurveData[i].Time / 10);
 		if (i > 0) {
 			t_arr[i - 1]->setMaximum(t_arr[i]->value() - 0.1);
 			t_arr[i]->setMinimum(t_arr[i - 1]->value() + 0.1);
 		}
-		p_arr[i]->setValue(Settings.Advanced.PowerCurves[curveId].CurveData[i].Percent);
+		p_arr[i]->setValue(settings.Advanced.PowerCurves[curveId].CurveData[i].Percent);
 	}
 	char c[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-	std::strncpy(c, (char *)Settings.Advanced.PowerCurves[curveId].Name, sizeof(Settings.Advanced.PowerCurves[curveId].Name));
+	std::strncpy(c, (char *)settings.Advanced.PowerCurves[curveId].Name, sizeof(settings.Advanced.PowerCurves[curveId].Name));
 	ui->curveNameEdit->setText(c);
 }
 
 void PowerCurveDialog::save() {
 	std::string s = ui->curveNameEdit->text().toStdString();
-	std::strncpy((char *)Settings.Advanced.PowerCurves[curveId].Name, s.c_str(), sizeof(Settings.Advanced.PowerCurves[curveId].Name));
+	std::strncpy((char *)settings.Advanced.PowerCurves[curveId].Name, s.c_str(), sizeof(settings.Advanced.PowerCurves[curveId].Name));
 
 	auto points = series->points();
 	for (int i = 0; i < 12; i++) {
-		Settings.Advanced.PowerCurves[curveId].CurveData[i].Time = (uint8_t)(points.at(i).x() * 10);
-		Settings.Advanced.PowerCurves[curveId].CurveData[i].Percent = points.at(i).y();
+		settings.Advanced.PowerCurves[curveId].CurveData[i].Time = (uint8_t)(points.at(i).x() * 10);
+		settings.Advanced.PowerCurves[curveId].CurveData[i].Percent = points.at(i).y();
 	}
 	done(QDialog::Accepted);
 }
