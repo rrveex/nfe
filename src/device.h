@@ -106,6 +106,7 @@ class Device : public QObject {
 		{"M973", "Eleaf iStick QC 200W"},	  {"M972", "Eleaf iStick TC200W"},	   {"M011", "Eleaf iStick TC100W"},
 		{"M041", "Eleaf iStick Pico"},		  {"M038", "Eleaf iStick Pico RDTA"},  {"M045", "Eleaf iStick Pico Mega"},
 		{"M065", "Eleaf iStick Pico Dual"},	  {"M046", "Eleaf iStick Power"},	   {"M037", "Eleaf ASTER"},
+		{"M105", "Eleaf Pico Squeeze 2"},
 
 		{"W007", "Wismec Presa TC75W"},		  {"W017", "Wismec Presa TC100W"},	   {"W018", "Wismec Reuleaux RX2/3"},
 		{"W014", "Wismec Reuleaux RX200"},	  {"W033", "Wismec Reuleaux RX200S"},  {"W026", "Wismec Reuleaux RX75"},
