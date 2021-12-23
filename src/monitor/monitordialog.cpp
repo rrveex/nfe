@@ -45,10 +45,12 @@ void Sensor::setValue(u_int32_t ts, qreal v) {
 	// running tooltip
 	QPointF point(ts, v);
 
-	tooltip->setText(sval, 6);
-	tooltip->setAnchor(point);
-	tooltip->updateGeometry();
-	tooltip->show();
+	if (tooltip) {
+		tooltip->setText(sval, 6);
+		tooltip->setAnchor(point);
+		tooltip->updateGeometry();
+		tooltip->show();
+	}
 }
 
 MonitorDialog::MonitorDialog(QWidget *parent, int numbat) : QDialog(parent), ui(new Ui::MonitorDialog), numbat(numbat) {
@@ -108,7 +110,9 @@ MonitorDialog::MonitorDialog(QWidget *parent, int numbat) : QDialog(parent), ui(
 
 		s.series->attachAxis(axisX);
 		s.series->attachAxis(s.axy);
-		s.tooltip = new Callout(chart, s.series, s.color);
+		if (s.check->isChecked()) {
+			s.tooltip = new Callout(chart, s.series, s.color);
+		}
 	}
 	barAxy = new QValueAxis;
 	barAxy->setRange(0, 100);
@@ -177,9 +181,10 @@ void MonitorDialog::addHandlers() {
 		axisX->setRange(val - (xrange * 0.95), val + (xrange * 0.05));
 		const auto callouts = m_callouts;
 		for (Callout *callout : callouts)
-			callout->updateGeometry();
+
+			if (callout) callout->updateGeometry();
 		for (auto &s : sensors)
-			s.tooltip->updateGeometry();
+			if (s.tooltip) s.tooltip->updateGeometry();
 	});
 
 	connect(ui->showXAxisCheck, &QCheckBox::stateChanged, this, [this](int state) {
@@ -196,7 +201,7 @@ void MonitorDialog::addHandlers() {
 	});
 
 	for (auto &s : sensors) {
-		connect(s.series, &QXYSeries::hovered, this, [this, s](const QPointF &point, bool state) {
+		connect(s.series, &QXYSeries::hovered, this, [this, &s](const QPointF &point, bool state) {
 			if (state) {
 				if (m_tooltip) delete m_tooltip;
 				m_tooltip = new Callout(chart, s.series, s.color);
@@ -213,24 +218,35 @@ void MonitorDialog::addHandlers() {
 				m_tooltip->hide();
 			}
 		});
-		connect(s.series, &QXYSeries::pressed, this, [this, s](QPointF) {
+		connect(s.series, &QXYSeries::pressed, this, [this, &s](QPointF) {
 			// keep tooltip
 			m_tooltip->setZValue(11);
 			m_callouts.append(m_tooltip);
 			m_tooltip = new Callout(chart, s.series, s.color);
 		});
-		connect(s.check, &QCheckBox::stateChanged, this, [s](int state) {
-			s.series->setVisible(state == Qt::Checked);
-			s.tooltip->setVisible(state == Qt::Checked);
+		connect(s.check, &QCheckBox::toggled, this, [this, &s](bool checked) {
+			s.series->setVisible(checked);
+			if (checked) {
+				if (!s.tooltip) {
+					s.tooltip = new Callout(chart, s.series, s.color);
+				}
+				s.tooltip->setVisible(true);
+			} else {
+				if (s.tooltip) {
+					s.tooltip->setVisible(false);
+					delete s.tooltip;
+					s.tooltip = nullptr;
+				}
+			}
 		});
 	}
 
 	connect(chartView, &ChartView::viewResized, this, [this]() {
 		const auto callouts = m_callouts;
 		for (Callout *callout : callouts)
-			callout->updateGeometry();
+			if (callout) callout->updateGeometry();
 		for (auto &s : sensors)
-			s.tooltip->updateGeometry();
+			if (s.tooltip) s.tooltip->updateGeometry();
 	});
 	connect(ui->xAxisCombo, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, [this](int idx) {
 		xrange = ui->xAxisCombo->itemData(idx).toInt();
@@ -284,9 +300,9 @@ void MonitorDialog::updateY(int) {
 	}
 	const auto callouts = m_callouts;
 	for (Callout *callout : callouts)
-		callout->updateGeometry();
+		if (callout) callout->updateGeometry();
 	for (auto &s : sensors)
-		s.tooltip->updateGeometry();
+		if (s.tooltip) s.tooltip->updateGeometry();
 }
 
 void MonitorDialog::onMonitorDataAvailable(bool ok, sMonitoringData data) {
