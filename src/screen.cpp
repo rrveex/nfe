@@ -213,10 +213,15 @@ void Screen::deviceSettingsAvailable() {
 	ui->screenFlippedCheck->setChecked(settings.UI.IsFlipped);
 
 	int tabIdx = ui->screenTabWidget->currentIndex();
-
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 	ui->screenTabWidget->setTabVisible(1, Settings::isAF());
 	ui->screenTabWidget->setTabVisible(2, Settings::isAF());
 	ui->screenTabWidget->setTabVisible(3, !Settings::isAF());
+#else
+	ui->screenTabWidget->setTabEnabled(1, Settings::isAF());
+	ui->screenTabWidget->setTabEnabled(2, Settings::isAF());
+	ui->screenTabWidget->setTabEnabled(3, !Settings::isAF());
+#endif
 	if (tabIdx == 2 || tabIdx == 3) {
 		ui->screenTabWidget->setCurrentIndex(Settings::isAF() ? 2 : 3);
 	}
