@@ -26,6 +26,7 @@ class Device : public QObject {
 	~Device();
 
 	QString getName();
+	static QString getDisplaySize();
 
 	bool saveConfig(QString filename);
 	bool loadConfig(QString filename);
@@ -41,7 +42,6 @@ class Device : public QObject {
 	void cmdResetDefaults();
 
   signals:
-	void deviceConnected();
 	void deviceDisconnected();
 
 	void readingSettings();
@@ -57,6 +57,7 @@ class Device : public QObject {
 	void doneReadMonitor(bool ok, sMonitoringData data);
 
   private:
+	static bool connected;
 	struct Res {
 		bool ok;
 		QString msg;

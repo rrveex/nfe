@@ -61,6 +61,8 @@ set(PROJECT_SOURCES
 
 	src/theme/display.h
 	src/theme/display.cpp
+	src/theme/displaybig.cpp
+	src/theme/displaysmall.cpp
 	src/theme/renderarea.h
 	src/theme/renderarea.cpp
 	src/theme/iconengine.h

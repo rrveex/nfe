@@ -10,31 +10,30 @@
 #include <QRect>
 #include <QVariant>
 
-//! [0]
-RenderArea::RenderArea(QWidget *parent, Display &display) : QWidget(parent), display(display) {
+RenderArea::RenderArea(QWidget *parent, Display *display) : QWidget(parent), display(display) {
 	setBackgroundRole(QPalette::Base);
 	setAutoFillBackground(true);
 }
 
 QSize RenderArea::minimumSizeHint() const {
-	return QSize(80, 160);
+	return display->size;
 }
 
 QSize RenderArea::sizeHint() const {
-	return QSize(160, 320);
+	return display->size * 2;
 }
 
 void RenderArea::paintEvent(QPaintEvent *event) {
 	QPainter painter(this);
 
-	scaleFactor = std::min((qreal)event->rect().width() / 80, (qreal)event->rect().height() / 160);
+	scaleFactor = std::min((qreal)event->rect().width() / display->size.width(), (qreal)event->rect().height() / display->size.height());
 
 	painter.scale(scaleFactor, scaleFactor);
 
 	QFont fa = QFontDatabase::applicationFontFamilies(0).at(0); // fontawesome loaded from res
 	painter.setFont(QFont(fa.family(), 8));
 
-	auto &items = display.dispItems[page];
+	auto &items = display->dispItems[page];
 
 	// first draw background
 	for (auto &it : items) {
@@ -45,29 +44,39 @@ void RenderArea::paintEvent(QPaintEvent *event) {
 		}
 	}
 	for (auto &it : items) {
-		//		qDebug() << it.listStr;
 		for (int i = 0; i < it.data.size(); i++) {
-			bool needRestore = false;
 			auto &qv = it.data[i];
 			painter.setPen(it.color);
 			if (qv.type() == QVariant::Type::Line) {
 				painter.drawLine(qv.toLine());
 			} else if (qv.type() == QVariant::Type::String) {
+				painter.save();
 				auto rect = it.data2[i].toRect();
-				if (rect.height() > 20) {
-					needRestore = true;
-					painter.save();
+
+				if (rect.height() > 40 && qv.toString()[0] == Display::fa_batteryhalf) {
+					// charge screen
+					painter.setFont(QFont(fa.family(), 20));
+					if (rect.height() > 60) painter.setFont(QFont(fa.family(), 50)); // RP
+					painter.rotate(-90.0);
+					rect = QRect(-(rect.y() + rect.height()), rect.x(), rect.height(), rect.width());
+
+				} else if (rect.x() > 120 && qv.toString()[0] == Display::fa_batteryhalf) {
+					// RP upper-right corner battery
+					painter.setFont(QFont(fa.family(), 16));
+					painter.rotate(180.0);
+					painter.translate(-(2 * rect.x() + rect.width()), -rect.height());
+
+				} else if (rect.height() > 50) {
+					painter.setFont(QFont(fa.family(), 42));
+
+				} else if (rect.height() > 30) {
+					painter.setFont(QFont(fa.family(), 20));
+
+				} else if (rect.height() > 20) {
 					painter.setFont(QFont(fa.family(), 16));
 				}
-				if (rect.height() > 40 && qv.toString()[0] == Display::fa_batteryhalf) {
-					painter.setFont(QFont(fa.family(), 20));
-					painter.translate(-40, 145);
-					painter.rotate(-90.0);
-					rect = QRect(rect.x(), rect.y(), rect.height(), rect.width());
-				}
 				painter.drawText(rect, qv.toString(), QTextOption(Qt::AlignCenter | Qt::AlignVCenter));
-
-				if (needRestore) painter.restore();
+				painter.restore();
 			}
 		}
 	}
@@ -77,9 +86,9 @@ void RenderArea::mousePressEvent(QMouseEvent *event) {
 	int x = std::round(event->x() / scaleFactor);
 	int y = std::round(event->y() / scaleFactor);
 	//	qDebug() << "press x: " << x << " y: " << y;
-	if (x >= 80 || y >= 160) return;
+	if (x >= display->size.width() || y >= display->size.height()) return;
 	QPoint p(x, y);
-	auto &items = display.dispItems[page];
+	auto &items = display->dispItems[page];
 
 	// look through lines; then labels; else background
 	for (int line = 0; line < items.size(); line++) {

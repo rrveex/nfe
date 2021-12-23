@@ -10,6 +10,7 @@
 #include <QFontDialog>
 #include <QMessageBox>
 #include <QProcess>
+#include <QSettings>
 #include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -79,12 +80,31 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	connect(ui->configLoadBtn, &QPushButton::clicked, this, &MainWindow::onLoadConfig);
 	connect(ui->configSaveBtn, &QPushButton::clicked, this, &MainWindow::onSaveConfig);
 	connect(ui->themeBtn, &QPushButton::clicked, this, [this] {
-		ThemeDialog diag(this);
+		QString displSize = Device::getDisplaySize();
+		if (displSize == "no") {
+			QMessageBox msgBox;
+			msgBox.setText("No known device connected");
+			msgBox.setInformativeText("To just play around, select screen size.");
+			msgBox.setStandardButtons(QMessageBox::Cancel);
+			QAbstractButton *big = msgBox.addButton("Big", QMessageBox::ActionRole);
+			QAbstractButton *small = msgBox.addButton("Small", QMessageBox::ActionRole);
+			msgBox.exec();
+			if (msgBox.clickedButton() == big) {
+				displSize = "big";
+			} else if (msgBox.clickedButton() == small) {
+				displSize = "small";
+			}
+			delete big;
+			delete small;
+		}
+		if (displSize == "no") return;
+
+		ThemeDialog diag(this, displSize);
 		connect(&diag, &ThemeDialog::doReadTheme, device, &Device::readTheme);
 		connect(&diag, &ThemeDialog::doWriteTheme, device, &Device::writeTheme);
-		connect(device, &Device::doneReadTheme, &diag, &ThemeDialog::onThemeWritten);
-		connect(device, &Device::doneWriteTheme, &diag, &ThemeDialog::onWriteTheme);
-		connect(device, &Device::deviceConnected, &diag, &ThemeDialog::onDeviceConnected);
+		connect(device, &Device::doneReadTheme, &diag, &ThemeDialog::onDoneReadTheme);
+		connect(device, &Device::doneWriteTheme, &diag, &ThemeDialog::onDoneWriteTheme);
+		connect(device, &Device::doneReadSettings, &diag, &ThemeDialog::onDeviceConnected);
 		connect(device, &Device::deviceDisconnected, &diag, &ThemeDialog::onDeviceDisconnected);
 		diag.exec();
 	});
@@ -97,7 +117,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 		diag.exec();
 	});
 
-	connect(ui->setTimeBtn, &QPushButton::clicked, device, &Device::writeTime);
+	QSettings conf("nfe");
+	ui->syncClockCheck->setChecked(conf.value("sync_clock", false).toBool());
+	connect(this, &MainWindow::cmdWriteTime, device, &Device::writeTime);
+	connect(ui->syncClockCheck, &QCheckBox::toggled, this, [this](bool checked) {
+		QSettings conf("nfe");
+		conf.setValue("sync_clock", checked);
+		if (checked) {
+			emit cmdWriteTime();
+		}
+	});
 	connect(device, &Device::doneWriteTime, this, [this](bool ok, QString msg) {
 		if (ok) {
 			ui->statusbar->showMessage("Date/Time written to device.", msg_duration);
@@ -131,8 +160,12 @@ void MainWindow::deviceSettingsAvailable() {
 	advanced->deviceSettingsAvailable();
 	controls->deviceSettingsAvailable();
 	smartstat->deviceSettingsAvailable();
-
 	ui->monitorBtn->setEnabled(true);
+
+	QSettings conf("nfe");
+	if (conf.value("sync_clock", false).toBool()) {
+		emit cmdWriteTime();
+	}
 }
 
 void MainWindow::onSaveConfig() {

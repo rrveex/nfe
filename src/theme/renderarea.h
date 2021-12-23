@@ -14,8 +14,9 @@ class RenderArea : public QWidget {
 	Q_OBJECT
 
   public:
-	explicit RenderArea(QWidget *parent, Display &display);
-	Display &display;
+	explicit RenderArea(QWidget *parent, Display *display);
+	void setDisplay(Display *display) { this->display = display; }
+	Display *display;
 
 	QSize minimumSizeHint() const override;
 	QSize sizeHint() const override;

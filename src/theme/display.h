@@ -4,10 +4,12 @@
 #include "src/settings.h"
 
 #include <QColor>
+#include <QLine>
 #include <QMap>
 #include <QObject>
 #include <QRect>
 #include <QStringList>
+#include <QVariant>
 #include <QVector>
 
 enum class Page
@@ -42,8 +44,10 @@ struct DisplayItem {
 class Display : public QObject {
 	Q_OBJECT
   public:
-	Display();
-	void populateItems();
+	Display(QSize s) : size(s){};
+
+	QSize size;
+	virtual void populateItems() = 0;
 
 	QMap<Page, QVector<DisplayItem>> dispItems;
 
@@ -53,6 +57,20 @@ class Display : public QObject {
 	static constexpr int fa_signal = 0xf012;
 	static constexpr int fa_tachometer = 0xf3fd;
 	static constexpr int fa_barcode = 0xf02a;
+};
+class DisplayBig : public Display {
+	Q_OBJECT
+	//
+  public:
+	DisplayBig() : Display({240, 320}){};
+	virtual void populateItems();
+};
+class DisplaySmall : public Display {
+	Q_OBJECT
+	//
+  public:
+	DisplaySmall() : Display({80, 160}){};
+	virtual void populateItems();
 };
 
 #endif // DISPLAY_H

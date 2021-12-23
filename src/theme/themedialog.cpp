@@ -1,4 +1,5 @@
 #include "themedialog.h"
+#include "src/device.h"
 #include "ui_themedialog.h"
 
 #include <QColorDialog>
@@ -7,8 +8,19 @@
 #include <QMessageBox>
 #include <QTimer>
 
-ThemeDialog::ThemeDialog(QWidget *parent) : QDialog(parent), ui(new Ui::ThemeDialog), display() {
+ThemeDialog::ThemeDialog(QWidget *parent, QString displModel) : QDialog(parent), ui(new Ui::ThemeDialog) {
 	ui->setupUi(this);
+
+	if (displModel == "small") {
+		display = new DisplaySmall();
+	} else if (displModel == "big") {
+		display = new DisplayBig();
+	} else {
+		assert(0);
+	}
+
+	display->populateItems();
+
 	renderArea = new RenderArea(this, display);
 	ui->renderLayout->insertWidget(0, renderArea);
 	ui->renderLayout->setStretch(0, 1);
@@ -22,6 +34,9 @@ ThemeDialog::ThemeDialog(QWidget *parent) : QDialog(parent), ui(new Ui::ThemeDia
 
 ThemeDialog::~ThemeDialog() {
 	delete ui;
+	delete renderArea;
+	delete display;
+	delete model;
 }
 
 void ThemeDialog::onPageCombo(int idx) {
@@ -29,11 +44,12 @@ void ThemeDialog::onPageCombo(int idx) {
 
 	model->clear();
 
-	for (int i = 0; i < display.dispItems[page].size(); i++) {
-		QIcon icon = QIcon(IconEngine::instance(display.dispItems[page][i].color));
-		QStandardItem *si = new QStandardItem(icon, display.dispItems[page][i].listStr);
+	for (int i = 0; i < display->dispItems[page].size(); i++) {
+		QIcon icon = QIcon(IconEngine::instance(display->dispItems[page][i].color));
+		QStandardItem *si = new QStandardItem(icon, display->dispItems[page][i].listStr);
 		model->appendRow(si);
 	}
+	ui->lv->setCurrentIndex(model->index(0, 0));
 	emit doSetPage(static_cast<Page>(idx));
 }
 
@@ -59,20 +75,20 @@ void ThemeDialog::onChooseColor() {
 	Page page = static_cast<Page>(ui->pageCombo->currentIndex());
 
 	int listIdx = ui->lv->currentIndex().row();
-	QColor initialColor = display.dispItems[page][listIdx].color;
+	QColor initialColor = display->dispItems[page][listIdx].color;
 	QColor color = QColorDialog::getColor(initialColor, this);
 
 	if (!color.isValid()) return;
 
 	// set in Theme; then we can get
-	display.dispItems[page][listIdx].setColor(color);
+	display->dispItems[page][listIdx].setColor(color);
 
 	// make new icon
 	QIcon icon = QIcon(IconEngine::instance(color));
 
 	// set button
-	QString hex = QString("0x%1").arg(display.dispItems[page][listIdx].rgb565, 4, 16, QLatin1Char('0'));
-	ui->colorBtn->setText(display.dispItems[page][listIdx].hex + " " + hex);
+	QString hex = QString("0x%1").arg(display->dispItems[page][listIdx].rgb565, 4, 16, QLatin1Char('0'));
+	ui->colorBtn->setText(display->dispItems[page][listIdx].hex + " " + hex);
 	ui->colorBtn->setIcon(icon);
 
 	// set list entry
@@ -89,18 +105,20 @@ void ThemeDialog::onLvSelection(const QItemSelection &selected, const QItemSelec
 	int listIdx = ui->lv->currentIndex().row();
 	QIcon icon = model->item(listIdx)->icon();
 	ui->colorBtn->setIcon(icon);
-	QString hex = QString("0x%1").arg(display.dispItems[page][listIdx].rgb565, 4, 16, QLatin1Char('0'));
-	ui->colorBtn->setText(display.dispItems[page][listIdx].hex + " " + hex);
+	QString hex = QString("0x%1").arg(display->dispItems[page][listIdx].rgb565, 4, 16, QLatin1Char('0'));
+	ui->colorBtn->setText(display->dispItems[page][listIdx].hex + " " + hex);
 }
 
-void ThemeDialog::onThemeWritten(bool ok, QString msg) {
-	if (ok) {
-		ui->statusLabel->setText("Read theme OK.");
-		display.populateItems();
-	} else {
+void ThemeDialog::onDoneReadTheme(bool ok, QString msg) {
+	if (!ok) {
 		ui->statusLabel->setText(msg);
 		return;
 	}
+
+	ui->readBtn->setEnabled(true);
+	ui->writeBtn->setEnabled(true);
+	ui->statusLabel->setText("Read theme OK.");
+	display->populateItems();
 	QTimer::singleShot(5000, this, [this] { ui->statusLabel->setText(""); });
 
 	ui->readBtn->setEnabled(true);
@@ -108,7 +126,7 @@ void ThemeDialog::onThemeWritten(bool ok, QString msg) {
 	onPageCombo(ui->pageCombo->currentIndex());
 }
 
-void ThemeDialog::onWriteTheme(bool ok, QString msg) {
+void ThemeDialog::onDoneWriteTheme(bool ok, QString msg) {
 	if (ok) {
 		ui->statusLabel->setText("Write theme OK.");
 	} else {
@@ -117,10 +135,25 @@ void ThemeDialog::onWriteTheme(bool ok, QString msg) {
 	QTimer::singleShot(5000, this, [this] { ui->statusLabel->setText(""); });
 }
 
-void ThemeDialog::onDeviceConnected() {
+void ThemeDialog::onDeviceConnected(bool ok, QString) {
+	if (!ok) return;
+	QString ds = Device::getDisplaySize();
+	if (ds == "no") return;
 	emit doReadTheme();
-	ui->readBtn->setEnabled(true);
-	ui->writeBtn->setEnabled(true);
+
+	if (ds == "small") {
+		delete display;
+		display = new DisplaySmall();
+	} else if (ds == "big") {
+		delete display;
+		display = new DisplayBig();
+	} else {
+		close();
+	}
+
+	display->populateItems();
+	renderArea->setDisplay(display);
+	onPageCombo(0);
 }
 
 void ThemeDialog::onDeviceDisconnected() {
@@ -170,6 +203,6 @@ void ThemeDialog::importConfig() {
 	ColorTheme &theme = Settings::getTheme();
 	int res = f.read((char *)&theme, sizeof(theme));
 	if (res == sizeof(theme)) {
-		onThemeWritten(true, "");
+		onDoneReadTheme(true, "");
 	}
 }

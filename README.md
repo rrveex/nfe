@@ -2,9 +2,9 @@
 
 ![](res/nfe_ss.png)
 ![](res/nfe_dm_ss.png)
-![](res/nfe_theme_ss.png)
+![](res/nfe_theme_ss.png) ![](res/nfe_theme_rp_ss.png)
 
-This is an **UNOFFICIAL** configuration utility for devices running the ArtixFox and RedPanda (not yet complete) **FW version >= 190602**
+This is an **UNOFFICIAL** configuration utility for devices running the ArtixFox and RedPanda **FW version >= 190602**
 
 Please see the official forum here:
 https://nfeteam.org/forum

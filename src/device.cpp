@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <wchar.h>
-
+bool Device::connected = false;
 Device::Device() {
 
 	findDeviceTimer = new QTimer(this);
@@ -68,6 +68,7 @@ void Device::onCheckDisconnectTimerTimeout() {
 		checkDisconnectTimer->stop();
 		handle = nullptr;
 		emit deviceDisconnected();
+		connected = false;
 		findDeviceTimer->start(1000);
 		break;
 	default:
@@ -104,6 +105,7 @@ void Device::readSettings() {
 	Res res = readBuffer(cmd_read_settings, buf, transfer_size[cmd_read_settings]);
 	if (res.ok) {
 		res.ok = settings.read(buf);
+		if (res.ok) connected = true;
 		qDebug() << "SettingsVersion: " << settings.DeviceInfo.SettingsVersion;
 		qDebug() << "ProductId: " << settings.DeviceInfo.ProductId;
 		qDebug() << "HardwareVersion: " << settings.DeviceInfo.HardwareVersion;
@@ -261,8 +263,9 @@ void Device::readTheme() {
 	emit doneReadTheme(res.ok, res.msg);
 }
 void Device::writeTime() {
-	QDateTime now = QDateTime::currentDateTime();
+	if (!connected) return;
 
+	QDateTime now = QDateTime::currentDateTime();
 	datetime.Year = (uint16_t)now.date().year();
 	datetime.Month = (uint8_t)now.date().month();
 	datetime.Day = (uint8_t)now.date().day();
@@ -303,6 +306,23 @@ QString Device::getName() {
 		return deviceStringMap[s];
 	} else {
 		return QString("Unknown device: ") + s;
+	}
+}
+
+QString Device::getDisplaySize() {
+	if (!connected) return "no";
+
+	char s[5] = {0, 0, 0, 0, 0};
+	Settings &settings = Settings::instance();
+	memcpy(s, &settings.DeviceInfo.ProductId, 4);
+	QString code(s);
+
+	if (code == "APRO" || code == "J184" || code == "GRUS" || code == "URSA" || code == "BTBM" || code == "THLM") {
+		return "small";
+	} else if (code == "J056" || code == "E248" || code == "E212" || code == "E211") {
+		return "big";
+	} else {
+		return "no";
 	}
 }
 

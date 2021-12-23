@@ -24,12 +24,12 @@ class ThemeDialog : public QDialog {
 
   public:
 	// sColorTheme afTheme
-	explicit ThemeDialog(QWidget *parent);
+	explicit ThemeDialog(QWidget *parent, QString displModel);
 	~ThemeDialog();
   public slots:
-	void onThemeWritten(bool ok, QString msg);
-	void onWriteTheme(bool ok, QString msg);
-	void onDeviceConnected();
+	void onDoneReadTheme(bool ok, QString msg);
+	void onDoneWriteTheme(bool ok, QString msg);
+	void onDeviceConnected(bool ok, QString msg);
 	void onDeviceDisconnected();
 
   signals:
@@ -42,7 +42,7 @@ class ThemeDialog : public QDialog {
 
   private:
 	Ui::ThemeDialog *ui;
-	Display display;
+	Display *display;
 	RenderArea *renderArea;
 	QStandardItemModel *model;
 

@@ -52,5 +52,7 @@ class MainWindow : public QMainWindow {
 	void deviceSettingsAvailable();
 	void onSaveConfig();
 	void onLoadConfig();
+  signals:
+	void cmdWriteTime();
 };
 #endif // MAINWINDOWAF_H
