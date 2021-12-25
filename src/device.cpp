@@ -100,6 +100,7 @@ void Device::closehid() {
 
 void Device::readSettings() {
 	char buf[transfer_size[cmd_read_settings]];
+	memset(buf, 0, sizeof(buf));
 	Settings &settings = Settings::instance();
 
 	Res res = readBuffer(cmd_read_settings, buf, transfer_size[cmd_read_settings]);
@@ -115,7 +116,6 @@ void Device::readSettings() {
 		qDebug() << "FirmwareVersion: " << settings.DeviceInfo.FirmwareVersion;
 		qDebug() << "FirmwareBuild: " << settings.DeviceInfo.FirmwareBuild;
 	}
-
 	if (!res.ok) {
 		qCritical() << "--- readSettings Error: " << res.msg;
 		res.msg = "Error: FW version < 190602";
