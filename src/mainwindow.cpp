@@ -12,9 +12,15 @@
 #include <QProcess>
 #include <QSettings>
 #include <QTimer>
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
 	ui->setupUi(this);
+#ifdef QT_DEBUG
+	std::cout << "nfe version " << NFE_VERSION << " (debug)" << std::endl;
+#else
+	std::cout << "nfe version " << NFE_VERSION << " (release)" << std::endl;
+#endif
 
 	setWindowIcon(QIcon(":/res/nfe.png"));
 	QFontDatabase::addApplicationFont(":/res/fontawesome-5.otf");

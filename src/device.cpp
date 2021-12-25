@@ -117,6 +117,7 @@ void Device::readSettings() {
 	}
 
 	if (!res.ok) {
+		qCritical() << "--- readSettings Error: " << res.msg;
 		res.msg = "Error: FW version < 190602";
 	}
 	emit doneReadSettings(res.ok, res.msg);

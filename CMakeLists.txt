@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(nfe VERSION 0.3 LANGUAGES CXX)
+project(nfe VERSION 0.4 LANGUAGES CXX)
 
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Release" CACHE STRING	"Default build type: Release" FORCE)
@@ -84,6 +84,8 @@ set(LIBS
 add_executable(nfe
 	${PROJECT_SOURCES}
 )
-
+target_compile_definitions(nfe
+	PRIVATE NFE_VERSION=${CMAKE_PROJECT_VERSION}
+)
 target_include_directories(nfe PRIVATE src/af)
 target_link_libraries(nfe PRIVATE ${LIBS})
