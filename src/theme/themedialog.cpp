@@ -73,12 +73,24 @@ void ThemeDialog::addHandlers() {
 
 void ThemeDialog::onChooseColor() {
 	Page page = static_cast<Page>(ui->pageCombo->currentIndex());
-
 	int listIdx = ui->lv->currentIndex().row();
 	QColor initialColor = display->dispItems[page][listIdx].color;
-	QColor color = QColorDialog::getColor(initialColor, this);
 
-	if (!color.isValid()) return;
+	QColorDialog qcd(initialColor, this);
+	connect(&qcd, &QColorDialog::currentColorChanged, this, [this, page, listIdx](const QColor &color) {
+		// update screen while choosing color
+		display->dispItems[page][listIdx].setColor(color);
+		emit doSetPage(page);
+	});
+
+	if (qcd.exec() == QColorDialog::Rejected) {
+		// cancel -> set back
+		display->dispItems[page][listIdx].setColor(initialColor);
+		emit doSetPage(page);
+		return;
+	}
+
+	QColor color = qcd.currentColor();
 
 	// set in Theme; then we can get
 	display->dispItems[page][listIdx].setColor(color);

@@ -97,25 +97,24 @@ class Device : public QObject {
 
 	//	std::map<QString, QString> deviceStringMap = {
 	QMap<QString, QString> deviceStringMap = {
-		{"E052", "Joyetech eVic VTC Mini"},	  {"E043", "Joyetech eVic VTwo"},	   {"E115", "Joyetech eVic VTwo Mini"},
-		{"E079", "Joyetech eVic VTC Dual"},	  {"E150", "Joyetech eVic Basic"},	   {"E092", "Joyetech eVic AIO"},
-		{"E182", "Joyetech eVic Primo"},	  {"E203", "Joyetech eVic Primo 2.0"}, {"E196", "Joyetech eVic Primo Mini"},
-		{"E060", "Joyetech Cuboid"},		  {"E056", "Joyetech Cuboid Mini"},	   {"E166", "Joyetech Cuboid 200"},
+		{"E052", "Joyetech eVic VTC Mini"},	 {"E043", "Joyetech eVic VTwo"},	   {"E115", "Joyetech eVic VTwo Mini"},
+		{"E079", "Joyetech eVic VTC Dual"},	 {"E150", "Joyetech eVic Basic"},	   {"E092", "Joyetech eVic AIO"},
+		{"E182", "Joyetech eVic Primo"},	 {"E203", "Joyetech eVic Primo 2.0"},  {"E196", "Joyetech eVic Primo Mini"},
+		{"E060", "Joyetech Cuboid"},		 {"E056", "Joyetech Cuboid Mini"},	   {"E166", "Joyetech Cuboid 200"},
 		{"E083", "Joyetech eGrip II"},
 
-		{"M973", "Eleaf iStick QC 200W"},	  {"M972", "Eleaf iStick TC200W"},	   {"M011", "Eleaf iStick TC100W"},
-		{"M041", "Eleaf iStick Pico"},		  {"M038", "Eleaf iStick Pico RDTA"},  {"M045", "Eleaf iStick Pico Mega"},
-		{"M065", "Eleaf iStick Pico Dual"},	  {"M046", "Eleaf iStick Power"},	   {"M037", "Eleaf ASTER"},
+		{"M973", "Eleaf iStick QC 200W"},	 {"M972", "Eleaf iStick TC200W"},	   {"M011", "Eleaf iStick TC100W"},
+		{"M041", "Eleaf iStick Pico"},		 {"M038", "Eleaf iStick Pico RDTA"},   {"M045", "Eleaf iStick Pico Mega"},
+		{"M065", "Eleaf iStick Pico Dual"},	 {"M046", "Eleaf iStick Power"},	   {"M037", "Eleaf ASTER"},
 		{"M105", "Eleaf Pico Squeeze 2"},
 
-		{"W007", "Wismec Presa TC75W"},		  {"W017", "Wismec Presa TC100W"},	   {"W018", "Wismec Reuleaux RX2/3"},
-		{"W014", "Wismec Reuleaux RX200"},	  {"W033", "Wismec Reuleaux RX200S"},  {"W026", "Wismec Reuleaux RX75"},
-		{"W069", "Wismec Reuleaux RX300"},	  {"W073", "Wismec Reuleaux RXmini"},  {"W078", "Wismec Predator"},
-		{"W010", "Vaporflask Classic"},		  {"W011", "Vaporflask Lite"},		   {"W013", "Vaporflask Stout"},
-		{"W016", "Beyondvape Centurion"},	  {"W043", "Vaponaute La Petit Box"},  {"W057", "Vapor Shark SwitchBox RX"},
-		{"W091", "Wismec Reuleaux RX Gen3"},
-
-		{"J056", "Wismec Sinuous Ravage230"}, {"GRUS", "Lost Vape Grus"},		   {"THLM", "Lost Vape Thelema"},
+		{"W007", "Wismec Presa TC75W"},		 {"W017", "Wismec Presa TC100W"},	   {"W018", "Wismec Reuleaux RX2/3"},
+		{"W014", "Wismec Reuleaux RX200"},	 {"W033", "Wismec Reuleaux RX200S"},   {"W026", "Wismec Reuleaux RX75"},
+		{"W069", "Wismec Reuleaux RX300"},	 {"W073", "Wismec Reuleaux RXmini"},   {"W078", "Wismec Predator"},
+		{"W010", "Vaporflask Classic"},		 {"W011", "Vaporflask Lite"},		   {"W013", "Vaporflask Stout"},
+		{"W016", "Beyondvape Centurion"},	 {"W043", "Vaponaute La Petit Box"},   {"W057", "Vapor Shark SwitchBox RX"},
+		{"W091", "Wismec Reuleaux RX Gen3"}, {"J056", "Wismec Sinuous Ravage230"}, {"GRUS", "Lost Vape Grus"},
+		{"THLM", "Lost Vape Thelema"},		 {"URSA", "Lost Vape Ursa"},
 	};
 
 	std::map<Chipset, std::vector<uint8_t>> hidSig = {
