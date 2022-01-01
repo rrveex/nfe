@@ -30,13 +30,16 @@ class RenderArea : public QWidget {
   protected:
 	virtual void paintEvent(QPaintEvent *event) override;
 	virtual void mousePressEvent(QMouseEvent *event) override;
+	virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
 
   private:
 	Page page;
 	qreal scaleFactor;
+	void processClick(QMouseEvent *event, void (RenderArea::*)(int));
 
   signals:
 	void itemClicked(int);
+	void itemDoubleClicked(int);
 };
 
 #endif // RENDERAREA_H

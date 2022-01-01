@@ -69,6 +69,7 @@ void ThemeDialog::addHandlers() {
 	connect(ui->lv, &QListView::doubleClicked, this, &ThemeDialog::onChooseColor);
 	connect(this, &ThemeDialog::doSetPage, renderArea, &RenderArea::setPage);
 	connect(renderArea, &RenderArea::itemClicked, this, [this](int i) { ui->lv->setCurrentIndex(model->index(i, 0)); });
+	connect(renderArea, &RenderArea::itemDoubleClicked, this, &ThemeDialog::onChooseColor);
 }
 
 void ThemeDialog::onChooseColor() {

@@ -83,6 +83,14 @@ void RenderArea::paintEvent(QPaintEvent *event) {
 }
 
 void RenderArea::mousePressEvent(QMouseEvent *event) {
+	processClick(event, &RenderArea::itemClicked);
+}
+
+void RenderArea::mouseDoubleClickEvent(QMouseEvent *event) {
+	processClick(event, &RenderArea::itemDoubleClicked);
+}
+
+void RenderArea::processClick(QMouseEvent *event, void (RenderArea::*sig)(int)) {
 	int x = std::round(event->x() / scaleFactor);
 	int y = std::round(event->y() / scaleFactor);
 	//	qDebug() << "press x: " << x << " y: " << y;
@@ -98,7 +106,7 @@ void RenderArea::mousePressEvent(QMouseEvent *event) {
 			if (qv.type() == QVariant::Type::Line) {
 				auto rect = it.data2[i].toRect();
 				if (rect.contains(p)) {
-					emit itemClicked(line);
+					emit(this->*sig)(line);
 					return;
 				}
 			}
@@ -111,7 +119,7 @@ void RenderArea::mousePressEvent(QMouseEvent *event) {
 			if (qv.type() == QVariant::Type::String) {
 				auto rect = it.data2[i].toRect();
 				if (rect.contains(p)) {
-					emit itemClicked(line);
+					emit(this->*sig)(line);
 					return;
 				}
 			}
@@ -124,7 +132,7 @@ void RenderArea::mousePressEvent(QMouseEvent *event) {
 			if (qv.type() == QVariant::Type::Rect) {
 				auto rect = qv.toRect();
 				if (rect.contains(p)) {
-					emit itemClicked(line);
+					emit(this->*sig)(line);
 					return;
 				}
 			}
