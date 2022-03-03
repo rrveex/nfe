@@ -22,8 +22,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	std::cout << "nfe version " << NFE_VERSION << " (release)" << std::endl;
 #endif
 
-	setWindowIcon(QIcon(":/res/nfe.png"));
-	QFontDatabase::addApplicationFont(":/res/fontawesome-5.otf");
+	setWindowIcon(QIcon("://res/nfe.png"));
+	QFontDatabase::addApplicationFont("://res/fa-solid-900.ttf");
 
 	// instantiate all other ui classes
 	profiles = new Profiles(this, ui);

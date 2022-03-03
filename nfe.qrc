@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>res/fontawesome-5.otf</file>
         <file>res/nfe.png</file>
+        <file>res/fa-solid-900.ttf</file>
     </qresource>
 </RCC>
